@@ -1,0 +1,5 @@
+Title: This API is so Fetching!
+Byline: Nikhil Marathe
+Excerpt: For more than a decade the Web has used XMLHttpRequest (XHR) to achieve asynchronous requests in JavaScript. While very useful, XHR is not a very ...
+Readerable: Yes
+Site name: Mozilla Hacks – the Web developer blog

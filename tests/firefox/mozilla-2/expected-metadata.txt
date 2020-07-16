@@ -1,0 +1,5 @@
+Title: Welcome to Firefox Developer Edition
+Excerpt: Built for those who build the Web. Introducing the only browser made for developers.
+Readerable: No
+Site name: Mozilla
+Text direction: Left to right

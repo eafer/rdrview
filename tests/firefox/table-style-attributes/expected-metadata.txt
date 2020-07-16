@@ -1,0 +1,3 @@
+Title: linux video
+Excerpt: linux usability ...or, why do I bother. © 2002, 2003 Jamie Zawinski 
+Readerable: Yes

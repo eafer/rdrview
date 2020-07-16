@@ -1,0 +1,125 @@
+   Neuroscience tells us that most of the work done by our brains happens on
+   an unconscious level, but when does that "a-ha!" moment occur? And what
+   happens during it? New research investigates.
+
+   hand holding brain lightbulb
+   A new study investigates when the 'a-ha!' moment takes place in the brain,
+   and how similar it is to other brain processes.
+
+   Many of us have noticed that we seem to get our best ideas when we're in
+   the shower, or that we can find the answer to a difficult question when we
+   least think about it.
+
+   A large body of neuroscientific studies has pointed out that the brain
+   does a lot of work in its spare time, the so-called idle state - wherein
+   the brain does not appear to be thinking about anything at all - and that
+   this is the time when it works at its hardest to find solutions to complex
+   problems.
+
+   With time and advances in neuroscience, it has become more and more clear
+   to researchers that Freud was right and the mind, as well as the brain, do
+   work unconsciously. In fact, it would be safe to say that what is
+   consciously known to us is just the tip of a much larger iceberg, deeply
+   submerged in unconscious waters.
+
+   But the exact moment at which information becomes known to us - or when
+   the "tip of the iceberg" pierces through the water, and the unconscious
+   becomes conscious - has been somewhat of a mystery, from a neuroscientific
+   point of view.
+
+   In other words, we do not yet know when that intellectually satisfying
+   "a-ha!" moment takes place, or what the biology is behind it. This is why
+   a team of researchers at Columbia University in New York City, NY, set out
+   to investigate this moment in more detail.
+
+   The scientists were led by Michael Shadlen, Ph.D., of Columbia
+   University's Mortimer B. Zuckerman Mind Brain Behavior Institute, and the
+   findings were published in the journal Current Biology.
+
+The hypothesis
+
+   Dr. Shadlen and colleagues started out from an interesting hypothesis, one
+   which they derived from previous research on the neurobiological processes
+   involved in decision-making.
+
+   As the authors explain, research conducted in both monkeys and humans
+   shows that many of our decisions take place at a point when the brain
+   "feels" as though it has gathered enough information, or when a critical
+   level of information has been accumulated.
+
+   This process of making a decision once the brain has accumulated enough
+   evidence bears the name of "bounded evidence accumulation." Reaching this
+   threshold is important because, although the brain does not use all of the
+   information available, it uses as much as is necessary to make a speedy
+   yet accurate decision.
+
+   The researchers wondered whether or not this threshold is also responsible
+   for our "eureka!" moments.
+
+   In Dr. Shadlen's words, "Could the moment when the brain believes it has
+   accumulated enough evidence be tied to the person's awareness of having
+   decided - that important 'a-ha!' moment?"
+
+Examining the 'a-ha!' moment
+
+   To answer this question, the scientists asked five people to perform a
+   "direction discrimination" task. In it, the participants looked at dots on
+   a computer screen. The dots moved randomly, as grains of sand would when
+   blown by the wind. The participants were asked to say in which direction
+   the dots had moved.
+
+   The moment they "decided" which direction the dots seemed to be taking was
+   considered to be the equivalent of the "a-ha!" moment.
+
+   In the center of the screen, there was a fixed point and a clock. The
+   display also had two "choice targets" - namely, left or right - and these
+   were the directions in which the participants had to decide that the dots
+   had moved.
+
+   Shortly after the dots had stopped moving, the participants used an
+   electronic, hand-held stylus to move the cursor in the direction that they
+   thought the dots had moved.
+
+   To determine when the decision was made, the researchers used the
+   technique called "mental chronometry" - that is, after they made their
+   decision, the participants were asked to move the clock backward to the
+   point when they felt that they had consciously done so.
+
+   "The moment in time indicated by the participants - this mental
+   chronometry - was entirely subjective; it relied solely on their own
+   estimation of how long it took them to make that decision," Dr. Shadlen
+   says. "And because it was purely subjective, in principle it ought to be
+   unverifiable."
+
+'A-ha' moment similar to making a decision
+
+   However, by applying a mathematical model, the scientists were able to
+   match these subjective decision times to the bounded evidence accumulation
+   process.
+
+   The subjective decision times fit so well with what the scientists
+   determined as the evidence accumulation threshold that they were able to
+   predict the choices of four of the five participants.
+
+   "If the time reported to us by the participants was valid, we reasoned
+   that it might be possible to predict the accuracy of the decision,"
+   explains Dr. Shadlen.
+
+   "We incorporated a kind of mathematical trick, based on earlier studies,
+   which showed that the speed and accuracy of decisions were tied together
+   by the same brain function." This "mathematical trick" was the evidence
+   accumulation model.
+
+     "Essentially, the act of becoming consciously aware of a decision
+     conforms to the same process that the brain goes through to complete a
+     decision, even a simple one - such as whether to turn left or right."
+
+     Michael Shadlen, Ph.D.
+
+   In other words, the study shows that the conscious awareness of the
+   "a-ha!" moment takes place precisely when the brain has reached that
+   threshold of evidence accumulation.
+
+   The findings provide unique insights into the biology of consciousness,
+   say the researchers, and they bring us closer to understanding the
+   biological basis of decisions, ethics, and, generally, the human mind.

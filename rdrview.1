@@ -1,0 +1,124 @@
+.\" rdrview.1 - manpage for rdrview
+.\"
+.\" Copyright (C) 2020 Ernesto A. Fernández <ernesto.mnd.fernandez@gmail.com>
+.\"
+.TH rdrview 1 "October 2020" "0.1"
+.SH NAME
+rdrview \- extract readable content from a webpage
+.SH SYNOPSIS
+.B rdrview
+.RB [ -v ]
+[\fB-u \fIbase-url\fR]
+[\fB-E \fIencoding\fR]
+[\fB-c\fR|\fB-H\fR|\fB\-M\fR|\fB\-B \fIbrowser\fR]
+.RI [ URL ]
+.SH DESCRIPTION
+.B rdrview
+attempts to extract the meaningful content from a webpage,
+as done by the "Reader View" feature of most modern browsers.
+It's intended to be used with terminal RSS readers,
+to clean up the articles for display on web browsers such as lynx.
+.PP
+If no
+.I URL
+is provided,
+the HTML will be read from standard input.
+By default,
+.B rdrview
+will check mailcap for a way to display the content as text.
+If preferred, a browser can be specified with the
+.B \-B
+option, or with the
+.B RDRVIEW_BROWSER
+environment variable.
+.SH EXAMPLES
+.TP 3
+If you have a text mode browser, you can extract content with just:
+.B rdrview 'https://en.wikipedia.org/wiki/World_wide_web'
+.TP 3
+To see the same article in a browser:
+.B rdrview -B firefox 'https://en.wikipedia.org/wiki/World_wide_web'
+.TP 3
+To clean up local HTML files:
+.B rdrview -H -b 'http://fakehost.com' < source.html > result.html
+.TP 3
+To mediate between the \
+\fBnewsboat\fR(1) feed reader and \fBlynx\fR(1):
+.B BROWSER='rdrview -B lynx' newsboat
+.SH OPTIONS
+.TP
+.BR \-c ", " \-\-check
+Don't extract content,
+just run a quick check to see if the document appears to have any.
+Exit status is 0 in that case, or 1 otherwise.
+.TP
+\fB-u \fIbase-url\fR, \fB--base=\fIbase-url
+Specify the base to be used for all relative URLs.
+This option is most useful for dealing with standard input,
+where the document's URL may be unknown.
+.TP
+.BR \-v ", " \-\-version
+Print the version number of
+.B rdrview
+and exit.
+.TP
+\fB\-B \fIbrowser\fR, \fB--browser=\fIbrowser
+Specify a browser to display the result.
+.TP
+\fB\-E \fIencoding\fR, \fB--encoding=\fIencoding
+Specify the character encoding of the source.
+By default,
+the meta tags will be checked.
+.TP
+.BR \-H ", " \-\-html
+Output the raw HTML for the extracted article.
+WARNING: the markup may still contain some scripts so,
+if you plan to open it with a modern browser at some point,
+first check how it implements the same-origin policy for local files.
+.TP
+.BR \-M ", " \-\-meta
+Output only the metadata for the article.
+.TP
+.BR \-\-disable-sandbox
+Disable the security sandbox.
+This option is extremely dangerous,
+so don't use it unless you know what you are doing.
+.SH EXIT STATUS
+The exit status is 0 on success, 1 on failure.
+.SH ENVIRONMENT
+Any environment understood by
+.BR curl (1)
+can be used here.
+.B TMPDIR
+is respected as well.
+.TP 3
+.B RDRVIEW_BROWSER
+Default browser to display the extracted articles. The
+.B \-B
+option overrides this.
+.SH BUGS
+The markup produced by the
+.B \-H
+option is a huge mess.
+If you intend to work with it you may want to pipe it to something like
+.BR tidy (1)
+first.
+.PP
+If you have a version of the libraries that hasn't been tested,
+the security sandbox might not allow the code to run.
+Please report this,
+but in the meantime,
+an option is provided to disable the sandbox.
+Don't use it unless you have other security measures in place.
+.SH AUTHOR
+Ernesto A. Fernández
+\%<ernesto.mnd.fernandez@gmail.com>
+.PP
+Please report bugs via email or, if preferred, file a github issue at
+\%https://github.com/eafer/rdrview/issues.
+.PP
+Credits to Readability.js by Mozilla;
+this tool is mostly a transpilation of their code done by hand.
+.SH SEE ALSO
+.BR lynx (1),
+.BR newsboat (1)

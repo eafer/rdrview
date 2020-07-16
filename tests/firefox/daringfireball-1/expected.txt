@@ -1,0 +1,46 @@
+   Daring Fireball is written and produced by John Gruber.
+
+   Photograph of the author.
+   Portrait by George Del Barrio
+
+Mac Apps
+
+     * BBEdit
+     * Acorn
+     * MarsEdit
+     * Napkin
+     * Yojimbo
+     * Transmit
+     * Script Debugger
+     * Snapz Pro X
+     * WebKit
+
+iPhone Apps
+
+     * Vesper
+
+Server Software
+
+   The Daring Fireball website is hosted by Joyent.
+
+   Articles and links are published through Movable Type. In addition to my
+   own SmartyPants and Markdown plug-ins, Daring Fireball uses several
+   excellent Movable Type plug-ins, including Brad Choate’s MT-Regex and
+   MT-IfEmpty, and Nat Irons’s Amputator.
+
+   Stats are tracked using Mint. Additional web nerdery, including the
+   membership system, is fueled by Perl, PHP, and MySQL.
+
+Web Standards
+
+   Web standards are important, and Daring Fireball adheres to them.
+   Specifically, Daring Fireball’s HTML markup should validate as either HTML
+   5 or XHTML 4.01 Transitional, its layout is constructed using valid CSS,
+   and its syndicated feed is valid Atom.
+
+   If Daring Fireball looks goofy in your browser, you’re likely using a
+   shitty browser that doesn’t support web standards. Internet Explorer, I’m
+   looking in your direction. If you complain about this, I will laugh at
+   you, because I do not care. If, however, you are using a modern,
+   standards-compliant browser and have trouble viewing or reading Daring
+   Fireball, please do let me know.

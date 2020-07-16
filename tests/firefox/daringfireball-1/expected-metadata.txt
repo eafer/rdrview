@@ -1,0 +1,3 @@
+Title: Daring Fireball: Colophon
+Excerpt: Daring Fireball is written and produced by John Gruber.
+Readerable: Yes

@@ -1,0 +1,43 @@
+# Suppression file for Valgrind
+
+{
+   Avoid false positive inside libxml2 for qq.com test
+   Memcheck:Cond
+   fun:xmlParseCharEncoding
+   obj:/usr/lib/x86_64-linux-gnu/libxml2.so.2.9.10
+   obj:/usr/lib/x86_64-linux-gnu/libxml2.so.2.9.10
+   obj:/usr/lib/x86_64-linux-gnu/libxml2.so.2.9.10
+   fun:htmlParseDocument
+   obj:/usr/lib/x86_64-linux-gnu/libxml2.so.2.9.10
+   fun:parse_file
+   fun:run_dangerous
+   fun:main
+}
+
+{
+   Avoid false positive inside libxml2 when checking known encodings
+   Memcheck:Cond
+   fun:xmlParseCharEncoding
+   fun:check_known_encoding
+   fun:parse_arguments
+   fun:main
+}
+
+{
+   Avoid false positive inside libxml2 for qq.com test under -O2
+   Memcheck:Cond
+   fun:xmlParseCharEncoding
+   obj:/usr/lib/x86_64-linux-gnu/libxml2.so.2.9.10
+   obj:/usr/lib/x86_64-linux-gnu/libxml2.so.2.9.10
+   obj:/usr/lib/x86_64-linux-gnu/libxml2.so.2.9.10
+   fun:htmlParseDocument
+   obj:/usr/lib/x86_64-linux-gnu/libxml2.so.2.9.10
+   fun:main
+}
+
+{
+   Avoid false positive inside libxml2 when checking known encodings under -O2
+   Memcheck:Cond
+   fun:xmlParseCharEncoding
+   fun:main
+}

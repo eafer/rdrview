@@ -1,0 +1,4 @@
+Title: Dublin Core property title
+Byline: Dublin Core property author
+Excerpt: Dublin Core property description
+Readerable: Yes

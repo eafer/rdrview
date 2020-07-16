@@ -1,0 +1,4 @@
+Title: Saving Data: Reducing the size of App Updates by 65%
+Excerpt: Posted by Andrew Hayden, Software Engineer on Google Play Android users are downloading tens of billions of apps and games on Google Pla...
+Readerable: Yes
+Text direction: Left to right

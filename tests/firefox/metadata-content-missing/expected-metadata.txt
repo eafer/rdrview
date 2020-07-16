@@ -1,0 +1,4 @@
+Title: My title
+Byline: Creator Name
+Excerpt: Preferred description
+Readerable: Yes

@@ -1,0 +1,4 @@
+Title: RTL Test
+Excerpt: Lorem ipsum dolor sit amet. 
+Readerable: Yes
+Text direction: Right to left

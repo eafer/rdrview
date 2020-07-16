@@ -1,0 +1,178 @@
+   Tuesday 15 October 2019 by Bradley M. Kuhn
+
+   The last 33 days have been unprecedentedly difficult for the software
+   freedom community and for me personally. Folks have been emailing,
+   phoning, texting, tagging me on social media (— the last of which has been
+   funny, because all my social media accounts are placeholder accounts).
+   But, just about everyone has urged me to comment on the serious issues
+   that the software freedom community now faces. Until now, I have stayed
+   silent regarding all these current topics: from Richard M. Stallman
+   (RMS)'s public statements, to his resignation from the Free Software
+   Foundation (FSF), to the Epstein scandal and its connection to MIT. I've
+   also avoided generally commenting on software freedom organizational
+   governance during this period. I did this for good reason, which is
+   explained below. However, in this blog post, I now share my primary
+   comments on the matters that seem to currently be of the utmost attention
+   of the Open Source and Free Software communities.
+
+   I have been silent the last month because, until two days ago, I was an
+   at-large member of FSF's Board of Directors, and a Voting Member of the
+   FSF. As a member of FSF's two leadership bodies, I was abiding by a
+   reasonable request from the FSF management and my duty to the
+   organization. Specifically, the FSF asked that all communication during
+   the crisis come directly from FSF officers and not from at-large directors
+   and/or Voting Members. Furthermore, the FSF management asked all Directors
+   and Voting Members to remain silent on this entire matter — even on issues
+   only tangentially related to the current situation, and even when speaking
+   in our own capacity (e.g., on our own blogs like this one). The FSF is an
+   important organization, and I take any request from the FSF seriously — so
+   I abided fully with their request.
+
+   The situation was further complicated because folks at my employer,
+   Software Freedom Conservancy (where I also serve on the Board of
+   Directors) had strong opinions about this matter as well. Fortunately, the
+   FSF and Conservancy both had already created clear protocols for what I
+   should do if ever there was a disagreement or divergence of views between
+   Conservancy and FSF. I therefore was recused fully from the planning,
+   drafting, and timing of Conservancy's statement on this matter. I thank my
+   colleagues at the Conservancy for working so carefully to keep me entirely
+   outside the loop on their statement and to diligently assure that it was
+   straight-forward for me to manage any potential organizational
+   disagreements. I also thank those at the FSF who outlined clear protocols
+   (ahead of time, back in March 2019) in case a situation like this ever
+   came up. I also know my colleagues at Conservancy care deeply, as I do,
+   about the health and welfare of the FSF and its mission of fighting for
+   universal software freedom for all. None of us want, nor have, any
+   substantive disagreement over software freedom issues.
+
+   I take very seriously my duty to the various organizations where I have
+   (or have had) affiliations. More generally, I champion non-profit
+   organizational transparency. Unfortunately, the current crisis left me in
+   a quandary between the overarching goal of community transparency and
+   abiding by FSF management's directives. Now that I've left the FSF Board
+   of Directors, FSF's Voting Membership, and all my FSF volunteer roles
+   (which ends my 22-year uninterrupted affiliation with the FSF), I can now
+   comment on the substantive issues that face not just the FSF, but the Free
+   Software community as a whole, while continuing to adhere to my past duty
+   of acting in FSF's best interest. In other words, my affiliation with the
+   FSF has come to an end for many good and useful reasons. The end to this
+   affiliation allows me to speak directly about the core issues at the heart
+   of the community's current crisis.
+
+   Firstly, all these events — from RMS' public comments on the MIT mailing
+   list, to RMS' resignation from the FSF to RMS' discussions about the next
+   steps for the GNU project — seem to many to have happened ridiculously
+   quickly. But it wasn't actually fast at all. In fact, these events were
+   culmination of issues that were slowly growing in concern to many people,
+   including me.
+
+   For the last two years, I had been a loud internal voice in the FSF
+   leadership regarding RMS' Free-Software-unrelated public statements; I
+   felt strongly that it was in the best interest of the FSF to actively seek
+   to limit such statements, and that it was my duty to FSF to speak out
+   about this within the organization. Those who only learned of this story
+   in the last month (understandably) believed Selam G.'s Medium post raised
+   an entirely new issue. In fact, RMS' views and statements posted on
+   stallman.org about sexual morality escalated for the worse over the last
+   few years. When the escalation started, I still considered RMS both a
+   friend and colleague, and I attempted to argue with him at length to
+   convince him that some of his positions were harmful to sexual assault
+   survivors and those who are sex trafficked, and to the people who devote
+   their lives in service to such individuals. More importantly to the FSF, I
+   attempted to persuade RMS that launching a controversial campaign on
+   sexual behavior and morality was counter to his and FSF's mission to
+   advance software freedom, and told RMS that my duty as an FSF Director was
+   to assure the best outcome for the FSF, which IMO didn't include having a
+   leader who made such statements. Not only is human sexual behavior not a
+   topic on which RMS has adequate academic expertise, but also his positions
+   appear to ignore significant research and widely available information on
+   the subject. Many of his comments, while occasionally politically
+   intriguing, lack empathy for people who experienced trauma.
+
+   IMO, this is not and has never been a Free Speech issue. I do believe
+   freedom of speech links directly to software freedom: indeed, I see the
+   freedom to publish software under Free licenses as almost a corollary to
+   the freedom of speech. However, we do not need to follow leadership from
+   those whose views we fundamentally disagree. Moreover, organizations need
+   not and should not elevate spokespeople and leaders who speak regularly on
+   unrelated issues that organizations find do not advance their mission,
+   and/or that alienate important constituents. I, like many other software
+   freedom leaders, curtail my public comments on issues not related to FOSS.
+   (Indeed, I would not even be commenting on this issue if it had not become
+   a central issue of concern to the software freedom community.) Leaders
+   have power, and they must exercise the power of their words with
+   restraint, not with impunity.
+
+   RMS has consistently argued that there was a campaign of “prudish
+   intimidation” — seeking to keep him quiet about his views on sexuality.
+   After years of conversing with RMS about how his non-software-freedom
+   views were a distraction, an indulgence, and downright problematic, his
+   general response was to make even more public comments of this nature. The
+   issue is not about RMS' right to say what he believes, nor is it even
+   about whether or not you agree or disagree with RMS' statements. The
+   question is whether an organization should have a designated leader who is
+   on a sustained, public campaign advocating about an unrelated issue that
+   many consider controversial. It really doesn't matter what your view about
+   the controversial issue is; a leader who refuses to stop talking loudly
+   about unrelated issues eventually creates an untenable distraction from
+   the radical activism you're actively trying to advance. The message of
+   universal software freedom is a radical cause; it's basically impossible
+   for one individual to effectively push forward two unrelated controversial
+   agendas at once. In short, the radical message of software freedom became
+   overshadowed by RMS' radical views about sexual morality.
+
+   And here is where I say the thing that may infuriate many but it's what I
+   believe: I think RMS took a useful step by resigning some of his
+   leadership roles at the FSF. I thank RMS for taking that step, and I wish
+   the FSF Directors well in their efforts to assure that the FSF becomes a
+   welcoming organization to all who care about universal software freedom.
+   The FSF's mission is essential to our technological future, and we should
+   all support that mission. I care deeply about that mission myself and have
+   worked and will continue to work in our community in the best interest of
+   the mission.
+
+   I'm admittedly struggling to find a way to work again with RMS, given his
+   views on sexual morality and his behaviors stemming from those views. I
+   explicitly do not agree with this “(re-)definition” of sexual assault.
+   Furthermore, I believe uninformed statements about sexual assault are
+   irresponsible and cause harm to victims. #MeToo is not a “frenzy”; it is a
+   global movement by individuals who have been harmed seeking to hold both
+   bad actors and society-at-large accountable for ignoring systemic wrongs.
+   Nevertheless, I still am proud of the essay that I co-wrote with RMS and
+   still find many of RMS' other essays compelling, important, and relevant.
+
+   I want the FSF to succeed in its mission and enter a new era of
+   accomplishments. I've spent the last 22 years, without a break, dedicating
+   substantial time, effort, care and loyalty to the various FSF roles that
+   I've had: including employee, volunteer, at-large Director, and Voting
+   Member. Even though my duties to the FSF are done, and my relationship
+   with the FSF is no longer formal, I still think the FSF is a valuable
+   institution worth helping and saving, specifically because the FSF was
+   founded for a mission that I deeply support. And we should also realize
+   that RMS — a human being (who is flawed like the rest of us) — invented
+   that mission.
+
+   As culture change becomes more rapid, I hope we can find reasonable nuance
+   and moderation on our complex analysis about people and their disparate
+   views, while we also hold individuals fully accountable for their actions.
+   That's the difficulty we face in the post-post-modern culture of the early
+   twenty-first century. Most importantly, I believe we must find a way to
+   stand firm for software freedom while also making a safe environment for
+   victims of sexual assault, sexual abuse, gaslighting, and other deplorable
+   actions.
+
+   Posted on Tuesday 15 October 2019 at 09:11 by Bradley M. Kuhn.
+
+   #include <std/disclaimer.h>
+   use Standard::Disclaimer;
+   from standard import disclaimer
+   SELECT full_text FROM standard WHERE type = 'disclaimer';
+
+   Both previously and presently, I have been employed by and/or done work
+   for various organizations that also have views on Free, Libre, and Open
+   Source Software. As should be blatantly obvious, this is my website, not
+   theirs, so please do not assume views and opinions here belong to any such
+   organization. Since I do co-own ebb.org with my wife, it may not be so
+   obvious that these aren't her views and opinions, either.
+
+   ebb ^℠ is a service mark of Bradley M. Kuhn.

@@ -1,0 +1,125 @@
+#!/bin/bash
+#
+# Copyright (C) 2020 Ernesto A. Fernández <ernesto.mnd.fernandez@gmail.com>
+#
+# Call as ./check to test rdrview. Use the '-V' flag to run valgrind as well.
+
+HTML_NEW=$(mktemp)
+TIDYHTML_NEW=$(mktemp)
+DUMP_NEW=$(mktemp)
+OUT_NEW=$(mktemp)
+META_NEW=$(mktemp)
+TIDYHTML_OLD=$(mktemp)
+
+# Use a separate tmp directory for rdrview; it should still be empty by the end
+export TMPDIR=$(mktemp -d)
+
+# Delete temporary files on exit
+cleanup()
+{
+	rm -f "$HTML_NEW" "$TIDYHTML_NEW" "$DUMP_NEW" "$OUT_NEW" "$META_NEW" "$TIDYHTML_OLD"
+	rm -fr "$TMPDIR"
+}
+trap cleanup EXIT
+
+# Print a message to stderr and exit with an error code
+fail()
+{
+	echo "$*" 1>&2
+	exit 1
+}
+
+# Declare a tool as a dependency for the tests
+require_tool()
+{
+	command -v $1 &>/dev/null || fail "You need to install $1"
+}
+
+# Run the html through tidy to eliminate cosmetic differences in the markup.
+# Two runs are necessary to get consistent output
+clean_html()
+{
+	tidy 2>/dev/null | tidy 2>/dev/null
+}
+
+require_tool valgrind
+require_tool tidy
+require_tool links
+
+VALGRIND="valgrind -q --leak-check=full --error-exitcode=1 --exit-on-first-error=yes --suppressions=./check.supp"
+RDRVIEW="../rdrview -u http://fakehost/test/page.html"
+if [ "$1" = "-V" ]; then
+	RDRVIEW="$VALGRIND $RDRVIEW --disable-sandbox" # Valgrind doesn't play well with seccomp
+fi
+
+TESTDIR="./firefox"
+
+# Run through all the tests supplied by Firefox
+for testcase in $(ls -1 "$TESTDIR"); do
+	echo $testcase
+
+	$RDRVIEW -H < "$TESTDIR/$testcase/source.html" > "$HTML_NEW" || fail "Failure for $testcase"
+	clean_html < "$HTML_NEW" > "$TIDYHTML_NEW"
+	links -dump "$HTML_NEW" > "$DUMP_NEW"
+	$RDRVIEW < "$TESTDIR/$testcase/source.html" > "$OUT_NEW" || fail "Failure for $testcase"
+	$RDRVIEW -M < "$TESTDIR/$testcase/source.html" > "$META_NEW" || fail "Failure for $testcase"
+
+	HTML_OLD="$TESTDIR/$testcase/expected.html"
+	clean_html < "$HTML_OLD" > "$TIDYHTML_OLD"
+	DUMP_OLD="$TESTDIR/$testcase/expected.txt"
+	META_OLD="$TESTDIR/$testcase/expected-metadata.txt"
+
+	diff "$DUMP_OLD" "$DUMP_NEW" || fail "Links dump differs for $testcase"
+	diff "$TIDYHTML_OLD" "$TIDYHTML_NEW" || fail "HTML differs for $testcase"
+	diff "$META_OLD" "$META_NEW" || fail "Metadata differs for $testcase"
+	diff "$DUMP_NEW" "$OUT_NEW" || fail "Regular output differs for $testcase"
+
+	READERABLE_NEW="No"
+	$RDRVIEW -c < "$TESTDIR/$testcase/source.html" && READERABLE_NEW="Yes"
+	READERABLE_OLD=$(awk '$1 == "Readerable:" {print $2}' $META_OLD)
+	[ "$READERABLE_NEW" = "$READERABLE_OLD" ] || fail "Quick check differs for $testcase"
+done
+
+# Block the process on a pipe and send a keyboard interrupt, just to check that
+# temporary files still get cleaned up
+setsid ../rdrview < /dev/random &
+sleep 1 # SIGINT appears to get ignored early on
+kill -SIGINT -- -$(jobs -p)
+wait
+
+# Check that we always use the browser requested by the user
+FAKE_OUTPUT=$(echo '<html><body>A</body></html>' | $RDRVIEW --browser='echo cli <')
+[ "$FAKE_OUTPUT" = "cli" ] || fail "Cli browser not respected"
+FAKE_OUTPUT=$(echo '<html><body>A</body></html>' | RDRVIEW_BROWSER='echo env <' $RDRVIEW)
+[ "$FAKE_OUTPUT" = "env" ] || fail "Environment browser not respected"
+FAKE_OUTPUT=$(echo '<html><body>A</body></html>' | RDRVIEW_BROWSER='echo env <' $RDRVIEW --browser='echo cli <')
+[ "$FAKE_OUTPUT" = "cli" ] || fail "Cli browser should override the environment"
+
+# Check that we can handle ISO-8859-1, and that we respect the encoding
+# specified by the user
+OUT_OLD="encodings/iso-8859-1.txt"
+$RDRVIEW --encoding="utf8" < "./encodings/iso-8859-1.html" &>/dev/null && fail "Cli encoding not respected"
+$RDRVIEW -E utf8 < "./encodings/iso-8859-1.html" &>/dev/null && fail "Cli encoding not respected"
+$RDRVIEW < "encodings/iso-8859-1.html" > "$OUT_NEW" || fail "Failure for ISO-8859-1"
+diff "$OUT_OLD" "$OUT_NEW" || fail "ISO-8859-1 not handled correctly"
+$RDRVIEW --encoding="iso-8859-1" < "encodings/iso-8859-1.html" > "$OUT_NEW" || fail "Failure for ISO-8859-1"
+diff "$OUT_OLD" "$OUT_NEW" || fail "ISO-8859-1 not handled correctly when requested via cli"
+$RDRVIEW -E iso-8859-1 < "encodings/iso-8859-1.html" > "$OUT_NEW" || fail "Failure for ISO-8859-1"
+diff "$OUT_OLD" "$OUT_NEW" || fail "ISO-8859-1 not handled correctly when requested via cli"
+
+# Check that we fail cleanly when given an unknown encoding
+echo '<html><body>A</body></html>' | $RDRVIEW -E hfi4iefh &>/dev/null
+[ "$?" -eq "1" ] || fail "Bad error status on unknown encoding"
+
+# Run a few extra checks for srcset handling
+../rdrview -H < "./srcset/source.html" > "$HTML_NEW" || fail "Failure on srcset test"
+clean_html < "$HTML_NEW" > "$TIDYHTML_NEW"
+clean_html < "./srcset/expected.html" > "$TIDYHTML_OLD"
+diff "$TIDYHTML_OLD" "$TIDYHTML_NEW" || fail "HTML differs for srcset test"
+
+# Check that the only temporary files remaining belong to Valgrind
+TMPCOUNT=$(ls -1 "$TMPDIR" | wc -l)
+VGDCOUNT=$(ls -1 "$TMPDIR" | grep "vgdb-pipe" | wc -l)
+[ "$TMPCOUNT" -eq "$VGDCOUNT" ] || fail "Temporary files not cleaned properly"
+
+exit 0

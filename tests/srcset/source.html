@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Srcset test</title>
+</head>
+<body>
+  <article>
+    <h1>Lorem</h1>
+    <div>
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+      quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+      consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+      cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+      proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    </div>
+    <p>Images with srcset</p>
+    <p><img srcset="foo/bar/baz.png"/></p>
+    <p><img srcset="foo/bar/baz.png,"/></p>
+    <p><img srcset="foo/bar/baz.png ,  "/></p>
+    <p><img srcset="foo/bar/baz.png 2x"/></p>
+    <p><img srcset="foo/bar/baz.png 2x,"/></p>
+    <p>
+		<img srcset="foo/bar/baz.png 480w,
+					http://test/foo/bar/baz.png 800w"/>
+	</p>
+    <p><img srcset="foo/bar.png 480w, http://test/foo/bar.png 800w,"/></p>
+    <p><img srcset="foo/bar.png, http://test/foo/bar.png 800w,"/></p>
+    <p><img srcset="foo/bar.png, http://test/foo/bar.png 800w"/></p>
+    <p><img srcset="foo/bar.png, foo/bar2.png 2x, foo/bar3.png 3x,"/></p>
+    <p><img srcset=",,,,,"/></p>
+    <p><img srcset="foo/bar.png, foo/bar2.png, foo/bar3.png,"/></p>
+    <p><img srcset="foo/bar.png 480w aaaaa, http://test/foo/bar.png 800w x x x x,x, x"/></p>
+    <h2>Foo</h2>
+    <div>
+      Tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+      quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+      consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+      cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+      proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    </div>
+  </article>
+</body>
+</html>

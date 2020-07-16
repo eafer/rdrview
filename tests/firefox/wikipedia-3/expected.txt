@@ -1,0 +1,268 @@
+   In mathematics, a Hermitian matrix (or self-adjoint matrix) is a complex
+   square matrix that is equal to its own conjugate transpose—that is, the
+   element in the i-th row and j-th column is equal to the complex conjugate
+   of the element in the j-th row and i-th column, for all indices i and j:
+
+   {\displaystyle A{\text{ Hermitian}}\quad \iff \quad a_{ij}={\overline
+   {a_{ji}}}}
+
+   or in matrix form:
+
+           {\displaystyle A{\text{ Hermitian}}\quad \iff \quad A={\overline
+           {A^{\mathsf {T}}}}}.
+
+   Hermitian matrices can be understood as the complex extension of real
+   symmetric matrices.
+
+   If the conjugate transpose of a matrix A is denoted by {\displaystyle
+   A^{\mathsf {H}}}, then the Hermitian property can be written concisely as
+
+   {\displaystyle A{\text{ Hermitian}}\quad \iff \quad A=A^{\mathsf {H}}}
+
+   Hermitian matrices are named after Charles Hermite, who demonstrated in
+   1855 that matrices of this form share a property with real symmetric
+   matrices of always having real eigenvalues. Other, equivalent notations in
+   common use are {\displaystyle A^{\mathsf {H}}=A^{\dagger }=A^{\ast }},
+   although note that in quantum mechanics, A^{\ast } typically means the
+   complex conjugate only, and not the conjugate transpose.
+
+Alternative characterizations[edit]
+
+   Hermitian matrices can be characterized in a number of equivalent ways,
+   some of which are listed below:
+
+  Equality with the adjoint[edit]
+
+   A square matrix A is Hermitian if and only if it is equal to its adjoint,
+   that is, it satisfies
+
+   {\displaystyle \langle w,Av\rangle =\langle Aw,v\rangle ,}
+
+   for any pair of vectors v,w, where {\displaystyle \langle \cdot ,\cdot
+   \rangle } denotes the inner product operation.
+
+   This is also the way that the more general concept of self-adjoint
+   operator is defined.
+
+  Reality of quadratic forms[edit]
+
+   A square matrix A is Hermitian if and only if it is such that
+
+   {\displaystyle \langle v,Av\rangle \in \mathbb {R} ,\quad v\in V.}
+
+  Spectral properties[edit]
+
+   A square matrix A is Hermitian if and only if it is unitarily
+   diagonalizable with real eigenvalues.
+
+Applications[edit]
+
+   Hermitian matrices are fundamental to the quantum theory of matrix
+   mechanics created by Werner Heisenberg, Max Born, and Pascual Jordan in
+   1925.
+
+Examples[edit]
+
+   In this section, the conjugate transpose of matrix A is denoted as
+   {\displaystyle A^{\mathsf {H}}}, the transpose of matrix A is denoted as
+   {\displaystyle A^{\mathsf {T}}} and conjugate of matrix A is denoted as
+   {\displaystyle {\overline {A}}}.
+
+   See the following example:
+
+           {\displaystyle
+           {\begin{bmatrix}2&2+i&4\\2-i&3&i\\4&-i&1\\\end{bmatrix}}}
+
+   The diagonal elements must be real, as they must be their own complex
+   conjugate.
+
+   Well-known families of Pauli matrices, Gell-Mann matrices and their
+   generalizations are Hermitian. In theoretical physics such Hermitian
+   matrices are often multiplied by imaginary coefficients,^[1]^[2] which
+   results in skew-Hermitian matrices (see below).
+
+   Here, we offer another useful Hermitian matrix using an abstract example.
+   If a square matrix A equals the multiplication of a matrix and its
+   conjugate transpose, that is, {\displaystyle A=BB^{\mathsf {H}}}, then A
+   is a Hermitian positive semi-definite matrix. Furthermore, if B is row
+   full-rank, then A is positive definite.
+
+Properties[edit]
+
+   [icon] This section needs expansion with: Proof of the properties          
+          requested. You can help by adding to it. (February 2018)            
+
+     * The entries on the main diagonal (top left to bottom right) of any
+       Hermitian matrix are real.
+
+           Proof: By definition of the Hermitian matrix
+
+                        {\displaystyle H_{ij}={\overline {H}}_{ji}}
+
+           so for i = j the above follows.
+           Only the main diagonal entries are necessarily real; Hermitian
+           matrices can have arbitrary complex-valued entries in their
+           off-diagonal elements, as long as diagonally-opposite entries are
+           complex conjugates.
+
+     * A matrix that has only real entries is Hermitian if and only if it is
+       symmetric. A real and symmetric matrix is simply a special case of a
+       Hermitian matrix.
+
+           Proof: {\displaystyle H_{ij}={\overline {H}}_{ji}} by definition.
+           Thus H_ij = H_ji (matrix symmetry) if and only if {\displaystyle
+           H_{ij}={\overline {H}}_{ij}} (H_ij is real).
+
+     * Every Hermitian matrix is a normal matrix. That is to say, AA^H =
+       A^HA.
+
+           Proof: A = A^H, so AA^H = AA = A^HA.
+
+     * The finite-dimensional spectral theorem says that any Hermitian matrix
+       can be diagonalized by a unitary matrix, and that the resulting
+       diagonal matrix has only real entries. This implies that all
+       eigenvalues of a Hermitian matrix A with dimension n are real, and
+       that A has n linearly independent eigenvectors. Moreover, a Hermitian
+       matrix has orthogonal eigenvectors for distinct eigenvalues. Even if
+       there are degenerate eigenvalues, it is always possible to find an
+       orthogonal basis of ℂ^n consisting of n eigenvectors of A.
+     * The sum of any two Hermitian matrices is Hermitian.
+
+           Proof: {\displaystyle (A+B)_{ij}=A_{ij}+B_{ij}={\overline
+           {A}}_{ji}+{\overline {B}}_{ji}={\overline {(A+B)}}_{ji},} as
+           claimed.
+
+     * The inverse of an invertible Hermitian matrix is Hermitian as well.
+
+           Proof: If {\displaystyle A^{-1}A=I}, then {\displaystyle
+           I=I^{H}=(A^{-1}A)^{H}=A^{H}(A^{-1})^{H}=A(A^{-1})^{H}}, so
+           {\displaystyle A^{-1}=(A^{-1})^{H}} as claimed.
+
+     * The product of two Hermitian matrices A and B is Hermitian if and only
+       if AB = BA.
+
+           Proof: Note that {\displaystyle (AB)^{\mathsf {H}}={\overline
+           {(AB)^{\mathsf {T}}}}={\overline {B^{\mathsf {T}}A^{\mathsf
+           {T}}}}={\overline {B^{\mathsf {T}}}}{\overline {A^{\mathsf
+           {T}}}}=B^{\mathsf {H}}A^{\mathsf {H}}=BA.} Thus {\displaystyle
+           (AB)^{\mathsf {H}}=AB} if and only if AB=BA.
+           Thus A^n is Hermitian if A is Hermitian and n is an integer.
+
+     * The Hermitian complex n-by-n matrices do not form a vector space over
+       the complex numbers, ℂ, since the identity matrix I_n is Hermitian,
+       but i I_n is not. However the complex Hermitian matrices do form a
+       vector space over the real numbers ℝ. In the 2n^2-dimensional vector
+       space of complex n × n matrices over ℝ, the complex Hermitian matrices
+       form a subspace of dimension n^2. If E_jk denotes the n-by-n matrix
+       with a 1 in the j,k position and zeros elsewhere, a basis (orthonormal
+       w.r.t. the Frobenius inner product) can be described as follows:
+
+                        {\displaystyle E_{jj}{\text{ for }}1\leq j\leq n\quad
+                        (n{\text{ matrices}})}
+
+           together with the set of matrices of the form
+
+                        {\displaystyle {\frac {1}{\sqrt
+                        {2}}}\left(E_{jk}+E_{kj}\right){\text{ for }}1\leq
+                        j<k\leq n\quad \left({\frac {n^{2}-n}{2}}{\text{
+                        matrices}}\right)}
+
+           and the matrices
+
+                        {\displaystyle {\frac {i}{\sqrt
+                        {2}}}\left(E_{jk}-E_{kj}\right){\text{ for }}1\leq
+                        j<k\leq n\quad \left({\frac {n^{2}-n}{2}}{\text{
+                        matrices}}\right)}
+
+           where i denotes the complex number {\sqrt {-1}}, called the
+           imaginary unit.
+
+                        {\displaystyle A=\sum _{j}\lambda
+                        _{j}u_{j}u_{j}^{\mathsf {H}},}
+
+           where \lambda _{j} are the eigenvalues on the diagonal of the
+           diagonal matrix \; \Lambda.
+
+     * The determinant of a Hermitian matrix is real:
+
+           Proof: {\displaystyle \det(A)=\det \left(A^{\mathsf
+           {T}}\right)\quad \Rightarrow \quad \det \left(A^{\mathsf
+           {H}}\right)={\overline {\det(A)}}}
+           Therefore if {\displaystyle A=A^{\mathsf {H}}\quad \Rightarrow
+           \quad \det(A)={\overline {\det(A)}}}.
+           (Alternatively, the determinant is the product of the matrix's
+           eigenvalues, and as mentioned before, the eigenvalues of a
+           Hermitian matrix are real.)
+
+Decomposition into Hermitian and skew-Hermitian[edit]
+
+   Additional facts related to Hermitian matrices include:
+
+     * The sum of a square matrix and its conjugate transpose {\displaystyle
+       \left(A+A^{\mathsf {H}}\right)} is Hermitian.
+     * The difference of a square matrix and its conjugate transpose
+       {\displaystyle \left(A-A^{\mathsf {H}}\right)} is skew-Hermitian (also
+       called antihermitian). This implies that the commutator of two
+       Hermitian matrices is skew-Hermitian.
+     * An arbitrary square matrix C can be written as the sum of a Hermitian
+       matrix A and a skew-Hermitian matrix B. This is known as the Toeplitz
+       decomposition of C.^[3]^:p. 7
+
+                        {\displaystyle C=A+B\quad {\mbox{with}}\quad A={\frac
+                        {1}{2}}\left(C+C^{\mathsf {H}}\right)\quad
+                        {\mbox{and}}\quad B={\frac {1}{2}}\left(C-C^{\mathsf
+                        {H}}\right)}
+
+Rayleigh quotient[edit]
+
+   In mathematics, for a given complex Hermitian matrix M and nonzero vector
+   x, the Rayleigh quotient^[4] R(M, x), is defined as:^[3]^:p. 234^[5]
+
+           {\displaystyle R(M,x):={\frac {x^{\mathsf {H}}Mx}{x^{\mathsf
+           {H}}x}}}.
+
+   For real matrices and vectors, the condition of being Hermitian reduces to
+   that of being symmetric, and the conjugate transpose {\displaystyle
+   x^{\mathsf {H}}} to the usual transpose {\displaystyle x^{\mathsf {T}}}.
+   Note that {\displaystyle R(M,cx)=R(M,x)} for any non-zero real scalar c.
+   Also, recall that a Hermitian (or real symmetric) matrix has real
+   eigenvalues.
+
+   It can be shown^[citation needed] that, for a given matrix, the Rayleigh
+   quotient reaches its minimum value \lambda_\min (the smallest eigenvalue
+   of M) when x is v_\min (the corresponding eigenvector). Similarly, R(M, x)
+   \leq \lambda_\max and R(M, v_\max) = \lambda_\max.
+
+   The Rayleigh quotient is used in the min-max theorem to get exact values
+   of all eigenvalues. It is also used in eigenvalue algorithms to obtain an
+   eigenvalue approximation from an eigenvector approximation. Specifically,
+   this is the basis for Rayleigh quotient iteration.
+
+   The range of the Rayleigh quotient (for matrix that is not necessarily
+   Hermitian) is called a numerical range (or spectrum in functional
+   analysis). When the matrix is Hermitian, the numerical range is equal to
+   the spectral norm. Still in functional analysis, \lambda_\max is known as
+   the spectral radius. In the context of C*-algebras or algebraic quantum
+   mechanics, the function that to M associates the Rayleigh quotient R(M, x)
+   for a fixed x and M varying through the algebra would be referred to as
+   "vector state" of the algebra.
+
+See also[edit]
+
+     * Vector space
+     * Skew-Hermitian matrix (anti-Hermitian matrix)
+     * Haynsworth inertia additivity formula
+     * Hermitian form
+     * Self-adjoint operator
+     * Unitary matrix
+
+References[edit]
+
+External links[edit]
+
+     * Hazewinkel, Michiel, ed. (2001) [1994], "Hermitian matrix",
+       Encyclopedia of Mathematics, Springer Science+Business Media B.V. /
+       Kluwer Academic Publishers, ISBN 978-1-55608-010-4
+     * Visualizing Hermitian Matrix as An Ellipse with Dr. Geo, by Chao-Kuei
+       Hung from Chaoyang University, gives a more geometric explanation.
+     * "Hermitian Matrices". MathPages.com.

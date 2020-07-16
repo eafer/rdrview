@@ -1,0 +1,4 @@
+Title: Minecraft 1.8 - The Bountiful Update
+Excerpt: + Added Granite, Andesite, and Diorite stone blocks, with smooth versions + Added Slime Block + Added Iron Trapdoor + Added Prismarine and Sea Lantern blocks + Added the Ocean Monument + Added Red...
+Readerable: Yes
+Site name: Minecraft Update News
