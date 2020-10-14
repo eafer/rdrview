@@ -15,18 +15,23 @@ sandboxed subprocess. Seccomp is used for this purpose.
 
 ## Usage
 
-There are three direct dependencies: libcurl, libxml2 and libseccomp.
-On Debian/Ubuntu, you can install them by running (as root):
+There are three direct dependencies: libxml2, libseccomp and libcurl.
+On Debian/Ubuntu, you can install the first two by running (as root):
 
-    apt install libcurl4-gnutls-dev libxml2-dev libseccomp-dev
+    apt install libxml2-dev libseccomp-dev
 
-For _rdrview_ to be useful, you should also install a character mode web
-browser such as lynx:
+The libcurl package comes in different flavours, depending on the backend that
+provides the SSL support. Any of them will do. To install the GnuTLS version:
+
+    apt install libcurl4-gnutls-dev
+
+For _rdrview_ to be useful, you should also get a character mode web browser
+such as lynx:
 
     apt install lynx
 
 The name of the packages might differ in your distribution. On Fedora, for
-example, this would be:
+example, you can install everything with:
 
     dnf install libcurl-devel libxml2-devel libseccomp-devel lynx
 
