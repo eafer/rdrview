@@ -27,62 +27,61 @@
 /*
  * These are all the regex literals provided with Readability.js
  * TODO: test that no regex was broken by the transpilation
+ *
+ * I'd rather define them as static constants instead of macros, but that breaks
+ * the build for older versions of gcc.
  */
-static const char * const UNLIKELY_RE =
-	"-ad-|ai2html|banner|breadcrumbs|combx|comment|community|cover-wrap|disqus|"
-	"extra|footer|gdpr|header|legends|menu|related|remark|replies|rss|shoutbox|"
-	"sidebar|skyscraper|social|sponsor|supplemental|ad-break|agegate|"
-	"pagination|pager|popup|yom-remote";
+#define UNLIKELY_RE \
+	"-ad-|ai2html|banner|breadcrumbs|combx|comment|community|cover-wrap|" \
+	"disqus|extra|footer|gdpr|header|legends|menu|related|remark|replies|rss|" \
+	"shoutbox|sidebar|skyscraper|social|sponsor|supplemental|ad-break|" \
+	"agegate|pagination|pager|popup|yom-remote"
 
-static const char * const CANDIDATE_RE =
-	"and|article|body|column|content|main|shadow";
+#define CANDIDATE_RE "and|article|body|column|content|main|shadow"
 
-static const char * const BYLINE_RE =
-	"byline|author|dateline|writtenby|p-author";
+#define BYLINE_RE "byline|author|dateline|writtenby|p-author"
 
-static const char * const PROPERTY_RE =
-	"[[:space:]]*(dc|dcterm|og|twitter)[[:space:]]*:"
-	"[[:space:]]*(author|creator|description|title|site_name)[[:space:]]*";
+#define PROPERTY_RE \
+	"[[:space:]]*(dc|dcterm|og|twitter)[[:space:]]*:" \
+	"[[:space:]]*(author|creator|description|title|site_name)[[:space:]]*"
 
-static const char * const NAME_RE =
-	"^[[:space:]]*((dc|dcterm|og|twitter|weibo:(article|webpage))[[:space:]]*"
-	"[\\.:][[:space:]]*)?(author|creator|description|title|site_name)"
-	"[[:space:]]*$";
+#define NAME_RE \
+	"^[[:space:]]*((dc|dcterm|og|twitter|weibo:(article|webpage))[[:space:]]*" \
+	"[\\.:][[:space:]]*)?(author|creator|description|title|site_name)" \
+	"[[:space:]]*$"
 
-static const char * const IMGEXT_RE = "\\.(jpg|jpeg|png|webp)";
+#define IMGEXT_RE "\\.(jpg|jpeg|png|webp)"
 
-static const char * const HASCONTENT_RE = "[^[:space:]]$";
+#define HASCONTENT_RE "[^[:space:]]$"
 
-static const char * const NEGATIVE_RE =
-	"hidden|^hid$| hid$| hid |^hid |banner|combx|comment|com-|contact|foot|"
-	"footer|footnote|gdpr|masthead|media|meta|outbrain|promo|related|scroll|"
-	"share|shoutbox|sidebar|skyscraper|sponsor|shopping|tags|tool|widget";
+#define NEGATIVE_RE \
+	"hidden|^hid$| hid$| hid |^hid |banner|combx|comment|com-|contact|foot|" \
+	"footer|footnote|gdpr|masthead|media|meta|outbrain|promo|related|scroll|" \
+	"share|shoutbox|sidebar|skyscraper|sponsor|shopping|tags|tool|widget"
 
-static const char * const POSITIVE_RE =
-	"article|body|content|entry|hentry|h-entry|main|page|pagination|post|"
-	"text|blog|story";
+#define POSITIVE_RE \
+	"article|body|content|entry|hentry|h-entry|main|page|pagination|post|" \
+	"text|blog|story"
 
-static const char * const SENTENCE_DOT_RE = "\\.( |$)";
+#define SENTENCE_DOT_RE "\\.( |$)"
 
-static const char * const B64_DATAURL_RE =
-	"^data:[[:space:]]*[^[:space:];,]+[[:space:]]*;"
-	"[[:space:]]*base64[[:space:]]*,";
+#define B64_DATAURL_RE \
+	"^data:[[:space:]]*[^[:space:];,]+[[:space:]]*;" \
+	"[[:space:]]*base64[[:space:]]*,"
 
-static const char * const SRCSET_RE =
-	"\\.(jpg|jpeg|png|webp)[[:space:]]+[[:digit:]]";
+#define SRCSET_RE "\\.(jpg|jpeg|png|webp)[[:space:]]+[[:digit:]]"
 
-static const char * const SRC_RE =
-	"^[[:space:]]*[^[:space:]]+\\.(jpg|jpeg|png|webp)"
-	"[^[:space:]]*[[:space:]]*$";
+#define SRC_RE \
+	"^[[:space:]]*[^[:space:]]+\\.(jpg|jpeg|png|webp)" \
+	"[^[:space:]]*[[:space:]]*$"
 
-static const char * const VIDEOS_RE =
-	"//(www\\.)?((dailymotion|youtube|youtube-nocookie|player\\.vimeo|v\\.qq)"
-	"\\.com|(archive|upload\\.wikimedia)\\.org|player\\.twitch\\.tv)";
+#define VIDEOS_RE \
+	"//(www\\.)?((dailymotion|youtube|youtube-nocookie|player\\.vimeo|v\\.qq)" \
+	"\\.com|(archive|upload\\.wikimedia)\\.org|player\\.twitch\\.tv)"
 
-static const char * const SHARE_RE =
-	"(^|[[:space:]]|_)(share|sharedaddy)($|[[:space:]]|_)";
+#define SHARE_RE "(^|[[:space:]]|_)(share|sharedaddy)($|[[:space:]]|_)"
 
-static const char * const ABSOLUTE_RE = "^([[:alpha:]]+:)?//";
+#define ABSOLUTE_RE "^([[:alpha:]]+:)?//"
 
 
 /* These are the compiled regexes that will actually get exported */
