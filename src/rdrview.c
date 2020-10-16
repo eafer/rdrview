@@ -580,6 +580,14 @@ static int run_browser_command(char *command)
 		command = newcom;
 	}
 
+	/* We may open a TUI now, so make sure stdin comes from the terminal */
+	if (!isatty(STDIN_FILENO)) {
+		char *termdev = ctermid(NULL);
+
+		if (!freopen(termdev, "r", stdin))
+			fatal_errno();
+	}
+
 	ret = system(command);
 	if (ret < 0)
 		fatal_errno();
