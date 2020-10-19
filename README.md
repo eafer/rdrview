@@ -55,6 +55,10 @@ If you find _rdrview_ useful and want to install it, become root again and run
 Now you can just call it with `rdrview` and get help with `man rdrview`, like
 you would for any other tool in your system.
 
+## Related projects
+
+- https://github.com/NightMachinary/readability-cli: A thin CLI wrapper around Mozilla's _Readability.js_
+
 ## Credits
 
 _rdrview_ was written by
