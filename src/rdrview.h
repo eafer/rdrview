@@ -149,6 +149,9 @@ extern regex_t share_re, absolute_re;
 extern void init_regexes(void);
 extern bool regex_matches(const regex_t *preg, const xmlChar *string);
 
+/* sandbox.c */
+extern void start_sandbox(void);
+
 /* rdrview.c */
 extern __attribute__((noreturn)) void fatal_errno(void);
 extern __attribute__((noreturn)) void fatal_msg(char *message);

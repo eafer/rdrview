@@ -30,7 +30,6 @@
 #include <string.h>
 #include <getopt.h>
 #include <signal.h>
-#include <seccomp.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
@@ -690,44 +689,6 @@ static void set_cleanup_handlers(void)
 	sigaction(SIGPIPE, &act, NULL);
 	sigaction(SIGQUIT, &act, NULL);
 	sigaction(SIGTERM, &act, NULL);
-}
-
-/**
- * Restrict the process to working with its existing temporary files
- */
-static void start_sandbox(void)
-{
-	scmp_filter_ctx ctx;
-	bool fail = false;
-
-	/*
-	 * If a different version of a library is conflicting with the sandbox,
-	 * the user must be trusted to decide if it's wise to disable it. The man
-	 * page includes an admonition against it, for the less tech-savvy.
-	 */
-	if (options.disable_sandbox)
-		return;
-
-	ctx = seccomp_init(SCMP_ACT_ERRNO(EPERM));
-	if (!ctx)
-		fatal_msg("failed to start the sandbox");
-
-	fail |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(brk), 0);
-	fail |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(write), 0);
-	fail |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(dup), 0);
-	fail |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(dup2), 0);
-	fail |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(exit), 0);
-	fail |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(exit_group), 0);
-	fail |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(close), 0);
-	fail |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(fstat), 0);
-	fail |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mmap), 0);
-	fail |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mremap), 0);
-	fail |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(munmap), 0);
-
-	fail |= seccomp_load(ctx);
-	if (fail)
-		fatal_msg("failed to load the seccomp rules");
-	seccomp_release(ctx);
 }
 
 /**
