@@ -269,21 +269,17 @@ static size_t map_file(FILE *file, char **map)
 }
 
 /**
- * Wrapper around xmlStrcasestr() that takes chars and doesn't return constants
- */
-static inline char *strcasestr(const char *haystack, const char *needle)
-{
-	return (char *)xmlStrcasestr((xmlChar *)haystack, (xmlChar *)needle);
-}
-
-/**
  * Overwrite text between script tags with X's; this gets rid of any closing
  * tags, which would terminate the CDATA section and cause libxml2 to choke.
+ *
+ * We search through the text as ascii, which will fail for some encodings,
+ * but is not likely to corrupt the page because the "<script" ascii string
+ * would have to randomly show up somewhere.
  */
 static void invalidate_script_cdata(char *map, size_t size)
 {
 	char lastchar;
-	char *opentag;
+	const char *opentag;
 
 	if (!size)
 		fatal();
@@ -292,22 +288,23 @@ static void invalidate_script_cdata(char *map, size_t size)
 	lastchar = map[size - 1];
 	map[size - 1] = '\0';
 
-	opentag = strcasestr(map, "<script");
+	opentag = (char *)xmlStrcasestr(BAD_CAST map, BAD_CAST "<script");
 	while (opentag) {
-		char *gt, *closetag;
+		char *gt;
+		const char *closetag;
 
 		gt = strchr(opentag, '>');
 		if (!gt)
 			break; /* Malformed html, just ignore it for now and move on */
 		if (*(gt - 1) == '/') { /* No closing tag for this node */
-			opentag = strcasestr(gt, "<script");
+			opentag = (char *)xmlStrcasestr(BAD_CAST gt, BAD_CAST "<script");
 			continue;
 		}
-		closetag = strcasestr(gt, "</script>");
+		closetag = (char *)xmlStrcasestr(BAD_CAST gt, BAD_CAST "</script>");
 		if (!closetag)
 			break; /* Malformed html, just ignore it for now and move on */
 		memset(gt + 1, 'X', closetag - (gt + 1));
-		opentag = strcasestr(closetag, "<script");
+		opentag = (char *)xmlStrcasestr(BAD_CAST closetag, BAD_CAST "<script");
 	}
 
 	map[size - 1] = lastchar;
