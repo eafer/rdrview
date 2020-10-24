@@ -1,11 +1,14 @@
+SYSTEM = $(shell uname)
 CC = gcc
 
 CFLAGS = -DNDEBUG -O2 -Wall -Wextra -fno-strict-aliasing
 override CFLAGS += $(shell curl-config --cflags) $(shell xml2-config --cflags)
 
 LDLIBS = $(shell curl-config --libs) $(shell xml2-config --libs) -lm
-ifeq ("$(shell uname)", "Linux")
-LDLIBS += -lseccomp
+ifeq ($(SYSTEM), Linux)
+	LDLIBS += -lseccomp
+else ifeq ($(SYSTEM), FreeBSD)
+	LDLIBS += -liconv
 endif
 
 PREFIX = /usr/local
