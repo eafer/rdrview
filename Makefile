@@ -27,10 +27,11 @@ rdrview: $(OBJS)
 clean:
 	rm -f $(OBJS) rdrview
 install:
-	install -d $(BINDIR)
-	install -t $(BINDIR) rdrview
-	install -d $(MANDIR)
-	install -m 644 -t $(MANDIR) rdrview.1
+	mkdir -p $(BINDIR)
+	cp -f rdrview $(BINDIR)
+	mkdir -p $(MANDIR)
+	cp -f rdrview.1 $(MANDIR)
+	chmod 0644 $(MANDIR)/rdrview.1
 
 uninstall:
 	cd $(BINDIR) && rm rdrview
