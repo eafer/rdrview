@@ -12,8 +12,8 @@ else ifeq ($(SYSTEM), FreeBSD)
 endif
 
 PREFIX = /usr/local
-BINDIR = $(PREFIX)/bin
-MANDIR = $(PREFIX)/share/man/man1
+BINDIR = $(DESTDIR)$(PREFIX)/bin
+MANDIR = $(DESTDIR)$(PREFIX)/share/man/man1
 
 SRCS = $(wildcard src/*.c)
 OBJS = $(SRCS:.c=.o)
