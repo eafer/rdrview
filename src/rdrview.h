@@ -37,6 +37,7 @@ struct options {
 	unsigned int flags;
 	bool disable_sandbox; /* Keep this separate from the other flags */
 	char *enc; /* Character encoding */
+	const char *template; /* Fields to include in the extracted article */
 	const char *base_url;
 	const char *browser;
 	const char *url;

@@ -342,7 +342,7 @@ static void check_known_encoding(const char *enc)
 	fatal_msg("unrecognized encoding");
 }
 
-static const char *OPTSTRING = "cu:vB:E:HM";
+static const char *OPTSTRING = "cu:vB:E:HMT:";
 #define DISABLE_SANDBOX 256 /* No short version of this option */
 static const struct option LONGOPTS[] = {
 	{"check", no_argument, NULL, 'c'},
@@ -351,6 +351,7 @@ static const struct option LONGOPTS[] = {
 	{"encoding", required_argument, NULL, 'E'},
 	{"html", no_argument, NULL, 'H'},
 	{"meta", no_argument, NULL, 'M'},
+	{"template", required_argument, NULL, 'T'},
 	{"disable-sandbox", no_argument, NULL, DISABLE_SANDBOX},
 	{0}
 };
@@ -402,6 +403,9 @@ static void parse_arguments(int argc, char *argv[])
 			check_known_encoding(optarg);
 			options.enc = optarg;
 			break;
+		case 'T':
+			options.template = optarg;
+			break;
 		case DISABLE_SANDBOX:
 			options.disable_sandbox = true;
 			break;
@@ -427,6 +431,11 @@ static void parse_arguments(int argc, char *argv[])
 		options.base_url = options.url;
 		if (!options.base_url)
 			options.base_url = "none://standard.input";
+	}
+	if (!options.template) {
+		options.template = getenv("RDRVIEW_TEMPLATE");
+		if (!options.template)
+			options.template = "body";
 	}
 }
 
@@ -724,6 +733,62 @@ static void clean_iconv(void)
 }
 
 /**
+ * Attach to the article any metadata fields requested by the user
+ */
+static void attach_metadata(htmlNodePtr article)
+{
+	char *template, *field;
+	bool past_body = false;
+	htmlNodePtr body_first = article->children; /* The article is not empty */
+
+	template = strdup(options.template);
+	if (!template)
+		fatal_errno();
+
+	for (field = strtok(template, ","); field; field = strtok(NULL, ",")) {
+		const char *tag, *content;
+		htmlNodePtr new;
+
+		if (strcmp(field, "title") == 0) {
+			tag = "h1";
+			content = metadata.title;
+		} else if (strcmp(field, "body") == 0) {
+			past_body = true;
+			continue;
+		} else if (strcmp(field, "byline") == 0) {
+			tag = "h3";
+			content = metadata.byline;
+		} else if (strcmp(field, "excerpt") == 0) {
+			tag = "p";
+			content = metadata.excerpt;
+		} else if (strcmp(field, "sitename") == 0) {
+			tag = "h2";
+			content = metadata.site_name;
+		} else if (strcmp(field, "url") == 0) {
+			tag = "h2";
+			content = options.url;
+		} else {
+			fatal_msg("unrecognized field in article template");
+		}
+
+		if (!content) /* Skip empty fields */
+			continue;
+		new = xmlNewNode(NULL, (const xmlChar *)tag);
+		if (!new)
+			fatal();
+		xmlNodeSetContent(new, (const xmlChar *)content);
+
+		if (past_body)
+			new = xmlAddChild(article, new);
+		else
+			new = xmlAddPrevSibling(body_first, new);
+		if (!new)
+			fatal();
+	}
+	free(template);
+}
+
+/**
  * Set up a sandbox and run all dangerous processing of the input HTML file
  */
 static int run_dangerous(FILE *input_fp, FILE *output_fp)
@@ -754,6 +819,7 @@ static int run_dangerous(FILE *input_fp, FILE *output_fp)
 	article = parse(doc);
 	if (!article)
 		fatal_msg("no content could be extracted");
+	attach_metadata(article);
 
 	if (options.flags & OPT_HTML)
 		xmlShellPrintNode(article);

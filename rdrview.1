@@ -10,6 +10,7 @@ rdrview \- extract readable content from a webpage
 .RB [ -v ]
 [\fB-u \fIbase-url\fR]
 [\fB-E \fIencoding\fR]
+[\fB-T \fItemplate\fR]
 [\fB-c\fR|\fB-H\fR|\fB\-M\fR|\fB\-B \fIbrowser\fR]
 .RI [ URL ]
 .SH DESCRIPTION
@@ -79,6 +80,18 @@ first check how it implements the same-origin policy for local files.
 .BR \-M ", " \-\-meta
 Output only the metadata for the article.
 .TP
+\fB\-T \fItemplate\fR, \fB--template=\fItemplate
+Pick the metadata to include in the extracted article.
+The template is a comma-separated list of some of the following:
+.IR title ,
+.IR body ,
+.IR byline ,
+.IR excerpt ,
+.IR sitename ,
+.IR url .
+The order matters, and metadata fields can be repeated.
+By default, only the body is included.
+.TP
 .BR \-\-disable-sandbox
 Disable the security sandbox.
 This option is extremely dangerous,
@@ -96,6 +109,11 @@ is respected as well.
 Default browser to display the extracted articles. The
 .B \-B
 option overrides this.
+.TP 3
+.B RDRVIEW_TEMPLATE
+Default template for article content. The
+.B \-T
+option overrides this; see that option for details.
 .SH BUGS
 The markup produced by the
 .B \-H
