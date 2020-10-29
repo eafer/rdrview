@@ -95,6 +95,16 @@ FAKE_OUTPUT=$(echo '<html><body>A</body></html>' | RDRVIEW_BROWSER='echo env <' 
 FAKE_OUTPUT=$(echo '<html><body>A</body></html>' | RDRVIEW_BROWSER='echo env <' $RDRVIEW --browser='echo cli <')
 [ "$FAKE_OUTPUT" = "cli" ] || fail "Cli browser should override the environment"
 
+# Check that the article follows the template requested by the user
+$RDRVIEW -HT "title,body,sitename" < "./template/source.html" > "$HTML_NEW" || fail "Failure on template test"
+diff "./template/expected-1.html" "$HTML_NEW" || fail "Cli template not respected"
+export RDRVIEW_TEMPLATE="sitename,title,excerpt,body,byline"
+$RDRVIEW -H < "./template/source.html" > "$HTML_NEW" || fail "Failure on template test"
+diff "./template/expected-2.html" "$HTML_NEW" || fail "Environment template not respected"
+$RDRVIEW -HT "title,body,sitename" < "./template/source.html" > "$HTML_NEW" || fail "Failure on template test"
+diff "./template/expected-1.html" "$HTML_NEW" || fail "Cli template should override the environment"
+export -n RDRVIEW_TEMPLATE
+
 # Check that we can handle ISO-8859-1, and that we respect the encoding
 # specified by the user
 OUT_OLD="encodings/iso-8859-1.txt"
