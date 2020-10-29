@@ -1782,6 +1782,17 @@ static char *first_paragraph_content(htmlNodePtr article)
 }
 
 /**
+ * Clean up the extracted metadata for presentation
+ */
+static void clean_metadata(void)
+{
+	trim_and_unescape(&metadata.title);
+	trim_and_unescape(&metadata.byline);
+	trim_and_unescape(&metadata.excerpt);
+	trim_and_unescape(&metadata.site_name);
+}
+
+/**
  * fx: Runs readability.
  *
  * Workflow:
@@ -1821,6 +1832,7 @@ htmlNodePtr parse(htmlDocPtr doc)
 
 	if ((options.flags & OPT_METADATA) && !metadata.excerpt)
 		metadata.excerpt = first_paragraph_content(article);
+	clean_metadata();
 
 	/* Discard the wrapping div */
 	content = article->children;

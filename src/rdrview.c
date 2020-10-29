@@ -597,11 +597,6 @@ static int run_browser_command(char *command)
  */
 static void print_metadata(htmlDocPtr doc)
 {
-	trim_and_unescape(&metadata.title);
-	trim_and_unescape(&metadata.byline);
-	trim_and_unescape(&metadata.excerpt);
-	trim_and_unescape(&metadata.site_name);
-
 	if (metadata.title)
 		printf("Title: %s\n", metadata.title);
 	if (metadata.byline)
