@@ -1830,7 +1830,7 @@ htmlNodePtr parse(htmlDocPtr doc)
 	/* We wouldn't need this if we could print/save a single node as html */
 	change_descendants(article, fill_if_not_self_closing);
 
-	if ((options.flags & OPT_METADATA) && !metadata.excerpt)
+	if (!metadata.excerpt)
 		metadata.excerpt = first_paragraph_content(article);
 	clean_metadata();
 
