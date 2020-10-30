@@ -21,10 +21,10 @@ SRCS = $(wildcard src/*.c)
 OBJS = $(SRCS:.c=.o)
 
 rdrview: $(OBJS)
-	$(CC) $(CFLAGS) -o rdrview $(OBJS) $(LDLIBS)
+	$(CC) $(LDFLAGS) -o rdrview $(OBJS) $(LDLIBS)
 
 %.o: %.c src/rdrview.h
-	$(CC) $(CFLAGS) -o $@ -c $<
+	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ -c $<
 
 clean:
 	rm -f $(OBJS) rdrview
