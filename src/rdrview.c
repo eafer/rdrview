@@ -240,6 +240,10 @@ static void url_to_file(FILE *file)
 	if (curl_easy_setopt(curl, CURLOPT_PROTOCOLS, protocols))
 		fatal();
 
+	/* Enable automatic decompression */
+	if (curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, ""))
+		fatal();
+
 	/* Follow up to 50 redirections, like the curl cli does by default */
 	if (curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1))
 		fatal();
