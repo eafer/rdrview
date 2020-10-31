@@ -42,7 +42,6 @@ To build _rdrview_, just cd to its directory and run
 Now it should be ready to be used. You can try:
 
     ./rdrview 'https://github.com/eafer/rdrview'
-    ./rdrview < local_file.html
 
 For more information, see the man page:
 

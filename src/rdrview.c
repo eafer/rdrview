@@ -186,9 +186,9 @@ static void set_encoding_from_response(CURL *curl)
 #endif
 
 /**
- * Save stdin to a temporary file
+ * Copy the content of one file into another
  */
-static void stdin_to_file(FILE *file)
+static void copy_file(FILE *dest, FILE *src)
 {
 	char *buf;
 
@@ -196,18 +196,26 @@ static void stdin_to_file(FILE *file)
 	if (!buf)
 		fatal_errno();
 
-	while (!feof(stdin)) {
+	while (!feof(src)) {
 		ssize_t ret;
 
-		ret = fread(buf, 1, 4096, stdin);
-		fwrite(buf, 1, ret, file);
-		if (ferror(stdin) || ferror(file))
+		ret = fread(buf, 1, 4096, src);
+		fwrite(buf, 1, ret, dest);
+		if (ferror(src) || ferror(dest))
 			fatal_msg("I/O error");
 	}
 
-	if (fflush(file))
+	if (fflush(dest))
 		fatal_errno();
 	free(buf);
+}
+
+/**
+ * Save stdin to a temporary file
+ */
+static void stdin_to_file(FILE *file)
+{
+	copy_file(file, stdin);
 }
 
 /**
@@ -424,13 +432,18 @@ static void parse_arguments(int argc, char *argv[])
 
 	if (optind < argc - 1)
 		usage();
-	if (optind == argc - 1)
+	if (optind == argc - 1) {
 		options.url = argv[optind];
+		options.localfile = fopen(options.url, "r"); /* Often NULL of course */
+	}
 
 	if (!options.base_url) {
-		options.base_url = options.url;
-		if (!options.base_url)
+		if (options.localfile)
+			options.base_url = "none://local.file";
+		else if (!options.url)
 			options.base_url = "none://standard.input";
+		else
+			options.base_url = options.url;
 	}
 	if (!options.template) {
 		options.template = getenv("RDRVIEW_TEMPLATE");
@@ -789,6 +802,20 @@ static void attach_metadata(htmlNodePtr article)
 }
 
 /**
+ * Save the HTML document to process to a temporary file
+ */
+static void save_input_to_file(FILE *file)
+{
+	/* Prioritize local files over remote urls, like real browsers do */
+	if (options.localfile)
+		copy_file(file, options.localfile);
+	else if (!options.url)
+		stdin_to_file(file);
+	else
+		url_to_file(file);
+}
+
+/**
  * Set up a sandbox and run all dangerous processing of the input HTML file
  */
 static int run_dangerous(FILE *input_fp, FILE *output_fp)
@@ -798,11 +825,7 @@ static int run_dangerous(FILE *input_fp, FILE *output_fp)
 	int ret = 0;
 
 	init_iconv();
-
-	if (options.url)
-		url_to_file(input_fp);
-	else
-		stdin_to_file(input_fp);
+	save_input_to_file(input_fp);
 
 	/* TODO: consider ways to sandbox the libcurl stuff as well */
 	start_sandbox();

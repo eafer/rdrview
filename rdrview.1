@@ -12,7 +12,7 @@ rdrview \- extract readable content from a webpage
 [\fB-E \fIencoding\fR]
 [\fB-T \fItemplate\fR]
 [\fB-c\fR|\fB-H\fR|\fB\-M\fR|\fB\-B \fIbrowser\fR]
-.RI [ URL ]
+[\fIpath\fR|\fIurl\fR]
 .SH DESCRIPTION
 .B rdrview
 attempts to extract the meaningful content from a webpage,
@@ -21,7 +21,9 @@ It's intended to be used with terminal RSS readers,
 to clean up the articles for display on web browsers such as lynx.
 .PP
 If no
-.I URL
+.I url
+or
+.I path
 is provided,
 the HTML will be read from standard input.
 By default,
@@ -55,7 +57,7 @@ Exit status is 0 in that case, or 1 otherwise.
 .TP
 \fB-u \fIbase-url\fR, \fB--base=\fIbase-url
 Specify the base to be used for all relative URLs.
-This option is most useful for dealing with standard input,
+This option is most useful for local files and standard input,
 where the document's URL may be unknown.
 .TP
 .BR \-v ", " \-\-version
