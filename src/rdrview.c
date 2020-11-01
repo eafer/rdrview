@@ -491,29 +491,43 @@ static void save_node_to_file(htmlNodePtr node, FILE *file)
  */
 static char *extract_browser_command_template(FILE *mailcap)
 {
-	static char line[256];
-	static char base[5]; /* Enough for 'text' */
-	static char type[5]; /* Enough for 'html' */
-	static char comm[128];
-	static char flag[14]; /* Enough for 'copiousoutput' */
+	char *template = NULL;
+	char *line;
+	struct {
+		char base[5]; /* Enough for 'text' */
+		char type[5]; /* Enough for 'html' */
+		char comm[128];
+		char flag[14]; /* Enough for 'copiousoutput' */
+	} *mce;
+
+	line = malloc(256);
+	if (!line)
+		fatal_errno();
+	mce = malloc(sizeof(*mce));
+	if (!mce)
+		fatal_errno();
 
 	/* TODO: don't ignore the "test" command */
 	while (fgets(line, 256, mailcap)) {
 		static const char *format = "%4[^/]/%4[^;]; %127[^;]; %13[^;]";
 		int ret;
 
-		ret = sscanf(line, format, base, type, comm, flag);
+		ret = sscanf(line, format, mce->base, mce->type, mce->comm, mce->flag);
 		if (ret != 4)
 			continue;
-		if (strcasecmp(base, "text") != 0)
+		if (strcasecmp(mce->base, "text") != 0)
 			continue;
-		if (strcasecmp(type, "html") != 0 && strcmp(type, "*") != 0)
+		if (strcasecmp(mce->type, "html") != 0 && strcmp(mce->type, "*") != 0)
 			continue;
-		if (strcasecmp(flag, "copiousoutput") != 0)
+		if (strcasecmp(mce->flag, "copiousoutput") != 0)
 			continue;
-		return comm;
+		template = strdup(mce->comm);
+		break;
 	}
-	return NULL;
+
+	free(line);
+	free(mce);
+	return template;
 }
 
 /**
@@ -550,6 +564,7 @@ static char *get_browser_command_via_mailcap(char *filepath)
 	};
 	char *homepath;
 	char *template = NULL;
+	char *command;
 	unsigned int i = 0;
 
 	/* Search the user's local mailcap before the others */
@@ -571,9 +586,11 @@ static char *get_browser_command_via_mailcap(char *filepath)
 	if (!template)
 		fatal_msg("mailcap query failed, please specify a web browser");
 	check_no_recursion(template);
+	command = mkstring(template, filepath);
 
+	free(template);
 	free(mailcap_paths[0]);
-	return mkstring(template, filepath);
+	return command;
 }
 
 /**
