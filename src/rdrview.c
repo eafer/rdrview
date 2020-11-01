@@ -226,6 +226,7 @@ static void url_to_file(FILE *file)
 	CURL *curl;
 	CURLcode res;
 	long protocols;
+	const char *uagent;
 
 	curl = curl_easy_init();
 	if (!curl)
@@ -242,6 +243,11 @@ static void url_to_file(FILE *file)
 
 	/* Enable automatic decompression */
 	if (curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, ""))
+		fatal();
+
+	/* The Incapsula CDN demands user-agent strings of a certain form */
+	uagent = "Mozilla/5.0 rdrview/0.1";
+	if (curl_easy_setopt(curl, CURLOPT_USERAGENT, uagent))
 		fatal();
 
 	/* Follow up to 50 redirections, like the curl cli does by default */
