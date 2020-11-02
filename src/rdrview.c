@@ -735,6 +735,10 @@ static void set_cleanup_handlers(void)
 
 /**
  * Try a single banned syscall to check if the sandbox works
+ *
+ * This won't run as intended on OpenBSD, it should just cause a crash. It's
+ * still useful as a quick test of the sandbox, but any proper build on that
+ * system has no choice but to define NDEBUG.
  */
 #ifdef NDEBUG
 static inline void assert_sandbox_works(void) {}

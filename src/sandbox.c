@@ -50,14 +50,25 @@ static void do_start_sandbox(void)
 	seccomp_release(ctx);
 }
 
-#else /* __linux__ */
+#elif defined(__OpenBSD__)
+
+#include <unistd.h>
+
+static void do_start_sandbox(void)
+{
+	if (pledge("stdio", NULL))
+		fatal_errno();
+}
+
+#else /* macOS and others, at least for now */
 
 static void do_start_sandbox(void)
 {
 	fatal_msg("no sandbox for your system - disable it at your own risk");
 }
 
-#endif /* __linux__ */
+#endif /* System-dependent code ends here */
+
 
 /**
  * Restrict the process to working with its existing temporary files
