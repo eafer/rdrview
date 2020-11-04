@@ -747,9 +747,13 @@ static inline void assert_sandbox_works(void)
 {
 	errno = 0;
 	if (!options.disable_sandbox) {
-		int ret = nice(0);
-		assert(ret == -1);
+		FILE *file = fopen("/dev/null", "a");
+		assert(!file);
+#if defined(__linux__)
 		assert(errno == EPERM);
+#elif defined(__FreeBSD__)
+		assert(errno == ECAPMODE);
+#endif
 	}
 }
 #endif /* NDEBUG */

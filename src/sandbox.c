@@ -50,6 +50,16 @@ static void do_start_sandbox(void)
 	seccomp_release(ctx);
 }
 
+#elif defined(__FreeBSD__)
+
+#include <sys/capsicum.h>
+
+static void do_start_sandbox(void)
+{
+	if (cap_enter())
+		fatal_errno();
+}
+
 #elif defined(__OpenBSD__)
 
 #include <unistd.h>
