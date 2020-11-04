@@ -11,9 +11,12 @@ and the output is expected to be mostly equivalent.
 
 This tool is young and written in C, so it's reasonable to wonder about the
 potential for memory issues. To be safe, all HTML parsing happens inside a
-sandboxed subprocess. Seccomp is used for this purpose.
+sandboxed subprocess. Seccomp is used for this purpose on Linux, Pledge on
+OpenBSD, and Capsicum on FreeBSD.
 
 ## Usage
+
+### Linux
 
 There are three direct dependencies: libxml2, libseccomp and libcurl.
 On Debian/Ubuntu, you can install the first two by running (as root):
@@ -53,6 +56,32 @@ If you find _rdrview_ useful and want to install it, become root again and run
 
 Now you can just call it with `rdrview` and get help with `man rdrview`, like
 you would for any other tool in your system.
+
+### BSDs
+
+To build _rdrview_ on the BSDs, you will need GNU make as well as the libraries.
+Having a terminal browser available is recommended. On OpenBSD, become root and
+run
+
+    pkg_add gmake curl libxml lynx
+
+On FreeBSD, that would be
+
+    pkg install gmake gcc libxml2 curl lynx
+
+Now you can cd to the source directory and run `gmake` for the build, and
+optionally `gmake install` for the installation. The BSDs don't provide any
+mailcap file by default, so to run rdrview you will need to specify the web
+browser:
+
+    ./rdrview -B lynx 'https://github.com/eafer/rdrview'
+
+### macOS
+
+I don't own any Apple computers to test this myself, but I've been told that
+_rdrview_ does build on macOS. A sandbox is not yet implemented, but the tool
+can still be run with the `--disable-sandbox` flag, as long as the user
+understands the risk.
 
 ## Credits
 
