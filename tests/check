@@ -132,6 +132,10 @@ OUT_OLD="./rust/expected.txt"
 $RDRVIEW < "./rust/source.html" > "$OUT_NEW" || fail "Failure for rust test"
 diff "$OUT_OLD" "$OUT_NEW" || fail "Regular output differs for rust test"
 
+# Check that a childless root node doesn't trigger NULL pointer dereference
+echo '<html></html>' | $RDRVIEW &>/dev/null
+[ "$?" -eq "139" ] && fail "Childless root node triggered a segfault"
+
 # Check that the only temporary files remaining belong to Valgrind
 TMPCOUNT=$(ls -1 "$TMPDIR" | wc -l)
 VGDCOUNT=$(ls -1 "$TMPDIR" | grep "vgdb-pipe" | wc -l)

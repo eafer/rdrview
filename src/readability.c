@@ -726,6 +726,9 @@ static htmlNodePtr find_top_candidate(htmlDocPtr doc)
 	htmlNodePtr *tops = run_on_nodes(doc, consider_for_top_list);
 	htmlNodePtr result;
 
+	if (!tops)
+		return NULL;
+
 	if (!tops[0] || node_has_tag(tops[0], "body"))
 		result = NULL;
 	else
