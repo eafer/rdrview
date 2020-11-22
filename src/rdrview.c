@@ -262,6 +262,9 @@ static void url_to_file(FILE *file)
 	else if (res)
 		fatal_msg("couldn't fetch the webpage");
 
+	if (fflush(file))
+		fatal_errno();
+
 	set_encoding_from_response(curl);
 	curl_easy_cleanup(curl);
 }
