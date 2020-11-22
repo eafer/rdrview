@@ -30,7 +30,7 @@
  */
 htmlNodePtr first_node(htmlDocPtr doc)
 {
-	return xmlDocGetRootElement(doc);
+	return following_node(xmlDocGetRootElement(doc));
 }
 
 /**
