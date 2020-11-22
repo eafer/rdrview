@@ -127,6 +127,11 @@ clean_html < "$HTML_NEW" > "$TIDYHTML_NEW"
 clean_html < "./srcset/expected.html" > "$TIDYHTML_OLD"
 diff "$TIDYHTML_OLD" "$TIDYHTML_NEW" || fail "HTML differs for srcset test"
 
+# Check that we don't remove root nodes if they are "unlikely to be readable"
+OUT_OLD="./rust/expected.txt"
+$RDRVIEW < "./rust/source.html" > "$OUT_NEW" || fail "Failure for rust test"
+diff "$OUT_OLD" "$OUT_NEW" || fail "Regular output differs for rust test"
+
 # Check that the only temporary files remaining belong to Valgrind
 TMPCOUNT=$(ls -1 "$TMPDIR" | wc -l)
 VGDCOUNT=$(ls -1 "$TMPDIR" | grep "vgdb-pipe" | wc -l)
