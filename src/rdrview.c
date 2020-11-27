@@ -246,7 +246,7 @@ static void url_to_file(FILE *file)
 		fatal();
 
 	/* The Incapsula CDN demands user-agent strings of a certain form */
-	uagent = "Mozilla/5.0 rdrview/0.1";
+	uagent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.109 Safari/537.36";
 	if (curl_easy_setopt(curl, CURLOPT_USERAGENT, uagent))
 		fatal();
 
