@@ -93,7 +93,7 @@ __attribute__((noreturn)) void fatal_errno(void)
  */
 static void usage(void)
 {
-	char *args = "[-v] [-u base-url] [-E encoding] [-c|-H|-M|-B browser] [URL]";
+	char *args = "[-v] [-u base-url] [-E encoding] [-A user-agent] [-c|-H|-M|-B browser] [URL]";
 
 	fprintf(stderr, "usage: %s %s\n", progname, args);
 	exit(1);
@@ -226,7 +226,6 @@ static void url_to_file(FILE *file)
 	CURL *curl;
 	CURLcode res;
 	long protocols;
-	const char *uagent;
 
 	curl = curl_easy_init();
 	if (!curl)
@@ -245,9 +244,7 @@ static void url_to_file(FILE *file)
 	if (curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, ""))
 		fatal();
 
-	/* The Incapsula CDN demands user-agent strings of a certain form */
-	uagent = "Mozilla/5.0 rdrview/0.1";
-	if (curl_easy_setopt(curl, CURLOPT_USERAGENT, uagent))
+	if (curl_easy_setopt(curl, CURLOPT_USERAGENT, options.agent))
 		fatal();
 
 	/* Follow up to 50 redirections, like the curl cli does by default */
@@ -363,13 +360,14 @@ static void check_known_encoding(const char *enc)
 	fatal_msg("unrecognized encoding");
 }
 
-static const char *OPTSTRING = "cu:vB:E:HMT:";
+static const char *OPTSTRING = "cu:vB:E:A:HMT:";
 #define DISABLE_SANDBOX 256 /* No short version of this option */
 static const struct option LONGOPTS[] = {
 	{"check", no_argument, NULL, 'c'},
 	{"base", required_argument, NULL, 'u'},
 	{"browser", required_argument, NULL, 'B'},
 	{"encoding", required_argument, NULL, 'E'},
+	{"agent", required_argument, NULL, 'A'},
 	{"html", no_argument, NULL, 'H'},
 	{"meta", no_argument, NULL, 'M'},
 	{"template", required_argument, NULL, 'T'},
@@ -424,6 +422,9 @@ static void parse_arguments(int argc, char *argv[])
 			check_known_encoding(optarg);
 			options.enc = optarg;
 			break;
+		case 'A':
+			options.agent = optarg;
+			break;
 		case 'T':
 			options.template = optarg;
 			break;
@@ -458,10 +459,17 @@ static void parse_arguments(int argc, char *argv[])
 		else
 			options.base_url = options.url;
 	}
+
 	if (!options.template) {
 		options.template = getenv("RDRVIEW_TEMPLATE");
 		if (!options.template)
 			options.template = "body";
+	}
+
+	if (!options.agent) {
+		options.agent = getenv("RDRVIEW_USER_AGENT");
+		if (!options.agent)
+			options.agent = RDRVIEW_DEFAULT_USER_AGENT;
 	}
 }
 

@@ -32,6 +32,9 @@
 #include <libxml/HTMLtree.h>
 #include <libxml/debugXML.h>
 
+/* The Incapsula CDN demands user-agent strings of a certain form */
+#define RDRVIEW_DEFAULT_USER_AGENT "Mozilla/5.0 rdrview/0.1"
+
 /* Cli options, plus some internal configuration */
 struct options {
 	unsigned int flags;
@@ -40,6 +43,7 @@ struct options {
 	const char *template; /* Fields to include in the extracted article */
 	const char *base_url;
 	const char *browser;
+	const char *agent;
 	char *url;
 	FILE *localfile; /* Used only if the "url" is actually a local path */
 };

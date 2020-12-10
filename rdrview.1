@@ -10,6 +10,7 @@ rdrview \- extract readable content from a webpage
 .RB [ -v ]
 [\fB-u \fIbase-url\fR]
 [\fB-E \fIencoding\fR]
+[\fB-A \fIuser-agent\fR]
 [\fB-T \fItemplate\fR]
 [\fB-c\fR|\fB-H\fR|\fB\-M\fR|\fB\-B \fIbrowser\fR]
 [\fIpath\fR|\fIurl\fR]
@@ -65,6 +66,10 @@ Print the version number of
 .B rdrview
 and exit.
 .TP
+\fB\-A \fIuser-agent\fR, \fB--agent=\fIuser-agent
+Specify the user-agent string.
+The default should work fine in most situations.
+.TP
 \fB\-B \fIbrowser\fR, \fB--browser=\fIbrowser
 Specify a browser to display the result.
 .TP
@@ -116,6 +121,11 @@ option overrides this.
 Default template for article content. The
 .B \-T
 option overrides this; see that option for details.
+.TP 3
+.B RDRVIEW_USER_AGENT
+Default user-agent string, overridden by the
+.B \-A
+option.
 .SH BUGS
 The markup produced by the
 .B \-H
