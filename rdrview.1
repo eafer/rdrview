@@ -10,6 +10,7 @@ rdrview \- extract readable content from a webpage
 .RB [ -v ]
 [\fB-u \fIbase-url\fR]
 [\fB-E \fIencoding\fR]
+[\fB-A \fIuser-agent\fR]
 [\fB-T \fItemplate\fR]
 [\fB-c\fR|\fB-H\fR|\fB\-M\fR|\fB\-B \fIbrowser\fR]
 [\fIpath\fR|\fIurl\fR]
@@ -72,6 +73,9 @@ Specify a browser to display the result.
 Specify the character encoding of the source.
 By default,
 the meta tags will be checked.
+.TP
+\fB\-A \fIuser-agent\fR, \fB--agent=\fIuser-agent
+Specify user-agent string.
 .TP
 .BR \-H ", " \-\-html
 Output the raw HTML for the extracted article.
