@@ -894,13 +894,37 @@ out:
 	return ret;
 }
 
+/**
+ * Fork a subprocess to run html parsing in a sandbox; return its exit status
+ */
+static int fork_and_run_dangerous(FILE *input_fp, FILE *output_fp)
+{
+	pid_t cpid;
+	int wstatus;
+
+	cpid = fork();
+	if (cpid < 0) {
+		fatal_errno();
+	} else if (!cpid) { /* Sandboxed subprocess */
+		free(tmpdir);
+		tmpdir = NULL; /* Otherwise the child would remove it on exit */
+		exit(run_dangerous(input_fp, output_fp));
+	} else if (wait(&wstatus) < 0) {
+		fatal_errno();
+	}
+
+	if (WIFEXITED(wstatus))
+		return WEXITSTATUS(wstatus);
+	if (WIFSIGNALED(wstatus))
+		return 128 + WTERMSIG(wstatus);
+	return 1;
+}
+
 int main(int argc, char *argv[])
 {
 	FILE *input_fp, *output_fp;
-	char *command = NULL;
-	pid_t cpid;
-	int ret = 1;
-	int wstatus;
+	static char *command = NULL; /* Static for the sake of valgrind */
+	int ret;
 
 	LIBXML_TEST_VERSION
 	/* I made a mess mixing xmlMalloc() and malloc(), so play it safe here */
@@ -924,24 +948,7 @@ int main(int argc, char *argv[])
 	init_iconv();
 	save_input_to_file(input_fp);
 
-	cpid = fork();
-	if (cpid < 0) {
-		fatal_errno();
-	} else if (!cpid) { /* Sandboxed subprocess */
-		free(tmpdir);
-		tmpdir = NULL; /* Otherwise the child would remove it on exit */
-		free(command); /* For the sake of valgrind */
-		ret = run_dangerous(input_fp, output_fp);
-		exit(ret);
-	} else if (wait(&wstatus) < 0) {
-		fatal_errno();
-	}
-
-	if (WIFEXITED(wstatus))
-		ret = WEXITSTATUS(wstatus);
-	else if (WIFSIGNALED(wstatus))
-		ret = 128 + WTERMSIG(wstatus);
-
+	ret = fork_and_run_dangerous(input_fp, output_fp);
 	if (!ret && (options.flags & OPT_BROWSER))
 		ret = run_browser_command(command);
 	return ret;
