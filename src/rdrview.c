@@ -862,10 +862,6 @@ static int run_dangerous(FILE *input_fp, FILE *output_fp)
 	htmlNodePtr article = NULL;
 	int ret = 0;
 
-	init_iconv();
-	save_input_to_file(input_fp);
-
-	/* TODO: consider ways to sandbox the libcurl stuff as well */
 	start_sandbox();
 	assert_sandbox_works();
 
@@ -924,6 +920,9 @@ int main(int argc, char *argv[])
 	/* Do this before the fork to avoid wasting time if there is no browser */
 	if (options.flags & OPT_BROWSER)
 		command = get_browser_command(outputfile);
+
+	init_iconv();
+	save_input_to_file(input_fp);
 
 	cpid = fork();
 	if (cpid < 0) {
