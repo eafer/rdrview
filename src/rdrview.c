@@ -446,7 +446,7 @@ static void parse_arguments(int argc, char *argv[])
 	if (optind < argc - 1)
 		usage();
 	if (optind == argc - 1) {
-		options.url = argv[optind];
+		options.url = strdup(argv[optind]);
 		options.localfile = fopen(options.url, "r"); /* Often NULL of course */
 	}
 
@@ -854,6 +854,78 @@ static void save_input_to_file(FILE *file)
 }
 
 /**
+ * If this is a meta node for an html redirect, return the node itself;
+ * otherwise return NULL
+ */
+static void *node_check_for_redirects(htmlNodePtr node)
+{
+	xmlChar *http_equiv;
+	htmlNodePtr ret = NULL;
+
+	if (!node_has_tag(node, "meta"))
+		return NULL;
+
+	http_equiv = xmlGetProp(node, BAD_CAST "http-equiv");
+	if (!http_equiv)
+		return NULL;
+
+	if (xmlStrcmp(http_equiv, BAD_CAST "refresh") == 0)
+		ret = node;
+
+	xmlFree(http_equiv);
+	return ret;
+}
+
+/**
+ * Is there an html redirect in the document? If so, save its url to the file.
+ */
+static bool check_html_redirect(htmlDocPtr doc, FILE *file)
+{
+	htmlNodePtr node = NULL;
+	xmlChar *content;
+	const xmlChar *url, *needle;
+	size_t url_len, written;
+	bool ret = false;
+
+	/*
+	 * Redirects from a local document may be a privacy issue, because the
+	 * author can use them to find out if it has been opened. Of course there
+	 * are other ways to do that, but those depend on the browser.
+	 */
+	if (options.localfile || !options.url)
+		return ret;
+
+	if (!xmlDocGetRootElement(doc))
+		return ret;
+	node = run_on_nodes(doc, node_check_for_redirects);
+	if (!node)
+		return ret;
+
+	content = xmlGetProp(node, BAD_CAST "content");
+	if (!content)
+		return ret;
+
+	needle = BAD_CAST ";url=";
+	url = xmlStrcasestr(content, needle);
+	if (!url)
+		goto out;
+	url += xmlStrlen(needle);
+
+	ret = true;
+	url_len = xmlStrlen(url) + 1; /* Save the termination too */
+	written = fwrite(url, 1, url_len, file);
+	if (written < url_len)
+		fatal_msg("I/O error");
+
+out:
+	xmlFree(content);
+	return ret;
+}
+
+/* Status code returned by the child if it found an html redirect */
+#define STATUS_HTML_REDIRECT 2
+
+/**
  * Set up a sandbox and run all dangerous processing of the input HTML file
  */
 static int run_dangerous(int input_fd, int output_fd)
@@ -874,6 +946,10 @@ static int run_dangerous(int input_fd, int output_fd)
 	assert_sandbox_works();
 
 	doc = parse_file(input_fp);
+	if (check_html_redirect(doc, output_fp)) {
+		ret = STATUS_HTML_REDIRECT;
+		goto out;
+	}
 	init_regexes();
 
 	if (options.flags & OPT_CHECK) {
@@ -932,6 +1008,10 @@ static int fork_and_run_dangerous(FILE **input_fp, FILE **output_fp)
 	input_fd = fclose_but_keep_fd(input_fp);
 	output_fd = fclose_but_keep_fd(output_fp);
 
+	/* Prepare the file to receive new output from the child */
+	if (ftruncate(output_fd, 0) || lseek(input_fd, 0, SEEK_SET))
+		fatal_errno();
+
 	cpid = fork();
 	if (cpid < 0) {
 		fatal_errno();
@@ -943,18 +1023,58 @@ static int fork_and_run_dangerous(FILE **input_fp, FILE **output_fp)
 		fatal_errno();
 	}
 
+	/* Prepare the input file in case we need to download a new document */
+	if (ftruncate(input_fd, 0) || lseek(input_fd, 0, SEEK_SET))
+		fatal_errno();
 	*input_fp = fdopen(input_fd, "w+");
 	if (!*input_fp)
 		fatal_errno();
-	*output_fp = fdopen(output_fd, "w");
+
+	/* Prepare the output file in case we need to read it */
+	*output_fp = fdopen(output_fd, "w+");
 	if (!*output_fp)
 		fatal_errno();
+	rewind(*output_fp);
 
 	if (WIFEXITED(wstatus))
 		return WEXITSTATUS(wstatus);
 	if (WIFSIGNALED(wstatus))
 		return 128 + WTERMSIG(wstatus);
 	return 1;
+}
+
+/**
+ * Update the url in the options with the contents of the file
+ */
+static void update_url_from_file(FILE *file)
+{
+	int fd = fileno(file);
+	struct stat statbuf;
+	size_t size, ret;
+
+	if (fstat(fd, &statbuf))
+		fatal_errno();
+	size = statbuf.st_size;
+	if (!size)
+		fatal_msg("the document has an html redirect without a target url");
+
+	free(options.url);
+	options.url = malloc(size);
+	if (!options.url)
+		fatal_errno();
+
+	ret = fread(options.url, 1, size, file);
+	if (ret < size)
+		fatal_msg("I/O error");
+
+	/*
+	 * The url in the output file should be null-terminated already, but it
+	 * comes from the sandboxed child so it's not trustworthy.
+	 */
+	options.url[size - 1] = '\0';
+
+	/* TODO: don't ignore the user-supplied base url for html redirects */
+	options.base_url = options.url;
 }
 
 int main(int argc, char *argv[])
@@ -974,7 +1094,7 @@ int main(int argc, char *argv[])
 	inputfile = get_temp_filepath("input.html");
 	outputfile = get_temp_filepath("output.html");
 	input_fp = fopen(inputfile, "w+");
-	output_fp = fopen(outputfile, "w");
+	output_fp = fopen(outputfile, "w+");
 	if (!input_fp || !output_fp)
 		fatal_msg("failed to create the temporary files");
 
@@ -983,9 +1103,17 @@ int main(int argc, char *argv[])
 		command = get_browser_command(outputfile);
 
 	init_iconv();
-	save_input_to_file(input_fp);
+	do {
+		save_input_to_file(input_fp);
+		ret = fork_and_run_dangerous(&input_fp, &output_fp);
+		/*
+		 * If the child finds an html redirect, it saves the url to the output
+		 * file and returns STATUS_HTML_REDIRECT.
+		 */
+		if (ret == STATUS_HTML_REDIRECT)
+			update_url_from_file(output_fp);
+	} while (ret == STATUS_HTML_REDIRECT);
 
-	ret = fork_and_run_dangerous(&input_fp, &output_fp);
 	if (!ret && (options.flags & OPT_BROWSER))
 		ret = run_browser_command(command);
 	return ret;

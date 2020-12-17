@@ -40,7 +40,7 @@ struct options {
 	const char *template; /* Fields to include in the extracted article */
 	const char *base_url;
 	const char *browser;
-	const char *url;
+	char *url;
 	FILE *localfile; /* Used only if the "url" is actually a local path */
 };
 extern struct options options;
