@@ -856,11 +856,19 @@ static void save_input_to_file(FILE *file)
 /**
  * Set up a sandbox and run all dangerous processing of the input HTML file
  */
-static int run_dangerous(FILE *input_fp, FILE *output_fp)
+static int run_dangerous(int input_fd, int output_fd)
 {
+	FILE *input_fp, *output_fp;
 	htmlDocPtr doc;
 	htmlNodePtr article = NULL;
 	int ret = 0;
+
+	input_fp = fdopen(input_fd, "w+");
+	if (!input_fp)
+		fatal_errno();
+	output_fp = fdopen(output_fd, "w");
+	if (!output_fp)
+		fatal_errno();
 
 	start_sandbox();
 	assert_sandbox_works();
@@ -895,12 +903,34 @@ out:
 }
 
 /**
+ * Close and nullify a stream but return an open file descriptor for the file
+ */
+static int fclose_but_keep_fd(FILE **file)
+{
+	int fd = fileno(*file);
+
+	fd = dup(fd);
+	if (fd < 0)
+		fatal_errno();
+
+	if (fclose(*file))
+		fatal_errno();
+	*file = NULL;
+	return fd;
+}
+
+/**
  * Fork a subprocess to run html parsing in a sandbox; return its exit status
  */
-static int fork_and_run_dangerous(FILE *input_fp, FILE *output_fp)
+static int fork_and_run_dangerous(FILE **input_fp, FILE **output_fp)
 {
 	pid_t cpid;
 	int wstatus;
+	int input_fd, output_fd;
+
+	/* The files are shared with the child, which invalidates the streams */
+	input_fd = fclose_but_keep_fd(input_fp);
+	output_fd = fclose_but_keep_fd(output_fp);
 
 	cpid = fork();
 	if (cpid < 0) {
@@ -908,10 +938,17 @@ static int fork_and_run_dangerous(FILE *input_fp, FILE *output_fp)
 	} else if (!cpid) { /* Sandboxed subprocess */
 		free(tmpdir);
 		tmpdir = NULL; /* Otherwise the child would remove it on exit */
-		exit(run_dangerous(input_fp, output_fp));
+		exit(run_dangerous(input_fd, output_fd));
 	} else if (wait(&wstatus) < 0) {
 		fatal_errno();
 	}
+
+	*input_fp = fdopen(input_fd, "w+");
+	if (!*input_fp)
+		fatal_errno();
+	*output_fp = fdopen(output_fd, "w");
+	if (!*output_fp)
+		fatal_errno();
 
 	if (WIFEXITED(wstatus))
 		return WEXITSTATUS(wstatus);
@@ -948,7 +985,7 @@ int main(int argc, char *argv[])
 	init_iconv();
 	save_input_to_file(input_fp);
 
-	ret = fork_and_run_dangerous(input_fp, output_fp);
+	ret = fork_and_run_dangerous(&input_fp, &output_fp);
 	if (!ret && (options.flags & OPT_BROWSER))
 		ret = run_browser_command(command);
 	return ret;
