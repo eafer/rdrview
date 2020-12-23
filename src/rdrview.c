@@ -365,6 +365,7 @@ static const char *OPTSTRING = "cu:vB:E:A:HMT:";
 static const struct option LONGOPTS[] = {
 	{"check", no_argument, NULL, 'c'},
 	{"base", required_argument, NULL, 'u'},
+	{"version", no_argument, NULL, 'v'},
 	{"browser", required_argument, NULL, 'B'},
 	{"encoding", required_argument, NULL, 'E'},
 	{"agent", required_argument, NULL, 'A'},
