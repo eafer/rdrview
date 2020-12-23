@@ -93,7 +93,7 @@ __attribute__((noreturn)) void fatal_errno(void)
  */
 static void usage(void)
 {
-	char *args = "[-v] [-u base-url] [-E encoding] [-A user-agent] [-c|-H|-M|-B browser] [URL]";
+	char *args = "[-v] [-u base-url] [-E encoding] [-A user-agent] [-T template] [-c|-H|-M|-B browser] [path|url]";
 
 	fprintf(stderr, "usage: %s %s\n", progname, args);
 	exit(1);
