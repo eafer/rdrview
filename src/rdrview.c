@@ -1005,6 +1005,15 @@ static int fclose_but_keep_fd(FILE **file)
 }
 
 /**
+ * Delete all contents of a file and move its offset to the beginning
+ */
+static void clear_file(int fd)
+{
+	if (ftruncate(fd, 0) || lseek(fd, 0, SEEK_SET))
+		fatal_errno();
+}
+
+/**
  * Fork a subprocess to run html parsing in a sandbox; return its exit status
  */
 static int fork_and_run_dangerous(FILE **input_fp, FILE **output_fp)
@@ -1018,8 +1027,7 @@ static int fork_and_run_dangerous(FILE **input_fp, FILE **output_fp)
 	output_fd = fclose_but_keep_fd(output_fp);
 
 	/* Prepare the file to receive new output from the child */
-	if (ftruncate(output_fd, 0) || lseek(input_fd, 0, SEEK_SET))
-		fatal_errno();
+	clear_file(output_fd);
 
 	cpid = fork();
 	if (cpid < 0) {
@@ -1033,8 +1041,7 @@ static int fork_and_run_dangerous(FILE **input_fp, FILE **output_fp)
 	}
 
 	/* Prepare the input file in case we need to download a new document */
-	if (ftruncate(input_fd, 0) || lseek(input_fd, 0, SEEK_SET))
-		fatal_errno();
+	clear_file(input_fd);
 	*input_fp = fdopen(input_fd, "w+");
 	if (!*input_fp)
 		fatal_errno();
