@@ -269,9 +269,8 @@ static void url_to_file(FILE *file)
 /**
  * Map a whole file to memory; return the length of the mapping
  */
-static size_t map_file(FILE *file, char **map)
+static size_t map_file(int fd, char **map)
 {
-	int fd = fileno(file);
 	struct stat statbuf;
 	size_t size;
 
@@ -332,14 +331,14 @@ static void invalidate_script_cdata(char *map, size_t size)
 /**
  * Parse the html in the file and return its htmlDocPtr; exit on failure
  */
-static htmlDocPtr parse_file(FILE *file)
+static htmlDocPtr parse_file(int fd)
 {
 	htmlDocPtr doc;
 	int flags = HTML_PARSE_NOERROR | HTML_PARSE_NOWARNING;
 	char *map;
 	size_t mapsize;
 
-	mapsize = map_file(file, &map);
+	mapsize = map_file(fd, &map);
 	invalidate_script_cdata(map, mapsize);
 	doc = htmlReadMemory(map, mapsize, options.base_url, options.enc, flags);
 	if (!doc)
@@ -939,14 +938,11 @@ out:
  */
 static int run_dangerous(int input_fd, int output_fd)
 {
-	FILE *input_fp, *output_fp;
+	FILE *output_fp;
 	htmlDocPtr doc;
 	htmlNodePtr article = NULL;
 	int ret = 0;
 
-	input_fp = fdopen(input_fd, "w+");
-	if (!input_fp)
-		fatal_errno();
 	output_fp = fdopen(output_fd, "w");
 	if (!output_fp)
 		fatal_errno();
@@ -954,7 +950,7 @@ static int run_dangerous(int input_fd, int output_fd)
 	start_sandbox();
 	assert_sandbox_works();
 
-	doc = parse_file(input_fp);
+	doc = parse_file(input_fd);
 	if (check_html_redirect(doc, output_fp)) {
 		ret = STATUS_HTML_REDIRECT;
 		goto out;
