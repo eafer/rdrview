@@ -769,8 +769,9 @@ static inline void assert_sandbox_works(void)
 }
 #endif /* NDEBUG */
 
-/* Descriptors for the encodings supported via iconv; for now only GB2312 */
+/* Descriptors for the encodings supported via iconv */
 static iconv_t gb2312_cd;
+static iconv_t cp1252_cd;
 
 /**
  * Set up the iconv conversion descriptors to be used by libxml2. This is
@@ -781,6 +782,10 @@ static void init_iconv(void)
 	gb2312_cd = iconv_open("UTF-8", "GB2312");
 	if (gb2312_cd == (iconv_t)(-1))
 		fatal_errno();
+
+	cp1252_cd = iconv_open("UTF-8", "CP1252");
+	if (cp1252_cd == (iconv_t)(-1))
+		fatal_errno();
 }
 
 /**
@@ -789,6 +794,7 @@ static void init_iconv(void)
 static void clean_iconv(void)
 {
 	iconv_close(gb2312_cd);
+	iconv_close(cp1252_cd);
 }
 
 /**
