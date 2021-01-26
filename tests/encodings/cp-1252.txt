@@ -1,0 +1,1500 @@
+             Home Switchboard Unix           Red TCP/IP   Neoliberalism Toxic    
+                              Administration Hat Networks               Managers 
+Softpanorama May the source be with you, but remember the KISS principle ;-)
+             Skepticism and critical thinking is not panacea, but can help to
+             understand the world better
+
+     ----------------------------------------------------------------------
+
+            Unix       Recommended Linux          Solaris                  Report     
+News        System     Links       implementation Implementation Reference Generators 
+            Monitoring 
+Performance memtool    vmstat      iostat         Sarcheck       Humor     Etc        
+Monitoring  
+
+     * Introduction
+     * Monitored parameters
+     * Structure of the package
+     * Enabling sar
+     * SAR reports
+     * Alternative implementations
+     * Side effects
+     * Additional information
+
+     ----------------------------------------------------------------------
+
+  Introduction
+
+   The System Activity Recorder (sar) and related suite of utilities
+   originated in Solaris. Later it was ported to all major flavors of UNIX,
+   including AIX, HP-UX, and Linux. Sysstat package is installed by default
+   in standard Red Hat installation. For Suse it is not installed by default
+   and you need to install sysstat package manually (package is provided by
+   Novell).
+
+   It is important to note that sar is an very good monitoring package,
+   capabilities of which are usually severely underutilized. Very few system
+   administrators have a habit of weekly looking at SAR logs (see SAR
+   reports). Moreover it often provide more reliable information then
+   commercial packages that cost considerable money. It can discover various
+   bottlenecks and is the simplest tool to decide if the server need hardware
+   upgrade of not. And hardware upgrades in a typical datacenter are a highly
+   politically charged thing, so having some more or less solid reference to
+   an actual performance of the server greatly helps.
+
+   The reason for sar creation was that gathering system activity data from
+   vmstat and iostat is pretty time-consuming. If you try to automate the
+   gathering of system activity data, and creation of periodic repots you
+   naturally come to creation of a tool like sar. To avoid reinventing the
+   bicycle again and again, Sun engineers wrote sar (System Activity
+   Reporter) and included it in standard Solaris distribution. The rest is
+   history.
+
+     Notes:
+
+       * Linux implementation closely resembles Solaris. For details of linux
+         implementation (which is a part of sysstat package) see Linux
+         implementation of sar
+       * In addition to sar, Linux sysstat package provides several other
+         useful utilities:
+            * sadf(1) -- similar to sar but can write its data in different
+              formats (CSV, XML, etc.). This is useful to load performance
+              data into a database, or import them in a spreadsheet to make
+              graphs.
+            * iostat(1) reports CPU statistics and input/output statistics
+              for devices, partitions and network filesystems.
+            * mpstat(1) reports individual or combined processor related
+              statistics.
+            * pidstat(1) reports statistics for Linux tasks (processes) :
+              I/O, CPU, memory, etc.
+            * nfsiostat(1) reports input/output statistics for network
+              filesystems (NFS).
+            * cifsiostat(1) reports CIFS statistics.
+
+  Monitored parameters
+
+   Monitored parameters are hardwired into sar. You can monitor half-dozen
+   metrics related to overall system performance, for example:
+
+    1. cpu utilization (it's pretty effective tool for spotting CPU
+       bottlenecks)
+    2. hard disk utilization
+    3. terminal IO
+    4. number of files open
+    5. processes running
+
+   It also provides queuing, paging, CPU and several other important for
+   judging performance of the particular server metrics. Modern Unixes
+   maintains a series of system activity counters that record various
+   activities and provide those data to sar. The command merely extracts the
+   values of the counters and saves them based on the sampling rate and the
+   set of samples specified. Naturally it does it more efficiently (and
+   sometimes more correctly) then custom shell or Perl scripts.
+
+  Structure of the package
+
+   The package consists of two programs sarc and sar:
+
+     * The sadc command is a data collecting part of the package. It writes
+       in binary format to the specified output file. To run sar in real time
+       type:
+
+       sar -u 2 5
+
+       In this case the sar command calls sadc to access system data.
+
+     * To report on previously captured data – type
+       sar -u -f filename > file
+     * Two shell scripts /usr/lib/sa/sa1 and usr/ib/sa/sa2 are also provided.
+       They can be run by the cron daemon and provide daily statistics and
+       reports.
+
+  Enabling sar
+
+   Sar is not enabled by default. To enable sar, you must include invocation
+   of two of its components (sadc and sar) at selected intervals in cron.
+   Usually sadc is evoked via sa1 script and sar via sa2 script).
+
+   In Linux this is done with the installation of the package sysstat.
+
+   On Solaris 9 and 10 it is preinstalled, but you need un-comment lines in
+   the start script (/etc/rc2.d/S21perf) and crontab file
+   (/var/spool/cron/crontabs/sys) associated with the tool. If sar is
+   activated the crontab for root should contain something like this:
+
+ # Collect measurements at 10-minute intervals
+ 0,10,20,30,40,50   * * * *   /usr/lib/sa/sa1
+ # Create daily reports and purge old files
+ 0 * * *   /usr/lib/sa/sa2 -A
+
+   Note: Not all linux distributions install sysstat package which contains
+   sar by default. For example in Suse you need to install and activate
+   sysstat package manually (see also Linux implementation of sar) :
+
+     The sysstat package contains the sar, sadf, iostat, mpstat, and pidstat
+     commands for Linux. The sar command collects and reports system activity
+     information. The statistics reported by sar concern I/O transfer rates,
+     paging activity, process-related activites, interrupts, network
+     activity, memory and swap space utilization, CPU utilization, kernel
+     activities, and TTY statistics, among others. The sadf command may be
+     used to display data collected by sar in various formats. The iostat
+     command reports CPU statistics and I/O statistics for tty devices and
+     disks. The pidstat command reports statistics for Linux processes. The
+     mpstat command reports global and per-processor statistics.
+
+  SAR reports
+
+   Here we will use Linux as an example.
+
+   The utility that writes data to disk is the binary utility
+   /usr/lib64/sa/sadc It is called system activity data collector binary, and
+   it serves as a backend to the sar command (generator of human readable
+   reports).
+
+   By default /usr/lib64/sa/sadc writes binary log of kernel data to the
+   /var/log/sa/sadd file, where the dd parameter is the current day (two
+   digits in the range 01-31).
+
+   This activity is controlled by cron script sysstat, which is stored in
+   /etc/cron.d/systat and is installed with the installation of the package.
+
+   The utility /usr/bin/sar is the command that generates human readable
+   report from binary "sa" file created by utility /usr/lib64/sa/sadc
+
+   When script /usr/lib64/sa/sa2 in invoked from cron it writes report to
+   /var/log/sa directory. This "human readable" report has prefix sar and it
+   it easy to confuse it with binary files with prefix sa. I did it multiple
+   times. So it is important to understand the difference:
+
+     * Binary files created by /usr/lib64/sa/sadc have prefix sa, For example
+
+ /var/log/sa/sa05
+
+     * Reports have prefix sar, For example 
+
+ /var/log/sa/sar05
+
+   So for July 5, the report created by sar will be /var/log/sa/sar05. While
+   the source binary report is /var/log/sa/sa05
+
+   Number of days preserved are controlled by /etc/sysconfig/sysstat file.
+   Default is 28.
+
+   Daily "human readable" report typically is around 1 MB.
+
+   To print those data in human readable format from "sa" binary files you
+   need to invoke the utility sar with option -f and specify binary file in
+   question. For example:
+
+ sar -u -f  /var/log/sa/sa05 > report05
+
+  Alternative implementations
+
+   There are several alternative script/programs for reporting sar data.
+   Among them:
+
+     * BSDsar -- BSDsar is a Perl script that generates a history of usage on
+       a FreeBSD machine. It logs data such as CPU usage, disk activity,
+       network bandwidth usage and activity, NFS information, memory, and
+       swap. It is similar to atsar (for Linux) and sar (for Solaris).
+     * ksar -- ksar is a Java-based sar graphing tool that can graph Linux,
+       Mac OS X, AIX, and Solaris sar output. A sar statistics graph can be
+       output to a PDF file.
+     * Sar P Plot This one is from asar, but can be easily adapted for
+       classic sar.
+
+         Sar P Plot is a simple Perl script which takes the output of the
+         atsar application and puts it into Gnuplot data files. It can be
+         useful on server systems for performance analysis.
+
+   There are also alternative implementations:
+
+     * dstat for Linux an alternative to sar-vmstat-iostst-etc. Retronux
+
+         Written in python, dstat is a neat piece of tooling. It is a
+         monitoring tool akin to sar, iostat, vmstat, etc. It allows you to
+         measure a host of metrics. You can install it on any modern ubuntu
+         box by typing “apt-get install dstat” (and I am sure it is available
+         for any major distro).
+
+         DAG Dstat Versatile resource statistics tool
+
+         Dstat gives you detailed selective information in columns and
+         clearly indicates in what magnitude and unit the output is
+         displayed. Less confusion, less mistakes. And most importantly, it
+         makes it very easy to write plugins to collect your own counters and
+         extend in ways you never expected.
+
+       Dstat's output by default is designed for being interpreted by humans
+       in real-time, however you can export details to CSV output to a file
+       to be imported later into Gnumeric or Excel to generate graphs.
+
+       Features
+          * Combines vmstat, iostat, ifstat, netstat information and more
+          * Shows stats in exactly the same timeframe
+          * Enable/order counters as they make most sense during
+            analysis/troubleshooting
+          * Modular design
+          * Written in python so easily extendable for the task at hand
+          * Easy to extend, add your own counters (please contribute those)
+          * Includes many external plugins to show how easy it is to add
+            counters
+          * Can summarize grouped block/network devices and give total
+            numbers
+          * Can show interrupts per device
+          * Very accurate timeframes, no timeshifts when system is stressed
+          * Shows exact units and limits conversion mistakes
+          * Indicate different units with different colors
+          * Show intermediate results when delay > 1
+          * Allows to export CSV output, which can be imported in Gnumeric
+            and Excel to make graphs
+     * atsar (outdated: last updated in Jul 2004) . Atsar has the ability to
+       show what is happening on the system at a given moment. It also keeps
+       track of the past system load by maintaining history files from which
+       information can be extracted. Statistics about the utilization of
+       CPUs, disks and disk partitions, memory and swap, tty's, TCP/IP
+       (v4/v6), NFS, and FTP/HTTP traffic are gathered. Most of the
+       functionality of atsar has been incorporated in the atop project.
+
+  Side effects
+
+   Any tool that collects performance data has some impact on system
+   performance, but with sar, it seems to be minimal. Even one minute
+   sampling usually does not cause any serious issues. That may not hold true
+   on a system that is very busy.
+
+  Additional information
+
+   For more details see:
+
+     * Linux implementation of sar
+     * Solaris implementation of sar
+
+     ----------------------------------------------------------------------
+
+     ----------------------------------------------------------------------
+
+     ----------------------------------------------------------------------
+
+NEWS CONTENTS
+
+     * 20100627 : The sar command ( redbooks.ibm.com )
+     * 20100627 : Performance Analysis Tools for Linux Developers ( Jun 27,
+       2010 )
+     * 20090811 : SYSSTAT Howto A Deployment and Configuration Guide for
+       Linux Servers ( SYSSTAT Howto A Deployment and Configuration Guide for
+       Linux Servers, Aug 11, 2009 )
+     * 20090811 : Linux-101-Hacks ( Linux-101-Hacks, )
+     * 20090523 : Linux.com CLI Magic Tracking system performance with sar by
+       Keith Winston ( March 20, 2006 )
+     * 20090523 : Project details for ksar ( freshmeat.net )
+     * 20090523 : Project details for atsar ( freshmeat.net )
+     * 20090523 : Project details for Sar P Plot ( freshmeat.net )
+     * 20090523 : Project details for BSDsar ( freshmeat.net )
+     * 20090523 : Red Hat Linux-Specific Information ( Red Hat Linux-Specific
+       Information, )
+     * 20080202 : ITworld.com - UNIX SYSTEM ADMINISTRATION - Introducing SAR
+       ( ITworld.com - UNIX SYSTEM ADMINISTRATION - Introducing SAR, Feb 2,
+       2008 )
+     * 20060818 : How To Monitor A System With Sysstat On Centos 4.3
+       HowtoForge - Linux Howtos and Tutorials ( How To Monitor A System With
+       Sysstat On Centos 4.3 HowtoForge - Linux Howtos and Tutorials, Aug 18,
+       2006 )
+     * 20060818 : Optimizing AIX 5L performance Monitoring your CPU, Part 2 (
+       Optimizing AIX 5L performance Monitoring your CPU, Part 2, )
+     * 20060818 : Identifying I/O Bottlenecks Under UNIX ( Identifying I/O
+       Bottlenecks Under UNIX, )
+     * 20060228 : Easy system monitoring with SAR by Sean Walberg ( Easy
+       system monitoring with SAR, Feb 28, 2006 )
+
+Old News ;-)
+
+    [Jun 27, 2010] The sar command
+
+        redbooks.ibm.com
+
+   sg246039.pdf
+
+  The sar command only formats input generated by the sadc command (sar data
+  collector). The sadc command acquires statistics mainly from the Perfstat
+  kernel extension (kex) (see 41.1, "Perfstat API" on page 786). The operating
+  system contains a number of counters that are incremented as various system
+  actions occur. The various system counters include:
+    * System unit utilization counters
+    * Buffer use counters
+    * Disk and tape I/O activity counters
+    * tty device activity counters
+    * Switching and subroutine counters
+    * File access counters
+    * Queue activity counters
+    * Interprocess communication counters
+  The sadc command samples system data a specified number of times at a
+  specified interval measured in seconds. It writes in binary format to the
+  specified output file or to stdout. When neither the measuring interval nor
+  the interval number are specified, a dummy record, which is used at system
+  startup to mark the time when the counter restarts from zero (0), will be
+  written. 9.2 Examples
+
+    [Jun 27, 2010] Performance Analysis Tools for Linux Developers
+
+  * Part 1
+  * Part 2
+
+    [Aug 11, 2009] SYSSTAT Howto A Deployment and Configuration Guide for Linux
+    Servers
+
+  SYSSTAT is a software application comprised of several tools that offers
+  advanced system performance monitoring. It provides the ability to create a
+  measurable baseline of server performance, as well as the capability to
+  formulate, accurately assess and conclude what led up to an issue or
+  unexpected occurrence. In short, it lets you peel back layers of the system to
+  see how it's doing... in a way it is the blinking light telling you what is
+  going on, except it blinks to a file. SYSSTAT has broad coverage of
+  performance statistics and will watch the following server elements:
+    * Input/Output and transfer rate statistics (global, per device, per
+      partition, per network filesystem and per Linux task / PID)
+    * CPU statistics (global, per CPU and per Linux task / PID), including
+      support for virtualization architectures
+    * Memory and swap space utilization statistics
+    * Virtual memory, paging and fault statistics
+    * Per-task (per-PID) memory and page fault statistics
+    * Global CPU and page fault statistics for tasks and all their children
+    * Process creation activity
+    * Interrupt statistics (global, per CPU and per interrupt, including
+      potential APIC interrupt sources)
+    * Extensive network statistics: network interface activity (number of
+      packets and kB received and transmitted per second, etc.) including
+      failures from network devices; network traffic statistics for IP, TCP,
+      ICMP and UDP protocols based on SNMPv2 standards.
+    * NFS server and client activity
+    * Socket statistics
+    * Run queue and system load statistics
+    * Kernel internal tables utilization statistics
+    * System and per Linux task switching activity
+    * Swapping statistics
+    * TTY device activity
+
+   (List source - http://pagesperso-orange.fr/sebastien.godard/features.html)
+
+   Scope
+
+   This article covers a brief overview of how the SYSSTAT utility works,
+   initial configuration, deployment and testing on Linux based servers. It
+   includes an optional system configuration guide for writing SYSSTAT data
+   into a MySQL database. This article is not intended to be an in-depth
+   explanation of the inner workings of SYSSTAT, nor a detailed manual on
+   database storage operations.
+
+   Now... on to the interesting parts of SYSSTAT!
+
+   Overview
+
+   The SYSSTAT software application is composed of several utilities. Each
+   utility has a specific function:
+
+    * iostat reports CPU statistics and input/output statistics for devices,
+      partitions and network filesystems.
+    * mpstat reports individual or combined processor related statistics.
+    * pidstat reports statistics for Linux tasks (processes) : I/O, CPU, memory,
+      etc.
+    * sar collects, reports and saves system activity information (CPU, memory,
+      disks, interrupts, network interfaces, TTY, kernel tables, NFS, sockets
+      etc.)
+    * sadc is the system activity data collector, used as a backend for sar.
+    * sa1 collects and stores binary data in the system activity daily data
+      file. It is a front end to sadc designed to be run from cron.
+    * sa2 writes a summarized daily activity report. It is a front end to sar
+      designed to be run from cron.
+    * sadf displays data collected by sar in multiple formats (CSV, XML, etc.)
+      This is useful to load performance data into a database, or import them in
+      a spreadsheet to make graphs.
+
+   (List source -
+   http://pagesperso-orange.fr/sebastien.godard/documentation.html)
+
+   The four main components used in collection activities are sar, sa1, sa2
+   and cron. Sar is the system activity reporter. This tool will display
+   interpreted results from the collected data. Sar is ran interactively by
+   an administrator via command line. When a sar file is created, it is
+   written into the /var/log/sa directory and named sar##. The ## is a
+   numerical value that represents the day of the month (i.e. sa03 would be
+   the third day of the month). The numerical value changes accordingly
+   without system administrator intervention. There are many option flags to
+   choose from to display data in a sar file to view information about server
+   operations, such as cpu, network activity, NFS and sockets. These options
+   can be viewed by reviewing the man pages of sar.
+
+   Sa1 is the internal mechanism that performs the actual statistical
+   collection and writes the data to a binary file at specified times.
+   Information is culled from the /proc directory where the Linux kernel
+   writes and maintains pertinent data while the operating system is running.
+   Similar to sar, the binary file is written into /var/log/sa and named
+   sa##. Again, the ## represents the day of the month (i.e. sar03 would be
+   the third day of the month). Once more, the numerical value changes
+   accordingly without system administrator intervention.
+
+   Sa2 is responsible for converting the sa1 binary file into a human
+   readable format. Upon successful creation of the binary file sa## it
+   becomes necessary to set up a cron task that will call the sa2 libraries
+   to convert the sa1 binary file into the human-readable sar file. SYSSTAT
+   utilizes the scheduled cron command execution to draw and record specified
+   performance data based upon pre-defined parameters. It is not necessary to
+   run the sa2 cron at the same time or as often as the sa1 cron. The sa2
+   function will create and write the sar file to the /var/log/sa directory.
+
+   How often SYSSTAT "wakes up" to record and what data is captured, is
+   determined by your operational needs, regulatory requirements and purposes
+   of the server being monitored. These logs can be rotated to a central
+   logging server and stored for analysis at a later date if desired.
+
+    Linux-101-Hacks
+
+   Display CPU Statistics using Sar Command
+
+   #
+
+  sar –u
+
+   Linux 2.6.9-42.ELsmp (dev-db) 01/01/2009
+
+   12:00:01 AM CPU %user %nice %system %iowait %idle
+
+   12:05:01 AM all 3.70 0.00 0.85 0.00 95.45
+
+   12:10:01 AM all 4.59 0.00 1.19 0.06 94.16
+
+   12:15:01 AM all 3.90 0.00 0.95 0.04 95.11
+
+   12:20:01 AM all 4.06 0.00 1.00 0.01 94.93
+
+   12:25:01 AM all 3.89 0.00 0.87 0.00 95.23
+
+   12:30:01 AM all 3.89 0.00 0.87 0.00 95.23
+
+   Skipped..
+
+   Average: all 4.56 0.00 1.00 0.15 94.29
+
+   Note:
+
+  If you need a break down of the performance data for the individual CPU's,
+  execute the following command.
+
+   # sar -u -P ALL
+
+   Display Disk IO Statistics using sar command
+
+   #
+
+  sar –d
+
+   Linux 2.6.9-42.ELsmp (dev-db) 01/01/2009
+
+   12:00:01 AM DEV tps rd_sec/s wr_sec/s
+
+   12:05:01 AM dev2-0 1.65 1.28 45.43
+
+   12:10:01 AM dev8-1 4.08 8.11 21.81
+
+   Skipped..
+
+   Average: dev2-0 4.66 120.77 69.45
+
+   Average: dev8-1 1.89 3.17 8.02
+
+   Display networking Statistics using sar command
+
+   #
+
+  sar -n DEV | more
+
+   Linux 2.6.9-42.ELsmp (dev-db) 01/01/2009
+
+   12:00:01 AM IFACE rxpck/s txpck/s rxbyt/s txbyt/s rxcmp/s txcmp/
+
+   s rxmcst/s
+
+   12:05:01 AM lo 0.17 0.16 25.31 23.33 0.00 0.0
+
+   0 0.00
+
+   12:10:01 AM eth0 52.92 53.64 10169.74 12178.57 0.00 0.0
+
+   0 0.00
+
+   #
+
+  sar -n SOCK |more
+
+   Linux 2.6.9-42.ELsmp (dev-db) 01/01/2009
+
+   12:00:01 AM totsck tcpsck udpsck rawsck ip-frag
+
+   12:05:01 AM 50 13 3 0 0
+
+   12:10:01 AM 50 13 4 0 0
+
+    [May 23, 2009] Linux.com CLI Magic Tracking system performance with sar By
+    Keith Winston
+
+        March 20, 2006
+
+  Sadc (system activity data collector) is the program that gathers performance
+  data. It pulls its data out of the virtual /proc filesystem, then it saves the
+  data in a file (one per day) named /var/log/sa/saDD where DD is the day of the
+  month.
+
+   Two shell scripts from the sysstat package control how the data collector
+   is run. The first script, sa1, controls how often data is collected, while
+   sa2 creates summary reports (one per day) in /var/log/sa/sarDD. Both
+   scripts are run from cron. In the default configuration, data is collected
+   every 10 minutes and summarized just before midnight.
+
+   If you suspect a performance problem with a particular program, you can
+   use sadc to collect data on a particular process (with the -x argument),
+   or its children (-X), but you will need to set up a custom script using
+   those flags.
+
+   As Dr. Heisenberg showed, the act of measuring something changes it. Any
+   tool that collects performance data has some overall negative impact on
+   system performance, but with sar, the impact seems to be minimal. I ran a
+   test with the sa1 cron job set to gather data every minute (on a server
+   that was not busy) and it didn't cause any serious issues. That may not
+   hold true on a busy system.
+
+   Creating reports
+
+   If the daily summary reports created by the sa2 script are not enough, you
+   can create your own custom reports using sar. The sar program reads data
+   from the current daily data file unless you specify otherwise. To have sar
+   read a particular data file, use the -f /var/log/sa/saDD option. You can
+   select multiple files by using multiple -f options. Since many of sar's
+   reports are lengthy, you may want to pipe the output to a file.
+
+   To create a basic report showing CPU usage and I/O wait time percentage,
+   use sar with no flags. It produces a report similar to this:
+
+ 01:10:00 PM       CPU     %user     %nice   %system   %iowait     %idle
+ 01:20:00 PM       all      7.78      0.00      3.34     20.94     67.94
+ 01:30:00 PM       all      0.75      0.00      0.46      1.71     97.08
+ 01:40:00 PM       all      0.65      0.00      0.48      1.63     97.23
+ 01:50:00 PM       all      0.96      0.00      0.74      2.10     96.19
+ 02:00:00 PM       all      0.58      0.00      0.54      1.87     97.01
+ 02:10:00 PM       all      0.80      0.00      0.60      1.27     97.33
+ 02:20:01 PM       all      0.52      0.00      0.37      1.17     97.94
+ 02:30:00 PM       all      0.49      0.00      0.27      1.18     98.06
+ Average:          all      1.85      0.00      0.44      2.56     95.14
+
+   If the %idle is near zero, your CPU is overloaded. If the %iowait is
+   large, your disks are overloaded.
+
+   To check the kernel's paging performance, use sar -B, which will produce a
+   report similar to this:
+
+ 11:00:00 AM  pgpgin/s pgpgout/s   fault/s  majflt/s
+ 11:10:00 AM      8.90     34.08      0.00      0.00
+ 11:20:00 AM      2.65     26.63      0.00      0.00
+ 11:30:00 AM      1.91     34.92      0.00      0.00
+ 11:40:01 AM      0.26     36.78      0.00      0.00
+ 11:50:00 AM      0.53     32.94      0.00      0.00
+ 12:00:00 PM      0.17     30.70      0.00      0.00
+ 12:10:00 PM      1.22     27.89      0.00      0.00
+ 12:20:00 PM      4.11    133.48      0.00      0.00
+ 12:30:00 PM      0.41     31.31      0.00      0.00
+ Average:       130.91     27.04      0.00      0.00
+
+   Raw paging numbers may not be of concern, but a high number of major
+   faults (majflt/s) indicate that the system needs more memory. Note that
+   majflt/s is only valid with kernel versions 2.5 and later.
+
+   For network statistics, use sar -n DEV. The -n DEV option tells sar to
+   generate a report that shows the number of packets and bytes sent and
+   received for each interface. Here is an abbreviated version of the report:
+
+ 11:00:00 AM     IFACE   rxpck/s   txpck/s   rxbyt/s   txbyt/s
+ 11:10:00 AM        lo      0.62      0.62     35.03     35.03
+ 11:10:00 AM      eth0     29.16     36.71   4159.66  34309.79
+ 11:10:00 AM      eth1      0.00      0.00      0.00      0.00
+ 11:20:00 AM        lo      0.29      0.29     15.85     15.85
+ 11:20:00 AM      eth0     25.52     32.08   3535.10  29638.15
+ 11:20:00 AM      eth1      0.00      0.00      0.00      0.00
+
+   To see network errors, try sar -n EDEV, which shows network failures.
+
+   Reports on current activity
+
+   Sar can also be used to view what is happening with a specific subsystem,
+   such as networking or I/O, almost in real time. By passing a time interval
+   (in seconds) and a count for the number of reports to produce, you can
+   take an immediate snapshot of a system to find a potential bottleneck.
+
+   For example, to see the basic report every second for the next 10 seconds,
+   use sar 1 10. You can run any of the reports this way to see near
+   real-time results.
+
+   Benchmarking
+
+   Even if you have plenty of horsepower to run your applications, you can
+   use sar to track changes in the workload over time. To do this, save the
+   summary reports (sar only saves seven) to a different directory over a
+   period of a few weeks or a month. This set of reports can serve as a
+   baseline for the normal system workload. Then compare new reports against
+   the baseline to see how the workload is changing over time. You can
+   automate your comparison reports with AWK or your favorite programming
+   language.
+
+   In large systems management, benchmarking is important to predict when and
+   how hardware should be upgraded. It also provides ammunition to justify
+   your hardware upgrade requests.
+
+   Digging deeper
+
+   In my experience, most hardware performance problems are related to the
+   disks, memory, or CPU. Perhaps more frequently, application programming
+   errors or poorly designed databases cause serious performance issues.
+
+   Whatever the problems, sar and friends can give you a comprehensive view
+   of how things are working and help track down bottlenecks to fix a
+   sluggish system. The examples here just scratch the surface of what sar
+   can do. If you take a look at the man pages, it should be easy to
+   customize a set of reports for your needs.
+
+    Project details for ksar
+
+      Java-based
+
+        freshmeat.net
+
+   ksar is a sar graphing tool that can graph Linux, Mac OS X, AIX, and
+   Solaris sar output. A sar statistics graph can be output to a PDF file.
+
+    Project details for atsar
+
+        freshmeat.net
+
+   The atsar command can be used to detect performance bottlenecks on Linux
+   systems. It is similar to the sar command on other UNIX platforms. Atsar
+   has the ability to show what is happening on the system at a given moment.
+   It also keeps track of the past system load by maintaining history files
+   from which information can be extracted. Statistics about the utilization
+   of CPUs, disks and disk partitions, memory and swap, tty's, TCP/IP
+   (v4/v6), NFS, and FTP/HTTP traffic are gathered. Most of the functionality
+   of atsar has been incorporated in the atop project.
+
+   Author:
+   Gerlof Langeveld [contact developer]
+
+    Project details for Sar P Plot
+
+      Perl based
+
+        freshmeat.net
+
+   Sar P Plot is a simple application which takes the output of the atsar
+   application and puts it into Gnuplot data files. It can be useful on
+   server systems for performance analysis.
+
+    Project details for BSDsar
+
+      Perl scripts for processing sar data
+
+        freshmeat.net
+
+   BSDsar generates a history of usage on a FreeBSD machine. It logs data
+   such as CPU usage, disk activity, network bandwidth usage and activity,
+   NFS information, memory, and swap. It is similar to atsar (for Linux) and
+   sar (for Solaris).
+
+    Red Hat Linux-Specific Information
+
+   2.5.4.3. The sadc command
+
+   As stated earlier, the sadc command collects system utilization data and
+   writes it to a file for later analysis. By default, the data is written to
+   files in the /var/log/sa/ directory. The files are named sa<dd>, where
+   <dd> is the current day's two-digit date.
+
+   sadc is normally run by the sa1 script. This script is periodically
+   invoked by cron via the file sysstat, which is located in /etc/crond.d.
+   The sa1 script invokes sadc for a single one-second measuring interval. By
+   default, cron runs sa1 every 10 minutes, adding the data collected during
+   each interval to the current /var/log/sa/sa<dd> file.
+
+   2.5.4.4. The sar command
+
+   The sar command produces system utilization reports based on the data
+   collected by sadc. As configured in Red Hat Linux, sar is automatically
+   run to process the files automatically collected by sadc. The report files
+   are written to /var/log/sa/ and are named sar<dd>, where <dd> is the
+   two-digit representations of the previous day's two-digit date.
+
+   sar is normally run by the sa2 script. This script is periodically invoked
+   by cron via the file sysstat, which is located in /etc/crond.d. By
+   default, cron runs sa2 once a day at 23:53, allowing it to produce a
+   report for the entire day's data.
+
+   2.5.4.4.1. Reading sar Reports
+
+   The format of a sar report produced by the default Red Hat Linux
+   configuration consists of multiple sections, with each section containing
+   a specific type of data, ordered by the time of day that the data was
+   collected. Since sadc is configured to perform a one-second measurement
+   interval every ten minutes, the default sar reports contain data in
+   ten-minute increments, from 00:00 to 23:50[2].
+
+   Each section of the report starts with a heading that illustrates the data
+   contained in the section. The heading is repeated at regular intervals
+   throughout the section, making it easier to interpret the data while
+   paging through the report. Each section ends with a line containing the
+   average of the data reported in that section.
+
+   Here is a sample section sar report, with the data from 00:30 through
+   23:40 removed to save space:
+
+ 00:00:01          CPU     %user     %nice   %system     %idle
+ 00:10:00          all      6.39      1.96      0.66     90.98
+ 00:20:01          all      1.61      3.16      1.09     94.14
+ …
+ 23:50:01          all     44.07      0.02      0.77     55.14
+ Average:          all      5.80      4.99      2.87     86.34
+            
+
+   In this section, CPU utilization information is displayed. This is very
+   similar to the data displayed by iostat.
+
+   Other sections may have more than one line's worth of data per time, as
+   shown by this section generated from CPU utilization data collected on a
+   dual-processor system:
+
+ 00:00:01          CPU     %user     %nice   %system     %idle
+ 00:10:00            0      4.19      1.75      0.70     93.37
+ 00:10:00            1      8.59      2.18      0.63     88.60
+ 00:20:01            0      1.87      3.21      1.14     93.78
+ 00:20:01            1      1.35      3.12      1.04     94.49
+ …
+ 23:50:01            0     42.84      0.03      0.80     56.33
+ 23:50:01            1     45.29      0.01      0.74     53.95
+ Average:            0      6.00      5.01      2.74     86.25
+ Average:            1      5.61      4.97      2.99     86.43
+            
+
+   There are a total of seventeen different sections present in reports
+   generated by the default Red Hat Linux sar configuration; many are
+   discussing in upcoming chapters. For more information about the data
+   contained in each section, see the sar(1) man page.
+
+  Notes
+
+    [Feb 2, 2008] ITworld.com - UNIX SYSTEM ADMINISTRATION - Introducing SAR
+
+   An underused tool for looking into system performance, the sar command
+   samples system activity counters available in the Unix kernel and prepares
+   reports. Like most tools for measuring performance, sar provides a lot of
+   data but little analysis, which probably explains why it doesn't get much
+   more of a workout. It's up to the user to interpret the numbers and
+   determine how a system is performing (or what is slowing it down).
+
+   Some companies bridge the gap between an excessive amount of available
+   data and the bottom line system performance by creating or employing
+   evaluation tools for the raw numbers and preparing a report that provides
+   conclusions, not just numbers. SarCheck (a tool available from Aptitune
+   Corporation) is one such tool. It provides some of the performance
+   insights that might otherwise only be available to those staffs blessed by
+   the presence of a performance specialist.
+
+   The sar command can be thought of as running in two modes: interactive or
+   "real-time". "Real-time" mode reports on the system's current activity and
+   "historical", which uses data previously collected and stored in log
+   files. In both cases, the reports reflect data that is routinely collected
+   in the kernel but, in the latter case, this data is sampled and stored so
+   that past performance can be analyzed.
+
+   sar is not strictly a Solaris tool, either. It's available in other
+   flavors of Unix as well, though configuration and default behavior may
+   vary between implementations. RedHat Linux systems collect system activity
+   data routinely and save it in files in the /var/log/sa directory. Solaris
+   systems come prepared for running sar in either mode, but collection of
+   data in performance logs must be specifically invoked by un-commenting
+   lines in the start script (/etc/rc2.d/S21perf) and crontab file
+   (/var/spool/cron/crontabs/sys) associated with the tool.
+
+   The Solaris package containing the sar commands is called SUNWaccu. The
+   interactive and historical versions of the sar command differ only in
+   where the data is coming from -- from the kernel moment by moment or from
+   one of the log files containing previously collected performance data.
+
+    [Aug 18, 2006] How To Monitor A System With Sysstat On Centos 4.3 HowtoForge
+    - Linux Howtos and Tutorials
+
+  A common task for System Administrators is to monitor and care for a server.
+  That's fairly easy to do at a moment's notice, but how to keep a record of
+  this information over time? One way to monitor your server is to use the
+  Sysstat package.
+
+   Sysstat is actually a collection of utilities designed to collect
+   information about the performance of a linux installation, and record them
+   over time.
+
+   It's fairly easy to install too, since it is included as a package on many
+   distributions.
+
+   To install on Centos 4.3, just type the following:
+
+   yum install sysstat
+
+   We now have the sysstat scripts installed on the system. Lets try the sar
+   command.
+
+   sar
+
+ Linux 2.6.16-xen (xen30)        08/17/2006
+
+ 11:00:02 AM       CPU     %user     %nice   %system   %iowait     %idle
+ 11:10:01 AM       all      0.00      0.00      0.00      0.00     99.99
+ Average:          all      0.00      0.00      0.00      0.00     99.99
+
+   Several bits of information, such as Linux kernel, hostname, and date are
+   reported.
+   More importantly, the various ways CPU time being spent on the system is
+   shown.
+
+    * %user, %nice, %system, %iowait, and %idle describe ways that the CPU may
+      be utilized.
+    * %user and %nice refer to your software programs, such as MySQL or Apache.
+    * %system refers to the kernel's internal workings.
+    * %iowait is time spent waiting for Input/Output, such as a disk read or
+      write. Finally, since the kernel accounts for 100% of the runnable time it
+      can schedule, any unused time goes into %idle.
+
+   The information above is shown for a 1 second interval. How can we keep
+   track of that information over time?
+
+   If our system was consistently running heavy in %iowait, we might surmise
+   that a disk was getting overloaded, or going bad.
+
+   At least, we would know to investigate.
+
+   So how do we track the information over time? We can schedule sar to run
+   at regular intervals, say, every 10 minutes.
+
+   We then direct it to send the output to sysstat's special log files for
+   later reports.
+   The way to do this is with the Cron daemon.
+
+   By creating a file called sysstat in /etc/cron.d, we can tell cron to run
+   sar every day.
+   Fortunately, the Systat package that yum installed already did this step
+   for us.
+
+   more /etc/cron.d/sysstat
+
+ # run system activity accounting tool every 10 minutes
+ */10 * * * * root /usr/lib/sa/sa1 1 1
+ # generate a daily summary of process accounting at 23:53
+ 53 23 * * * root /usr/lib/sa/sa2 -A
+
+   The sa1 script logs sar output into sysstatâ€™s binary log file format,
+   and sa2 reports it back in human readable format. The report is written to
+   a file in /var/log/sa.
+
+   ls /var/log/sa
+
+ sa17  sar17
+
+   sa17 is the binary sysstat log, sar17 is the report. (Today's date is the
+   17th)
+
+   There is quite alot of information contained in the sar report, but there
+   are a few values that can tell us how busy the server is.
+
+   Values to watch are swap usage, disk IO wait, and the run queue. These can
+   be obtained by running sar manually, which will report on those values.
+
+   sar
+
+ Linux 2.6.16-xen (xen30)        08/17/2006
+
+ 11:00:02 AM       CPU     %user     %nice   %system   %iowait     %idle
+ 11:10:01 AM       all      0.00      0.00      0.00      0.00     99.99
+ 11:20:01 AM       all      0.00      0.00      0.00      0.00    100.00
+ 11:30:02 AM       all      0.01      0.26      0.19      1.85     97.68
+ 11:39:20 AM       all      0.00      2.41      2.77      0.53     94.28
+ 11:40:01 AM       all      1.42      0.00      0.18      3.24     95.15
+ Average:          all      0.03      0.62      0.69      0.64     98.02
+
+   There were a few moments where of disk activity was high in the %iowait
+   column, but it didn't stay that way for too long. An average of 0.64 is
+   pretty good.
+
+   How about my swap usage, am I running out of Ram? Being swapped out is
+   normal for the Linux kernel, which will swap from time to time. Constant
+   swapping is bad, and generally means you need more Ram.
+
+   sar -W
+
+ Linux 2.6.16-xen (xen30)        08/17/2006
+
+ 11:00:02 AM  pswpin/s pswpout/s
+ 11:10:01 AM      0.00      0.00
+ 11:20:01 AM      0.00      0.00
+ 11:30:02 AM      0.00      0.00
+ 11:39:20 AM      0.00      0.00
+ 11:40:01 AM      0.00      0.00
+ 11:50:01 AM      0.00      0.00
+ Average:         0.00      0.00
+
+   Nope, we are looking good. No persistant swapping has taken place.
+
+   How about system load? Are my processes waiting too long to run on the
+   CPU?
+
+   sar -q
+
+ Linux 2.6.16-xen (xen30)        08/17/2006
+
+ 11:00:02 AM   runq-sz  plist-sz   ldavg-1   ldavg-5  ldavg-15
+ 11:10:01 AM         0        47      0.00      0.00      0.00
+ 11:20:01 AM         0        47      0.00      0.00      0.00
+ 11:30:02 AM         0        47      0.28      0.21      0.08
+ 11:39:20 AM         0        45      0.01      0.24      0.17
+ 11:40:01 AM         0        46      0.07      0.22      0.17
+ 11:50:01 AM         0        46      0.00      0.02      0.07
+ Average:            0        46      0.06      0.12      0.08
+
+   No, an average load of .06 is really good. Notice that there is a 1, 5,
+   and 15 minute interval on the right.
+
+   Having the three time intervals gives you a feel for how much load the
+   system is carrying.
+   A 3 or 4 in the 1 minute average is ok, but the same number in the 15
+   minute
+   column may indicate that work is not clearing out, and that a closer look
+   is warranted.
+
+   This was a short look at the Sysstat package.
+
+   We only looked at the out put of three of sar's attributes, but there are
+   others.
+   Now, armed with sar in your toolbox, your system administration job just
+   became a little easier.
+
+  This page is released into the public domain.
+
+    Optimizing AIX 5L performance Monitoring your CPU, Part 2
+
+   Using sar
+
+   The next command, sar, is the UNIX System Activity Reporting tool (part of
+   the bos.acct fileset). It has been around for what seems like forever in
+   the UNIX world. This command essentially writes to standard output the
+   contents of the cumulative activity, which you would have selected as its
+   flag. For example, the following command using the -u flag reports CPU
+   statistics. As with vmstat, if you are using shared partitioning in a
+   virtualized environment, it reports back two additional columns of
+   information; physc and entc, which define the number of physical
+   processors consumed by the partitions as well as the percentage of
+   entitled capacity utilized.
+
+   I ran this command on the system (see Listing 3) when there were no users
+   around. Unless there were some batch jobs running, I would not expect to
+   see a lot of activity.
+
+   Listing 3. Running sar with no users around
+
+                
+ # sar -u 1 5 (or sar 1 5)
+
+ AIX test01 3 5     03/18/07
+
+ System configuration: lcpu=2
+
+ 17:36:53    %usr    %sys    %wio   %idle   physc
+ 17:36:54       0       0       0     100    2.00
+ 17:36:55       1       0       0     99     2.00
+ 17:36:56       0       0       0     100    2.00
+ 17:36:57       0       0       0     100    2.00
+ 17:36:58       0       0       0     100    2.00
+
+ Average        0       0       0     100    2.00
+
+   Clearly, this system also shows no CPU bottleneck to speak of.
+
+   The columns used above are similar to vmstat entry outputs. The following
+   table correlates sar and vmstat descriptives (see Table 1).
+
+   Table 1. sar output fields and the corresponding vmstat field
+
+  sar   vmstat 
+  %usr  us     
+  %sys  sy     
+  %wio  wa     
+  %idle id     
+
+   One of the reasons I prefer vmstat to sar is that it gives you the CPU
+   utilization information, and it provides overall monitoring information on
+   memory and I/O. With sar, you need to run separate commands to pull the
+   information. One advantage that sar gives you is the ability to capture
+   daily information and to run reports on this information (without writing
+   your own script to do so). It does this by using a process called the
+   System Activity Data Collector, which is essentially a back-end to the sar
+   command. When enabled, usually through cron (on a default AIX partition,
+   you would usually find it commented out), it collects data periodically in
+   binary format.
+
+    [PDF] Identifying I/O Bottlenecks Under UNIX
+
+    [Feb 28, 2006] Easy system monitoring with SAR by Sean Walberg
+
+   www.ibm.com/developerworks
+
+   Extracting useful information
+
+   Data is being collected, but it must be queried to be useful. Running the
+   sar command without options generates basic statistics about CPU usage for
+   the current day. Listing 2 shows the output of sar without any parameters.
+   (You might see different column names depending on the platform. In some
+   UNIX flavors, sadc collects more or less data based on what's available.)
+   The examples here are from Sun Solaris 10; whatever platform you're using
+   will be similar, but might have slightly different column names.
+
+  Listing 2. Default output of sar (showing CPU usage
+
+ -bash-3.00$ sar
+
+ SunOS unknown 5.10 Generic_118822-23 sun4u    01/20/2006
+
+ 00:00:01    %usr    %sys    %wio   %idle
+ 00:10:00       0       0       0     100
+ . cut ...
+ 09:30:00       4      47       0      49
+
+ Average        0       1       0      98
+
+   Each line in the output of sar is a single measurement, with the timestamp
+   in the left-most column. The other columns hold the data. (These columns
+   vary depending on the command-line arguments you use.) In Listing 2, the
+   CPU usage is broken into four categories:
+
+    * %usr: The percentage of time the CPU is spending on user processes, such
+      as applications, shell scripts, or interacting with the user.
+    * %sys: The percentage of time the CPU is spending executing kernel tasks.
+      In this example, the number is high, because I was pulling data from the
+      kernel's random number generator.
+    * %wio: The percentage of time the CPU is waiting for input or output from a
+      block device, such as a disk.
+    * %idle: The percentage of time the CPU isn't doing anything useful.
+
+   The last line is an average of all the datapoints. However, because most
+   systems experience busy periods followed by idle periods, the average
+   doesn't tell the entire story.
+
+   Watching disk activity
+
+   Disk activity is also monitored. High disk usage means that there will be
+   a greater chance that an application requesting data from disk will block
+   (pause) until the disk is ready for that process. The solution typically
+   involves splitting file systems across disks or arrays; however, the first
+   step is to know that you have a problem.
+
+   The output of sar -d shows various disk-related statistics for one
+   measurement period. For the sake of brevity, Listing 3 shows only hard
+   disk drive activity.
+
+   Listing 3. Output of sar -d (showing disk activity)
+
+ $ sar -d
+
+ SunOS unknown 5.10 Generic_118822-23 sun4u    01/22/2006
+
+ 00:00:01   device       %busy   avque   r+w/s  blks/s  avwait  avserv
+ . cut ...
+ 14:00:02   dad0             31     0.6      78   16102     1.9     5.3
+            dad0,c            0     0.0       0       0     0.0     0.0
+            dad0,h           31     0.6      78   16102     1.9     5.3
+            dad1              0     0.0       0       1     1.6     1.3
+            dad1,a            0     0.0       0       1     1.6     1.3
+            dad1,b            0     0.0       0       0     0.0     0.0
+            dad1,c            0     0.0       0       0     0.0     0.0
+
+   As in the previous example, the time is along the left. The other columns
+   are as follows:
+
+    * device: This is the disk, or disk partition, being measured. In Sun
+      Solaris, you must translate this disk into a physical disk by looking up
+      the reported name in /etc/path_to_inst, and then cross-reference that
+      information to the entries in /dev/dsk. In Linux®, the major and minor
+      numbers of the disk device are used.
+    * %busy: This is the percentage of time the device is being read from or
+      written to.
+    * avque: This is the average depth of the queue that is used to serialize
+      disk activity. The higher the avque value, the more blocking is occurring.
+    * r+w/s, blks/s: This is disk activity per second in terms of read or write
+      operations and disk blocks, respectively.
+    * avwait: This is the average time (in milliseconds) that a disk read or
+      write operation waits before it is performed.
+    * avserv: This is the average time (in milliseconds) that a disk read or
+      write operation takes to execute.
+
+   Some of these numbers, such as avwait and avserv values, correlate
+   directly into user experience. High wait times on the disk likely point to
+   several people contending for the disk, which should be confirmed with
+   high avque numbers. High avserv values point to slow disks.
+
+   Other metrics
+
+   Many other items are collected, with corresponding arguments to view them:
+
+    * The -b argument shows information on buffers and the efficiency of using a
+      buffer versus having to go to disk.
+    * The -c argument shows system calls broken down into some of the popular
+      calls, such as fork(), exec(), read(), and write(). High process creation
+      can lead to poor performance and is a sign that you might need to move
+      some applications to another computer.
+    * The -g, -p, and -w arguments show paging (swapping) activity. High paging
+      is a sign of memory starvation. In particular, the -w argument shows the
+      number of process switches: A high number can mean too many things are
+      running on the computer, which is spending more time switching than
+      working.
+    * The -q argument shows the size of the run queue, which is the same as the
+      load average for the time.
+    * The -r argument shows free memory and swap space over time.
+
+   Each UNIX flavor implements its own set of measurements and command-line
+   arguments for sar. Those I've shown are common and represent the elements
+   that I find more useful.
+
+Recommended Links
+
+  Softpanorama Recommended
+
+  Top articles
+
+  Sites
+
+    Sar in UNIX - Wikipedia, the free encyclopedia
+
+    SYSSTAT
+
+   This page has news, information, documentation and links software for the
+   sysstat utilities that I created for Linux. The sysstat utilities are a
+   collection of performance monitoring tools for Linux. These include sar,
+   sadf, mpstat, iostat, pidstat and sa tools. Go to the Features page to
+   display a list of sysstat's features, or see the Documentation page to
+   learn some more about them.
+
+    Easy system monitoring with SAR by
+
+        Feb 28, 2006 | IBM DeveloperWorks
+
+    How To Monitor A System With Sysstat On Centos 4.3 HowtoForge - Linux Howtos
+    and Tutorials by Quantact-Tim
+
+    Linux.com CLI Magic Tracking system performance with sar
+
+    ITworld.com - UNIX SYSTEM ADMINISTRATION - Introducing SAR
+
+    [PDF] Solaris Performance monitoring - sar - NCCCS Systems Office Wiki
+
+    freshmeat.net Project details for BSDsar
+
+   BSDsar generates a history of usage on a FreeBSD machine. It logs data
+   such as CPU usage, disk activity, network bandwidth usage and activity,
+   NFS information, memory, and swap. It is similar to atsar (for Linux) and
+   sar (for Solaris).
+
+    freshmeat.net Project details for atsar
+
+  The atsar command can be used to detect performance bottlenecks on Linux
+  systems. It is similar to the sar command on other UNIX platforms. Atsar has
+  the ability to show what is happening on the system at a given moment. It also
+  keeps track of the past system load by maintaining history files from which
+  information can be extracted. Statistics about the utilization of CPUs, disks
+  and disk partitions, memory and swap, tty's, TCP/IP (v4/v6), NFS, and FTP/HTTP
+  traffic are gathered. Most of the functionality of atsar has been incorporated
+  in the atop project.
+
+   Author:
+   Gerlof Langeveld [contact developer]
+
+Sar Report Generators
+
+    freshmeat.net Project details for Sar P Plot
+
+   Sar P Plot is a simple application which takes the output of the atsar
+   application and puts it into Gnuplot data files. It can be useful on
+   server systems for performance analysis.
+
+    freshmeat.net Project details for BSDsar
+
+      Perl scripts for processing sar data
+
+   BSDsar generates a history of usage on a FreeBSD machine. It logs data
+   such as CPU usage, disk activity, network bandwidth usage and activity,
+   NFS information, memory, and swap. It is similar to atsar (for Linux) and
+   sar (for Solaris).
+
+Reference
+
+    Solaris troubleshooting - sar
+
+   The word "sar" is used to refer to two related items:
+
+   1. The system activity report package
+   2. The system activity reporter
+
+   System Activity Report Package
+
+  This facility stores a great deal of performance data about a system. This
+  information is invaluable when attempting to identify the source of a
+  performance problem.
+
+   The Report Package can be enabled by uncommenting the appropriate lines in
+   the sys crontab. The sa1 program stores performance data in the
+   /var/adm/sa directory. sa2 writes reports from this data, and sadc is a
+   more general version of sa1.
+
+   In practice, I do not find that the sa2-produced reports are terribly
+   useful in most cases. Depending on the issue being examined, it may be
+   sufficient to run sa1 at intervals that can be set in the sys crontab.
+
+   Alternatively, sar can be used on the command line to look at performance
+   over different time slices or over a constricted period of time:
+
+   sar -A -o outfile 5 2000
+
+   (Here, "5" represents the time slice and "2000" represents the number of
+   samples to be taken. "outfile" is the output file where the data will be
+   stored.)
+
+   The data from this file can be read by using the "-f" option (see below).
+
+   System Activity Reporter
+
+  sar has several options that allow it to process the data collected by sa1 in
+  different ways:
+    * -a: Reports file system access statistics. Can be used to look at issues
+      related to the DNLC.
+         * iget/s: Rate of requests for inodes not in the DNLC. An iget will be
+           issued for each path component of the file's path.
+         * namei/s: Rate of file system path searches. (If the directory name is
+           not in the DNLC, iget calls are made.)
+         * dirbk/s: Rate of directory block reads.
+    * -A: Reports all data.
+    * -b: Buffer activity reporter:
+         * bread/s, bwrit/s: Transfer rates (per second) between system buffers
+           and block devices (such as disks).
+         * lread/s, lwrit/s: System buffer access rates (per second).
+         * %rcache, %wcache: Cache hit rates (%).
+         * pread/s, pwrit/s: Transfer rates between system buffers and character
+           devices.
+    * -c: System call reporter:
+         * scall/s: System call rate (per second).
+         * sread/s, swrit/s, fork/s, exec/s: Call rate for these calls (per
+           second).
+         * rchar/s, wchar/s: Transfer rate (characters per second).
+    * -d: Disk activity (actually, block device activity):
+         * %busy: % of time servicing a transfer request.
+         * avque: Average number of outstanding requests.
+         * r+w/s: Rate of reads+writes (transfers per second).
+         * blks/s: Rate of 512-byte blocks transferred (per second).
+         * avwait: Average wait time (ms).
+         * avserv: Average service time (ms). (For block devices, this includes
+           seek rotation and data transfer times. Note that the iostat svc_t is
+           equivalent to the avwait+avserv.)
+    * -e HH:MM: CPU useage up to time specified.
+    * -f filename: Use filename as the source for the binary sar data. The
+      default is to use today's file from /var/adm/sa.
+    * -g: Paging activity (see "Paging" for more details):
+         * pgout/s: Page-outs (requests per second).
+         * ppgout/s: Page-outs (pages per second).
+         * pgfree/s: Pages freed by the page scanner (pages per second).
+         * pgscan/s: Scan rate (pages per second).
+         * %ufs_ipf: Percentage of UFS inodes removed from the free list while
+           still pointing at reuseable memory pages. This is the same as the
+           percentage of igets that force page flushes.
+    * -i sec: Set the data collection interval to i seconds.
+    * -k: Kernel memory allocation:
+         * sml_mem: Amount of virtual memory available for the small pool
+           (bytes). (Small requests are less than 256 bytes)
+         * lg_mem: Amount of virtual memory available for the large pool
+           (bytes). (512 bytes-4 Kb)
+         * ovsz_alloc: Memory allocated to oversize requests (bytes). Oversize
+           requests are dynamically allocated, so there is no pool. (Oversize
+           requests are larger than 4 Kb)
+         * alloc: Amount of memory allocated to a pool (bytes). The total KMA
+           useage is the sum of these columns.
+         * fail: Number of requests that failed.
+    * -m: Message and semaphore activities.
+         * msg/s, sema/s: Message and semaphore statistics (operations per
+           second).
+    * -o filename: Saves output to filename.
+    * -p: Paging activities.
+         * atch/s: Attaches (per second). (This is the number of page faults
+           that are filled by reclaiming a page already in memory.)
+         * pgin/s: Page-in requests (per second) to file systems.
+         * ppgin/s: Page-ins (per second). (Multiple pages may be affected by a
+           single request.)
+         * pflt/s: Page faults from protection errors (per second).
+         * vflts/s: Address translation page faults (per second). (This happens
+           when a valid page is not in memory. It is comparable to the
+           vmstat-reported page/mf value.)
+         * slock/s: Faults caused by software lock requests that require
+           physical I/O (per second).
+    * -q: Run queue length and percentage of the time that the run queue is
+      occupied.
+    * -r: Unused memory pages and disk blocks.
+         * freemem: Pages available for use (Use pagesize to determine the size
+           of the pages).
+         * freeswap: Disk blocks available in swap (512-byte blocks).
+    * -s time: Start looking at data from time onward.
+    * -u: CPU utilization.
+         * %usr: User time.
+         * %sys: System time.
+         * %wio: Waiting for I/O (does not include time when another process
+           could be schedule to the CPU).
+         * %idle: Idle time.
+    * -v: Status of process, inode, file tables.
+         * proc-sz: Number of process entries (proc structures) currently in
+           use, compared with max_nprocs.
+         * inod-sz: Number of inodes in memory compared with the number
+           currently allocated in the kernel.
+         * file-sz: Number of entries in and size of the open file table in the
+           kernel.
+         * lock-sz: Shared memory record table entries currently used/allocated
+           in the kernel. This size is reported as 0 for standards compliance
+           (space is allocated dynamically for this purpose).
+         * ov: Overflows between sampling points.
+    * -w: System swapping and switching activity.
+         * swpin/s, swpot/s, bswin/s, bswot/s: Number of LWP transfers or
+           512-byte blocks per second.
+         * pswch/s: Process switches (per second).
+    * -y: TTY device activity.
+         * rawch/s, canch/s, outch/s: Input character rate, character rate
+           processed by canonical queue, output character rate.
+         * rcvin/s, xmtin/s, mdmin/s: Receive, transmit and modem interrupt
+           rates.
+
+     ----------------------------------------------------------------------
+
+Etc
+
+                                    Society
+
+   Groupthink : Two Party System as Polyarchy : Corruption of Regulators :
+   Bureaucracies : Understanding Micromanagers and Control Freaks : Toxic
+   Managers : Harvard Mafia : Diplomatic Communication : Surviving a Bad
+   Performance Review : Insufficient Retirement Funds as Immanent Problem of
+   Neoliberal Regime : PseudoScience : Who Rules America : Neoliberalism :
+   The Iron Law of Oligarchy : Libertarian Philosophy
+
+                                     Quotes
+
+   War and Peace : Skeptical Finance : John Kenneth Galbraith :Talleyrand :
+   Oscar Wilde : Otto Von Bismarck : Keynes : George Carlin : Skeptics :
+   Propaganda : SE quotes : Language Design and Programming Quotes : Random
+   IT-related quotes : Somerset Maugham : Marcus Aurelius : Kurt Vonnegut :
+   Eric Hoffer : Winston Churchill : Napoleon Bonaparte : Ambrose Bierce :
+   Bernard Shaw : Mark Twain Quotes
+
+                                   Bulletin:
+
+   Vol 25, No.12 (December, 2013) Rational Fools vs. Efficient Crooks The
+   efficient markets hypothesis : Political Skeptic Bulletin, 2013 :
+   Unemployment Bulletin, 2010 : Vol 23, No.10 (October, 2011) An observation
+   about corporate security departments : Slightly Skeptical Euromaydan
+   Chronicles, June 2014 : Greenspan legacy bulletin, 2008 : Vol 25, No.10
+   (October, 2013) Cryptolocker Trojan (Win32/Crilock.A) : Vol 25, No.08
+   (August, 2013) Cloud providers as intelligence collection hubs : Financial
+   Humor Bulletin, 2010 : Inequality Bulletin, 2009 : Financial Humor
+   Bulletin, 2008 : Copyleft Problems Bulletin, 2004 : Financial Humor
+   Bulletin, 2011 : Energy Bulletin, 2010 : Malware Protection Bulletin, 2010
+   : Vol 26, No.1 (January, 2013) Object-Oriented Cult : Political Skeptic
+   Bulletin, 2011 : Vol 23, No.11 (November, 2011) Softpanorama
+   classification of sysadmin horror stories : Vol 25, No.05 (May, 2013)
+   Corporate bullshit as a communication method : Vol 25, No.06 (June, 2013)
+   A Note on the Relationship of Brooks Law and Conway Law
+
+                                    History:
+
+   Fifty glorious years (1950-2000): the triumph of the US computer
+   engineering : Donald Knuth : TAoCP and its Influence of Computer Science :
+   Richard Stallman : Linus Torvalds : Larry Wall : John K. Ousterhout : CTSS
+   : Multix OS Unix History : Unix shell history : VI editor : History of
+   pipes concept : Solaris : MS DOS : Programming Languages History : PL/1 :
+   Simula 67 : C : History of GCC development : Scripting Languages : Perl
+   history : OS History : Mail : DNS : SSH : CPU Instruction Sets : SPARC
+   systems 1987-2006 : Norton Commander : Norton Utilities : Norton Ghost :
+   Frontpage history : Malware Defense History : GNU Screen : OSS early
+   history
+
+                                 Classic books:
+
+   The Peter Principle : Parkinson Law : 1984 : The Mythical Man-Month : How
+   to Solve It by George Polya : The Art of Computer Programming : The
+   Elements of Programming Style : The Unix Hater’s Handbook : The Jargon
+   file : The True Believer : Programming Pearls : The Good Soldier Svejk :
+   The Power Elite
+
+                           Most popular humor pages:
+
+   Manifest of the Softpanorama IT Slacker Society : Ten Commandments of the
+   IT Slackers Society : Computer Humor Collection : BSD Logo Story : The
+   Cuckoo's Egg : IT Slang : C++ Humor : ARE YOU A BBS ADDICT? : The Perl
+   Purity Test : Object oriented programmers of all nations : Financial Humor
+   : Financial Humor Bulletin, 2008 : Financial Humor Bulletin, 2010 : The
+   Most Comprehensive Collection of Editor-related Humor : Programming
+   Language Humor : Goldman Sachs related humor : Greenspan humor : C Humor :
+   Scripting Humor : Real Programmers Humor : Web Humor : GPL-related Humor :
+   OFM Humor : Politically Incorrect Humor : IDS Humor : "Linux Sucks" Humor
+   : Russian Musical Humor : Best Russian Programmer Humor : Microsoft plans
+   to buy Catholic Church : Richard Stallman Related Humor : Admin Humor :
+   Perl-related Humor : Linus Torvalds Related humor : PseudoScience Related
+   Humor : Networking Humor : Shell Humor : Financial Humor Bulletin, 2011 :
+   Financial Humor Bulletin, 2012 : Financial Humor Bulletin, 2013 : Java
+   Humor : Software Engineering Humor : Sun Solaris Related Humor : Education
+   Humor : IBM Humor : Assembler-related Humor : VIM Humor : Computer Viruses
+   Humor : Bright tomorrow is rescheduled to a day after tomorrow : Classic
+   Computer Humor
+
+     The Last but not Least Technology is dominated by two types of people:
+     those who understand what they do not manage and those who manage what
+                  they do not understand ~Archibald Putt. Ph.D
+
+     ----------------------------------------------------------------------
+
+    Copyright © 1996-2020 by Softpanorama Society. www.softpanorama.org was
+       initially created as a service to the (now defunct) UN Sustainable
+     Development Networking Programme (SDNP) without any remuneration. This
+   document is an industrial compilation designed and created exclusively for
+   educational use and is distributed under the Softpanorama Content License.
+   Original materials copyright belong to respective owners. Quotes are made
+    for educational purposes only in compliance with the fair use doctrine.
+
+    FAIR USE NOTICE This site contains copyrighted material the use of which
+   has not always been specifically authorized by the copyright owner. We are
+      making such material available to advance understanding of computer
+      science, IT technology, economic, scientific, and social issues. We
+   believe this constitutes a 'fair use' of any such copyrighted material as
+    provided by section 107 of the US Copyright Law according to which such
+    material can be distributed without profit exclusively for research and
+                             educational purposes.
+
+   This is a Spartan WHYFF (We Help You For Free) site written by people for
+   whom English is not a native language. Grammar and spelling errors should
+     be expected. The site contain some broken links as it develops like a
+                                 living tree...
+
+ You can use PayPal to to buy a cup of coffee for authors of this site 
+
+                                  Disclaimer:
+
+   The statements, views and opinions presented on this web page are those of
+     the author (or referenced source) and are not endorsed by, nor do they
+    necessarily reflect, the opinions of the Softpanorama society. We do not
+   warrant the correctness of the information provided or its fitness for any
+    purpose. The site uses AdSense so you need to be aware of Google privacy
+       policy. You you do not want to be tracked by Google please disable
+        Javascript for this site. This site is perfectly usable without
+                                  Javascript.
+
+                         Last modified: March 12, 2019

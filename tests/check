@@ -116,6 +116,10 @@ $RDRVIEW --encoding="iso-8859-1" < "encodings/iso-8859-1.html" > "$OUT_NEW" || f
 diff "$OUT_OLD" "$OUT_NEW" || fail "ISO-8859-1 not handled correctly when requested via cli"
 $RDRVIEW -E iso-8859-1 < "encodings/iso-8859-1.html" > "$OUT_NEW" || fail "Failure for ISO-8859-1"
 diff "$OUT_OLD" "$OUT_NEW" || fail "ISO-8859-1 not handled correctly when requested via cli"
+# Also check that we handle Windows-1252
+OUT_OLD="encodings/cp-1252.txt"
+$RDRVIEW < "encodings/cp-1252.html" > "$OUT_NEW" || fail "Failure for Windows-1252"
+diff "$OUT_OLD" "$OUT_NEW" || fail "Windows-1252 not handled correctly"
 
 # Check that we fail cleanly when given an unknown encoding
 echo '<html><body>A</body></html>' | $RDRVIEW -E hfi4iefh &>/dev/null

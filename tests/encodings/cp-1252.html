@@ -1,0 +1,1751 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>System Activity Reporter (sar)</title>
+<link rel="stylesheet" type="text/css" href="../../CSS/main.css">
+</head>
+
+<body>
+
+<basefont face="Times" size="3">
+<table border="0" width="100%" id="table1" cellspacing="1" cellpadding="4"  >
+<tr>
+<td rowspan="2" width="40%">
+
+<p align="center"><img border="0" src="/Images/splogo.gif" width="45"  ><font face="Bernard MT Condensed" color="#FF0000" size="7">
+<font color="#FF0000"><a href="/index.shtml">Softpanorama</a></font></font></p>
+</td>
+<td align="center">
+
+<b><a href="/index.shtml"><font size="2">Home</font></a></b></td>
+<td align="center">
+
+<b><a href="/switchboard.shtml"><font size="2">Switchboard</font></a></b></td>
+<td align="center">
+
+<b><a href="/Admin/index.shtml"><font size="2">Unix Administration</font></a></b></td>
+<td align="center">
+
+<b><a href="/Commercial_linuxes/RHEL/index.shtml"><font size="2">Red Hat</font></a></b></td>
+<td align="center">
+
+<b><a href="/Net/index.shtml"><font size="2">TCP/IP Networks</font></a></b></td>
+<td align="center">
+
+<b><a href="/Skeptics/Political_skeptic/Neoliberalism/index.shtml"><font size="2">Neoliberalism</font></a></b></td>
+<td align="center">
+
+<b><a href="/Social/Toxic_managers/index.shtml"><font size="2">Toxic Managers</font></a></b></td>
+</tr>
+<tr>
+<td colspan="7" align="center">
+
+<font size="2" face="Arial"><b>May the source be with you, but remember the KISS principle ;-) <i><br>
+</i>Skepticism and critical thinking is not panacea, but can help to understand the world better<i> </i></b></font></td>
+</tr>
+</table>
+<hr width="100%" noshade size="5" color="#FF0000">
+<center>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- top_large_banner -->
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</center>
+
+<h1>System Activity Reporter (sar)</h1>
+<table width="100%" bgcolor="#FFFFCC" border="1">
+	<tr>
+		<td bordercolorlight="#000000" align="center" width="10%" bordercolordark="#ffffff"><a href="#News">News</a></td>
+		<td bordercolorlight="#000000" align="center" width="10%" bordercolordark="#ffffff"><b>
+		<a target="_blank" href="../system_monitoring.shtml">Unix System Monitoring</a></b></td>
+		<td bordercolorlight="#000000" align="center" width="10%" bordercolordark="#ffffff">
+		<a href="#Recommended_Links">Recommended Links</a></td>
+		<td bordercolorlight="#000000" align="center" width="10%" bordercolordark="#ffffff"><b>
+		<a href="Sar/linux_implementation_of_sar.shtml">Linux implementation</a></b></td>
+		<td bordercolorlight="#000000" align="center" width="10%" bordercolordark="#ffffff"><b>
+		<a href="Sar/solaris_implementation_of_sar.shtml">Solaris Implementation</a></b></td>
+		<td bordercolorlight="#000000" align="center" width="5%" bordercolordark="#ffffff"><a href="#Reference">Reference</a></td>
+		<td bordercolorlight="#000000" align="center" width="5%" bordercolordark="#ffffff"><b><a href="#Sar_Report_Generators">Report 
+		Generators</a></b></td>
+	</tr>
+	<tr>
+		<td bordercolorlight="#000000" align="center" width="10%" bordercolordark="#ffffff"><b>
+		<a target="_blank" href="../performance_monitoring.shtml">Performance Monitoring </a></b></td>
+		<td bordercolorlight="#000000" align="center" width="10%" bordercolordark="#ffffff">
+		<a target="_blank" href="http://www.solarisinternals.com/si/tools/memtool/index.php">memtool</a></td>
+		<td bordercolorlight="#000000" align="center" width="10%" bordercolordark="#ffffff">vmstat</td>
+		<td bordercolorlight="#000000" align="center" width="10%" bordercolordark="#ffffff">iostat</td>
+		<td bordercolorlight="#000000" align="center" width="10%" bordercolordark="#ffffff">
+		<a target="_blank" href="../Performance/sarcheck.shtml">Sarcheck</a></td>
+		<td bordercolorlight="#000000" align="center" width="5%" bordercolordark="#ffffff">
+		<a target="_blank" href="../../Bulletin/Humor/index.shtml">Humor</a></td>
+		<td bordercolorlight="#000000" align="center" width="5%" bordercolordark="#ffffff"><a href="#Etc">Etc</a></td>
+	</tr>
+</table>
+
+<table border="0" width="178" height="620" align="right" cellspacing="4" bgcolor="#FFFFFF">
+   <tr>
+      <td>
+
+      <table border="1" width="174" height="616" align="center" bgcolor="#FF0000">
+         <tr>
+            <td>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- Upper skyscaper -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:160px;height:600px"
+     data-ad-client="ca-pub-4031247137266443"
+     data-ad-slot="0371843916"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+            </td>
+         </tr>
+      </table></td>
+   </tr>
+</table>
+<ul>
+
+	<li><b><a href="#Introduction">Introduction</a></b></li>
+
+	<li><b><a href="#Monitored_parameters">Monitored parameters</a></b></li>
+
+	<li><b><a href="#Structure_of_the_package">Structure of the package</a></b></li>
+
+	<li><b><a href="#Enabling_sar">Enabling sar</a></b></li>
+
+	<li><b><a href="#SAR_reports">SAR reports</a></b></li>
+
+	<li><b><a href="#Alternative_implementations">Alternative implementations</a></b></li>
+
+	<li><b><a href="#Side_effects">Side effects</a></b></li>
+
+	<li><b><a href="#Additional_information">Additional information</a></b></li>
+
+	
+</ul>
+<hr noshade color="#FF0000" width="33%" size="7">
+
+<h3><a name="Introduction">Introduction</a></h3>
+<p>The System Activity Recorder (sar) and related suite of utilities originated in 
+<a href="Sar/solaris_implementation_of_sar.shtml">Solaris</a>. Later it was ported to all major flavors of UNIX, including AIX, HP-UX, and 
+Linux.&nbsp; <b><a style="text-decoration: underline" href="http://freshmeat.net/projects/sysstat/">Sysstat</a> </b>package is installed 
+by default in standard <a href="Sar/linux_implementation_of_sar.shtml">Red Hat installation</a>. For Suse it is not installed by default and you need to install <b>
+<a style="text-decoration: underline" href="http://freshmeat.net/projects/sysstat/">sysstat</a> </b>package manually (package is provided 
+by Novell).</p>
+<!---google box ------->
+<table border="0" width="310" align="left" cellspacing="7" cellpadding="4">
+<tr><td width="340" bgcolor="#FFFF00" valign="center" align="center">
+<center>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- Top Large Rectangle -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:336px;height:280px"
+     data-ad-client="ca-pub-4031247137266443"
+     data-ad-slot="3274064497"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</center>
+</td></tr>
+</table>
+<!---end of google box ------->
+
+<p>It is important to note that <tt>sar</tt> is an very good monitoring package, capabilities of which are usually severely underutilized. 
+Very few system administrators have a habit of weekly looking at SAR logs (see
+<a href="Sar/sar_reports.shtml">SAR reports</a>).&nbsp; Moreover it often provide more reliable 
+information then commercial packages that cost considerable money.&nbsp; It can discover various 
+bottlenecks and <em>is the simplest tool to decide if the server need hardware upgrade of not.</em> And 
+hardware upgrades in a typical datacenter are a highly politically charged thing, so having some 
+more or less solid reference to an actual performance of the server greatly helps. </p>
+<p>The reason for <b><font color="#0000FF">sar </font></b>creation was that gathering system activity data from <tt>vmstat</tt> and
+<tt>iostat</tt> is pretty time-consuming. If you try to automate the gathering of system activity data, and creation of periodic repots 
+you naturally come to creation of a tool like <tt>sar</tt>. To avoid reinventing the bicycle again and again, Sun engineers wrote 
+<tt>sar</tt> (System Activity Reporter) and included it in standard Solaris distribution. The rest is history.</p>
+<blockquote>
+
+	<p><em>Notes:</em> </p>
+	<ul>
+
+		<li>Linux implementation closely resembles Solaris. For details of linux implementation (which is a part of 
+		<a rel="nofollow" href="http://freshmeat.net/projects/sysstat/">
+		<span style="text-decoration: underline"><b>s</b></span></a><b><a style="text-decoration: underline" href="http://freshmeat.net/projects/sysstat/">ysstat</a></b> 
+package) see <a href="Sar/linux_implementation_of_sar.shtml">Linux implementation of sar</a></li>
+
+		<li>In addition to <tt>sar</tt>, Linux <tt>sysstat</tt> package provides several other useful utilities: 
+<ul>
+	<li><a rel="nofollow" href="http://sebastien.godard.pagesperso-orange.fr/man_sadf.html">sadf(1)</a> -- similar to 
+	<tt>sar</tt> but can write 
+	its data in&nbsp; different formats (CSV, XML, etc.). T<em>his is useful to load performance data into a database, or import them in 
+	a spreadsheet to make graphs. </em> </li>
+	<li><a rel="nofollow" href="http://sebastien.godard.pagesperso-orange.fr/man_iostat.html">iostat(1)</a> reports CPU statistics and 
+	input/output statistics for devices, partitions and network filesystems. </li>
+	<li><a rel="nofollow" href="http://sebastien.godard.pagesperso-orange.fr/man_mpstat.html">mpstat(1)</a> reports individual or combined 
+	processor related statistics. </li>
+	<li><a rel="nofollow" href="http://sebastien.godard.pagesperso-orange.fr/man_pidstat.html">pidstat(1)</a> reports statistics for 
+	Linux tasks (processes) : I/O, CPU, memory, etc.</li>
+	<li><a rel="nofollow" href="http://sebastien.godard.pagesperso-orange.fr/man_nfsiostat.html">nfsiostat(1)</a> reports input/output 
+	statistics for network filesystems (NFS). </li>
+	<li><a rel="nofollow" href="http://sebastien.godard.pagesperso-orange.fr/man_cifsiostat.html">cifsiostat(1)</a> reports CIFS statistics.</li>
+</ul>
+
+		<p>&nbsp;</p></li>
+	</ul>
+</blockquote>
+<h3><a name="Monitored_parameters">Monitored parameters</a></h3>
+
+<p>Monitored parameters are hardwired into sar.&nbsp; You can monitor half-dozen metrics related to overall system performance, for example:</p>
+<ol>
+	<li><b>cpu utilization</b> (it&#39;s pretty effective tool for spotting CPU bottlenecks)</li>
+	<li><b>hard disk utilization</b></li>
+	<li><b>terminal IO </b> </li>
+	<li><b>number of files open</b></li>
+	<li><b>processes running</b></li>
+</ol>
+<p>It also provides queuing, paging, CPU and several other important for judging performance of the 
+particular server metrics. Modern Unixes maintains a series of system activity counters that record 
+various activities and provide those data to <tt>sar</tt>. The command merely extracts the values of the counters and saves them based 
+on the sampling rate and the set of samples specified. Naturally it does it more efficiently (and 
+sometimes more correctly) then custom shell or Perl scripts. </p>
+
+<h3><a name="Structure_of_the_package">Structure of the package</a></h3>
+<p>The package consists of two programs <font color="#0000FF" face="Fixedsys">sarc</font> and <font color="#0000FF" face="Fixedsys">
+sar</font>:</p>
+<ul>
+	<li>The <font color="#0000FF" face="Fixedsys">sadc</font> command is a data collecting part of the package. It writes in binary 
+	format to the specified output file. To run sar in real time type:<p align="LEFT">&nbsp;&nbsp;&nbsp;
+	<font color="#0000FF" face="Fixedsys">sar -u 2 5</font></p>
+	<p align="LEFT">In this case the <tt>sar</tt> command calls <font color="#0000FF" face="Fixedsys">sadc</font> to access system data.<br>
+&nbsp;</p>
+	</li>
+	<li>To report on previously captured data – type <br>
+&nbsp;&nbsp;&nbsp; <font color="#0000FF" face="Fixedsys">sar -u -f <i>filename</i> &gt; file</font></li>
+	<li>Two shell scripts <font color="#0000FF" face="Fixedsys">/usr/lib/sa/sa1</font> and <font color="#0000FF" face="Fixedsys">usr/ib/sa/sa2</font> 
+	are also provided. They can be run by the cron daemon and provide daily statistics and reports.</li>
+</ul>
+<h3><a name="Enabling_sar">Enabling sar</a></h3>
+
+<p>Sar is not enabled by default.&nbsp; To enable <tt>sar</tt>, you must include invocation of two of its components (<font color="#0000FF" face="Fixedsys">sadc</font> 
+and <font color="#0000FF" face="Fixedsys">sar</font>) at selected intervals&nbsp; in <tt>cron.</tt> Usually
+<font color="#0000FF" face="Fixedsys">sadc</font> is evoked via <font color="#0000FF" face="Fixedsys">sa1</font> script and
+<font color="#0000FF" face="Fixedsys">sar</font> via <font color="#0000FF" face="Fixedsys">sa2</font> script).&nbsp;</p>
+
+<p>In Linux this is done with the installation of the package sysstat.&nbsp; </p>
+<p>On Solaris 9 and 10 it is preinstalled, but you need un-comment lines in the start script (<font face="Fixedsys" color="#0000FF">/etc/rc2.d/S21perf</font>) 
+and <tt>crontab</tt> file (<font color="#0000FF" face="Fixedsys">/var/spool/cron/crontabs/sys</font>) associated with the tool. If 
+<tt>sar</tt> is activated 
+the <tt>crontab</tt> for root should contain something like this: </p>
+<pre>
+# Collect measurements at 10-minute intervals
+0,10,20,30,40,50   * * * *   /usr/lib/sa/sa1
+# Create daily reports and purge old files
+0 * * *   /usr/lib/sa/sa2 -A</pre>
+<p><b>Note:</b> Not all&nbsp; linux distributions install <b>
+<a style="text-decoration: underline" href="http://freshmeat.net/projects/sysstat/">sysstat</a>&nbsp; 
+package which contains </b>sar by default. For example in Suse you need to&nbsp; install and activate <b>
+<a style="text-decoration: underline" href="http://freshmeat.net/projects/sysstat/">sysstat</a> </b>package 
+manually (see also
+<a href="Sar/linux_implementation_of_sar.shtml">Linux implementation of sar</a>) :</p>
+<blockquote>
+	<p>The sysstat package contains the <font color="#0000FF" face="Fixedsys">sar, sadf, iostat, mpstat, and pidstat</font> commands 
+	for Linux. The sar command collects and reports system activity information. The statistics reported by sar concern I/O transfer 
+	rates, paging activity, process-related activites, interrupts, network activity, memory and swap space utilization, CPU utilization, 
+	kernel activities, and TTY statistics, among others. The sadf command may be used to display data collected by sar in various formats. 
+	The iostat command reports CPU statistics and I/O statistics for tty devices and disks. The pidstat command reports statistics for 
+	Linux processes. The mpstat command reports global and per-processor statistics.</p>
+</blockquote>
+
+<h3><a name="SAR_reports">SAR reports</a></h3>
+
+<p>Here we will use Linux as an example. </p>
+
+<p>The utility that writes data to disk is the binary utility <tt>/usr/lib64/sa/sadc</tt>&nbsp;It 
+is called system activity data collector binary, and it serves as a backend 
+		to the sar command (generator of human readable reports).</p>
+
+<p>By default <tt>/usr/lib64/sa/sadc</tt> writes binary log of kernel data to the 
+		<tt>/var/log/sa/sa<i>dd</i></tt>&nbsp; 
+		file, where the <tt>dd</tt> parameter is the current day (two 
+digits in the range 01-31).&nbsp; 
+</p>
+
+<p>This activity is controlled by <tt>cron</tt> script <tt>sysstat</tt>, which is stored in <tt>/etc/cron.d/systat
+</tt>and is installed with the installation of the package.&nbsp; </p>
+
+<p>The utility <tt>/usr/bin/sar</tt>&nbsp; is the command that generates human readable 
+report from binary &quot;<tt>sa</tt>&quot; file created by utility 
+<tt>/usr/lib64/sa/sadc</tt>&nbsp;</p>
+
+<p>When&nbsp; script <tt>/usr/lib64/sa/sa2</tt> in invoked from <tt>cron</tt> it writes report to
+<tt>/var/log/sa </tt>directory. This &quot;<em>human readable</em>&quot; report has prefix <tt>sar </tt>and it 
+it easy to confuse it with binary files with prefix <tt>sa</tt>. I did it multiple times. So <tt>i</tt>t is important to 
+understand the difference:</p>
+<ul>
+
+	<li>Binary files created by <tt>/usr/lib64/sa/sadc</tt>&nbsp; have prefix <tt>sa, </tt>For 
+	example<tt> </tt>
+
+<pre>/var/log/sa/sa05</pre>
+
+	</li>
+
+	<li>Reports have prefix <tt>sar, </tt>For example<tt> </tt>
+
+<pre>/var/log/sa/sar05</pre>
+
+	</li>
+</ul>
+
+<p>So for&nbsp; July 5, the report created by <tt>sar</tt> will be <tt>/var/log/sa/sar05. </tt>While the source binary report is <tt>/var/log/sa/sa05</tt></p>
+
+<p>Number of days preserved are controlled by <tt>/etc/sysconfig/sysstat</tt> file. Default is 28. </p>
+
+<p>Daily &quot;<em>human readable</em>&quot; report typically is around 1 MB. </p>
+
+<p>To print those data in human readable format from &quot;<tt>sa</tt>&quot; binary files you need to invoke the utility 
+<tt>sar</tt> 
+with option <tt>-f</tt> and specify binary file in question. For example:
+&nbsp;&nbsp;&nbsp; <pre>sar -u -f  <tt>/var/log/sa/sa05</tt> &gt; report05</pre>
+
+<h3><a name="Alternative_implementations">Alternative implementations</a></h3>
+
+<p>There are several alternative script/programs for reporting <tt>sar</tt> data. Among them:</p>
+<ul>
+	<li><a target="_blank" href="http://freshmeat.net/projects/bsdsar/">BSDsar</a>&nbsp; -- BSDsar is a Perl script that generates a 
+	history of usage on a FreeBSD machine. It logs data such as CPU usage, disk activity, network bandwidth usage and activity, NFS 
+	information, memory, and swap. It is similar to atsar (for Linux) and sar (for Solaris).</li>
+
+	<li><a rel="nofollow" href="http://freshmeat.net/projects/ksar/">ksar</a>&nbsp; -- ksar is a Java-based sar graphing tool that can 
+	graph Linux, Mac OS X, AIX, and Solaris sar output. A sar statistics graph can be output to a PDF file. </li>
+	<li><a target="_blank" href="http://freshmeat.net/projects/sarpplot/">Sar P Plot</a> This one is 
+	from <tt>asar</tt>, but can be easily adapted 
+	for classic <tt>sar</tt>.
+	<blockquote>
+		<p>Sar P Plot is a simple Perl script which takes the output of the atsar application and puts it into Gnuplot data files. It 
+		can be useful on server systems for performance analysis.</p>
+	</blockquote>
+	</li>
+</ul>
+<p>There are also alternative implementations: </p>
+<ul>
+	<li>
+<h4> <a rel="nofollow" href="http://www.retronux.com/2010/02/15/dstat-for-linux-an-alternative-to-sarvmstatioststetc/">
+dstat for Linux an alternative to sar-vmstat-iostst-etc. Retronux</a></h4>
+<blockquote>
+	<p>Written in python, <a target="_blank" href="http://dag.wieers.com/home-made/dstat/">dstat</a> is a neat piece of tooling. It 
+	is a monitoring tool akin to sar, iostat, vmstat, etc. It allows you to measure a host of metrics. You can install it on any modern 
+	ubuntu box by typing “apt-get install dstat” (and I am sure it is available for any major distro).</p>
+</blockquote>
+	<blockquote>
+
+		<p><a rel="nofollow" href="http://dag.wieers.com/home-made/dstat/">DAG Dstat Versatile resource statistics tool</a></p>
+
+		<p>Dstat gives 
+	you detailed selective information in columns and clearly indicates in what magnitude and unit the output is displayed. Less confusion, 
+	less mistakes. And most importantly, it makes it very easy to write plugins to collect your own counters and extend in ways you 
+	never expected. </p>
+	</blockquote>
+
+	<p>Dstat&#39;s output by default is designed for being interpreted by humans in real-time, however you can export details to CSV output 
+	to a file to be imported later into Gnumeric or Excel to generate graphs. </p>
+	<a name="features">Features</a><ul>
+
+		<li>Combines vmstat, iostat, ifstat, netstat information and more </li>
+
+		<li>Shows stats in exactly the same timeframe </li>
+
+		<li>Enable/order counters as they make most sense during analysis/troubleshooting </li>
+
+		<li>Modular design </li>
+
+		<li>Written in python so easily extendable for the task at hand </li>
+
+		<li>Easy to extend, add your own counters (please contribute those) </li>
+
+		<li>Includes many external plugins to show how easy it is to add counters </li>
+
+		<li>Can summarize grouped block/network devices and give total numbers </li>
+
+		<li>Can show interrupts per device </li>
+
+		<li>Very accurate timeframes, no timeshifts when system is stressed </li>
+
+		<li>Shows exact units and limits conversion mistakes </li>
+
+		<li>Indicate different units with different colors </li>
+
+		<li>Show intermediate results when delay &gt; 1 </li>
+
+		<li>Allows to export CSV output, which can be imported in Gnumeric and Excel to make graphs
+		</li>
+	</ul>
+	</li>
+	<li><a target="_blank" href="http://freshmeat.net/projects/atsar/">atsar</a> (outdated: last updated in Jul 2004) . Atsar has the 
+	ability to show what is happening on the system at a given moment. It also keeps track of the past system load by maintaining history 
+	files from which information can be extracted. Statistics about the utilization of CPUs, disks and disk partitions, memory and swap, 
+	tty&#39;s, TCP/IP (v4/v6), NFS, and FTP/HTTP traffic are gathered. Most of the functionality of atsar has been incorporated in the atop 
+	project. </li>
+</ul>
+<h3><a name="Side_effects">Side effects</a></h3>
+<p>Any tool that collects performance data has some impact on system performance, but with sar, it seems to be minimal. Even one minute 
+sampling usually does not cause any serious issues. That may not hold true on a system that is very busy. </p>
+
+<h3><a name="Additional_information">Additional information</a></h3>
+<p>For more details see:</p>
+<ul>
+	<li><a href="Sar/linux_implementation_of_sar.shtml">Linux implementation of sar</a></li>
+	<li><a href="Sar/solaris_implementation_of_sar.shtml">Solaris implementation of sar</a></li>
+</ul>
+
+<p>&nbsp;</p>
+<hr>
+<table border="1" width="100%" height="350">
+   <tr>
+      <td width="100%" align="center" colspan="5" rowspan="4">
+      <center>
+      <b>Top Visited</b></center>
+      <iframe src="/topupdates.shtml" width="100%" height="320">
+
+      <p>Your browser does not support iframes.</p>
+      </iframe>
+      </td>
+      <td bgcolor="#FFFF00" align="center"><b><a href="switchboard.shtml">Switchboard</a></b></td>
+   </tr>
+   <tr>
+      <td bgcolor="#FFFF00" align="center"><b><a href="/index.shtml#Latest">Latest</a></b></td>
+   </tr>
+   <tr>
+      <td bgcolor="#FFFF00" align="center"><b>
+      <a href="http://www.google.com/search?q=site:www.softpanorama.org&hl=en&lr=&tbo=1&prmd=ivns&source=lnt&tbs=qdr:y&sa=X&ei=aML0TaHgO4fUgAedxtjzCw&ved=0CAsQpwUoBQ&biw=1256&bih=801&cad=cbv#q=site:www.softpanorama.org&hl=en&lr=&tbo=1&prmd=ivns&source=lnt&tbs=qdr:w&sa=X&ei=csL0TYHsI4LagAeKu7DPCw&ved=0CAwQpwUoAw&fp=fb58e14853731932&biw=1256&bih=801">
+      Past week</a></b></td>
+   </tr>
+   <tr>
+      <td bgcolor="#FFFF00" align="center"><b>
+      <a href="http://www.google.com/search?q=site:www.softpanorama.org&hl=en&lr=&tbo=1&prmd=ivns&source=lnt&tbs=qdr:m&sa=X&ei=IMD0TdjLHMXUgQe9t6zfCw&ved=0CA0QpwUoBA">
+      Past month</a></b></td>
+   </tr>
+</table
+<hr noshade color="#FF0000" size="5">
+
+
+
+<hr>
+<h2><a name="NEWS_TOC">NEWS CONTENTS</a></h2>
+<ul>
+<li>20100627 : <a href="#n20100627X_the_sar_command">The sar command</a> <i></i>  ( <a target="_blank" href="http://www.redbooks.ibm.com/pubs/pdfs/redbooks/sg246039.pdf">redbooks.ibm.com</a> ) </li>
+<li>20100627 : <a href="#n20100627X_performance_analysis_tools_for_linux_developers"> Performance Analysis Tools for Linux Developers</a> <i></i>  ( Jun 27, 2010 ) </li>
+<li>20090811 : <a href="#n20090811X_sysstat_howto_a_deployment_and_configuration_guide_for_linux_servers"> SYSSTAT Howto A Deployment and Configuration Guide for Linux Servers</a> <i></i>  ( <a target="_blank" href="http://linux.com/learn/tutorials/33766-sysstat-howto-a-deployment-and-configuration-guide-for-linux-servers"> SYSSTAT Howto A Deployment and Configuration Guide for Linux Servers</a>, Aug 11, 2009 ) </li>
+<li>20090811 : <a href="#n20090811X_linux_101_hacks">Linux-101-Hacks</a> <i></i>  ( <a target="_blank" href="http://www.ccm.ece.vt.edu/twiki/pub/Main/WebHome/Linux-101-Hacks.pdf">Linux-101-Hacks</a>,  ) </li>
+<li>20090523 : <a href="#n20090523X_linux_com_cli_magic_tracking_system_performance_with_sar">Linux.com CLI Magic Tracking system performance  with sar</a> <i> by <a target="_blank" href="http://commandlinemac.com">Keith Winston</a> </i>  ( March 20, 2006 ) </li>
+<li>20090523 : <a href="#n20090523X_project_details_for_ksar">Project details for ksar</a> <i></i>  ( <a target="_blank" href="http://freshmeat.net/projects/ksar/">freshmeat.net</a> ) </li>
+<li>20090523 : <a href="#n20090523X_project_details_for_atsar">Project details for atsar</a> <i></i>  ( <a target="_blank" href="http://freshmeat.net/projects/atsar/">freshmeat.net</a> ) </li>
+<li>20090523 : <a href="#n20090523X_project_details_for_sar_p_plot">Project details for Sar P Plot</a> <i></i>  ( <a target="_blank" href="http://freshmeat.net/projects/sarpplot/">freshmeat.net </a> ) </li>
+<li>20090523 : <a href="#n20090523X_project_details_for_bsdsar"> Project details for BSDsar</a> <i></i>  ( <a target="_blank" href="http://freshmeat.net/projects/bsdsar/">freshmeat.net</a> ) </li>
+<li>20090523 : <a href="#n20090523X_red_hat_linux_specific_information">Red Hat Linux-Specific  Information</a> <i></i>  ( <a target="_blank" href="http://www.redhat.com/docs/manuals/linux/RHL-9-Manual/admin-primer/s1-resource-rhlspec.html">Red Hat Linux-Specific  Information</a>,  ) </li>
+<li>20080202 : <a href="#n20080202X_itworld_com_unix_system_administration_introducing_sar">ITworld.com - UNIX SYSTEM ADMINISTRATION  - Introducing SAR</a> <i></i>  ( <a target="_blank" href="http://www.itworld.com/nl/unix_sys_adm/04172002/">ITworld.com - UNIX SYSTEM ADMINISTRATION  - Introducing SAR</a>, Feb 2, 2008 ) </li>
+<li>20060818 : <a href="#n20060818X_how_to_monitor_a_system_with_sysstat_on_centos_4_3_howtoforge_linux_howtos_and_tutorials">How To Monitor A System With Sysstat  On Centos 4.3 HowtoForge - Linux Howtos and Tutorials</a> <i></i>  ( <a target="_blank" href="http://www.howtoforge.com/sysstat_monitoring_centos">How To Monitor A System With Sysstat  On Centos 4.3 HowtoForge - Linux Howtos and Tutorials</a>, Aug 18, 2006 ) </li>
+<li>20060818 : <a href="#n20060818X_optimizing_aix_5l_performance_monitoring_your_cpu_part_2">Optimizing AIX 5L  performance Monitoring your CPU, Part 2</a> <i></i>  ( <a target="_blank" href="http://www.ibm.com/developerworks/aix/library/au-aixoptimization2/index.html?ca=drs-">Optimizing AIX 5L  performance Monitoring your CPU, Part 2</a>,  ) </li>
+<li>20060818 : <a href="#n20060818X_identifying_i_o_bottlenecks_under_unix"> Identifying I/O Bottlenecks Under UNIX</a> <i></i>  ( <a target="_blank" href="http://support.businessobjects.com/documentation/installation_resources/5i/tips_and_tricks/pdf/deployment/dt024.pdf"> Identifying I/O Bottlenecks Under UNIX</a>,  ) </li>
+<li>20060228 : <a href="#n20060228X_easy_system_monitoring_with_sar">Easy system  monitoring with SAR</a> <i> by <a href="#author">Sean Walberg</a></i>  ( <a target="_blank" href="http://www.ibm.com/developerworks/aix/library/au-unix-perfmonsar.html">Easy system  monitoring with SAR</a>, Feb 28,  2006 ) </li>
+</ul>
+<h2><a name="News">Old News ;-)</a></h2>
+<center><table border="0" width="100"><tr>
+<td align="center"><a href="#NEWS_TOC"><img border="0" src="/Images/up.png" width="16" height="16"></a></td>
+<td align="center"><a name="n20100627X_the_sar_command" href="#NEWS_TOC"><img border="0" src="/Images/home.gif" width="16" height="18"></a></td>
+<td align="center"><a href="#n20100627X_performance_analysis_tools_for_linux_developers"><img border="0" src="/Images/down.png" width="16" height="16"></a></td>
+</tr></table></center>
+
+<h4>[Jun 27, 2010]   <a target="_blank" href="http://www.redbooks.ibm.com/pubs/pdfs/redbooks/sg246039.pdf">The sar command</a></h4>
+<blockquote>
+	<h6><a target="_blank" href="http://www.redbooks.ibm.com/pubs/pdfs/redbooks/sg246039.pdf">redbooks.ibm.com</a></h6>
+
+	<p><a target="_blank" href="http://www.redbooks.ibm.com/pubs/pdfs/redbooks/sg246039.pdf">sg246039.pdf</a>
+	</p>
+	The sar command only formats input generated by the sadc command (sar data collector). The sadc command acquires statistics mainly 
+	from the Perfstat kernel extension (kex) (see 41.1, "Perfstat API" on page 786). The operating system contains a number of counters 
+	that are incremented as various system actions occur. The various system counters include:
+	<ul>
+		<li>System unit utilization counters </li>
+		<li>Buffer use counters </li>
+		<li>Disk and tape I/O activity counters </li>
+		<li>tty device activity counters </li>
+		<li>Switching and subroutine counters </li>
+		<li>File access counters </li>
+		<li>Queue activity counters </li>
+		<li>Interprocess communication counters</li>
+	</ul>
+	The sadc command samples system data a specified number of times at a specified interval measured in seconds. It writes in binary 
+	format to the specified output file or to stdout. When neither the measuring interval nor the interval number are specified, a dummy 
+	record, which is used at system startup to mark the time when the counter restarts from zero (0), will be written. 9.2 Examples
+</blockquote>
+</em></b></i><center><table border="0" width="100"><tr>
+<td align="center"><a href="#n20100627X_the_sar_command"><img border="0" src="/Images/up.png" width="16" height="16"></a></td>
+<td align="center"><a name="n20100627X_performance_analysis_tools_for_linux_developers" href="#NEWS_TOC"><img border="0" src="/Images/home.gif" width="16" height="18"></a></td>
+<td align="center"><a href="#n20090811X_sysstat_howto_a_deployment_and_configuration_guide_for_linux_servers"><img border="0" src="/Images/down.png" width="16" height="16"></a></td>
+</tr></table></center>
+
+<h4>[Jun 27, 2010] Performance Analysis Tools for Linux Developers</h4>
+<ul>
+	<li><a target="_blank" href="http://www.drdobbs.com/open-source/220700195?queryText=sar">Part 1</a></li>
+	<li><a target="_blank" href="http://www.drdobbs.com/open-source/220900401?queryText=sar">Part 2</a></li>
+</ul>
+</em></b></i><center><table border="0" width="100"><tr>
+<td align="center"><a href="#n20100627X_performance_analysis_tools_for_linux_developers"><img border="0" src="/Images/up.png" width="16" height="16"></a></td>
+<td align="center"><a name="n20090811X_sysstat_howto_a_deployment_and_configuration_guide_for_linux_servers" href="#NEWS_TOC"><img border="0" src="/Images/home.gif" width="16" height="18"></a></td>
+<td align="center"><a href="#n20090811X_linux_101_hacks"><img border="0" src="/Images/down.png" width="16" height="16"></a></td>
+</tr></table></center>
+
+<h4>[Aug 11, 2009]
+<a target="_blank" href="http://linux.com/learn/tutorials/33766-sysstat-howto-a-deployment-and-configuration-guide-for-linux-servers">
+SYSSTAT Howto A Deployment and Configuration Guide for Linux Servers</a></h4>
+<blockquote>
+	SYSSTAT is a software application comprised of several tools that offers advanced system performance monitoring. It provides the 
+	ability to create a measurable baseline of server performance, as well as the capability to formulate, accurately assess and conclude 
+	what led up to an issue or unexpected occurrence. In short, it lets you peel back layers of the system to see how it's doing... 
+	in a way it is the blinking light telling you what is going on, except it blinks to a file. SYSSTAT has broad coverage of performance 
+	statistics and will watch the following server elements:<ul>
+		<li>Input/Output and transfer rate statistics (global, per device, per partition, per network filesystem and per Linux task 
+		/ PID) </li>
+		<li>CPU statistics (global, per CPU and per Linux task / PID), including support for virtualization architectures </li>
+		<li>Memory and swap space utilization statistics </li>
+		<li>Virtual memory, paging and fault statistics </li>
+		<li>Per-task (per-PID) memory and page fault statistics </li>
+		<li>Global CPU and page fault statistics for tasks and all their children </li>
+		<li>Process creation activity</li>
+		<li>Interrupt statistics (global, per CPU and per interrupt, including potential APIC interrupt sources) </li>
+		<li>Extensive network statistics: network interface activity (number of packets and kB received and transmitted per second, 
+		etc.) including failures from network devices; network traffic statistics for IP, TCP, ICMP and UDP protocols based on SNMPv2 
+		standards.</li>
+		<li>NFS server and client activity </li>
+		<li>Socket statistics</li>
+		<li>Run queue and system load statistics </li>
+		<li>Kernel internal tables utilization statistics </li>
+		<li>System and per Linux task switching activity </li>
+		<li>Swapping statistics</li>
+		<li>TTY device activity</li>
+	</ul>
+	<p>(List source - <a target="_blank" href="http://pagesperso-orange.fr/sebastien.godard/features.html">http://pagesperso-orange.fr/sebastien.godard/features.html</a>)</p>
+	<p><b>Scope</b></p>
+	<p>This article covers a brief overview of how the SYSSTAT utility works, initial configuration, deployment and testing on Linux 
+	based servers. It includes an optional system configuration guide for writing SYSSTAT data into a MySQL database. This article is 
+	not intended to be an in-depth explanation of the inner workings of SYSSTAT, nor a detailed manual on database storage operations.</p>
+	<p>Now... on to the interesting parts of SYSSTAT!</p>
+	<p><b>Overview</b></p>
+	<p>The SYSSTAT software application is composed of several utilities. Each utility has a specific function:</p>
+	<ul>
+		<li><b>iostat</b> reports CPU statistics and input/output statistics for devices, partitions and network filesystems. </li>
+		<li><b>mpstat</b> reports individual or combined processor related statistics. </li>
+		<li><b>pidstat</b> reports statistics for Linux tasks (processes) : I/O, CPU, memory, etc. </li>
+		<li><b>sar</b> collects, reports and saves system activity information (CPU, memory, disks, interrupts, network interfaces, 
+		TTY, kernel tables, NFS, sockets etc.) </li>
+		<li><b>sadc</b> is the system activity data collector, used as a backend for sar. </li>
+		<li><b>sa1</b> collects and stores binary data in the system activity daily data file. It is a front end to sadc designed to 
+		be run from cron. </li>
+		<li><b>sa2</b> writes a summarized daily activity report. It is a front end to sar designed to be run from cron. </li>
+		<li><b>sadf</b> displays data collected by sar in multiple formats (CSV, XML, etc.) This is useful to load performance data 
+		into a database, or import them in a spreadsheet to make graphs.</li>
+	</ul>
+	<p>(List source - <a target="_blank" href="http://pagesperso-orange.fr/sebastien.godard/documentation.html">http://pagesperso-orange.fr/sebastien.godard/documentation.html</a>)</p>
+	<p>The four main components used in collection activities are <b>sar</b>, <b>sa1,</b> <b>sa2 </b>and <b>cron</b>. <b>Sar</b> is 
+	the <u><b>s</b></u>ystem <u><b>a</b></u>ctivity <u><b>r</b></u>eporter. This tool will display interpreted results from the collected 
+	data. Sar is ran interactively by an administrator via command line. When a sar file is created, it is written into the <b>/var/log/sa</b> 
+	directory and named <b>sar##.</b> The <b>##</b> is a numerical value that represents the day of the month (i.e. <b>sa03</b> would 
+	be the third day of the month). The numerical value changes accordingly without system administrator intervention. There are many 
+	option flags to choose from to display data in a sar file to view information about server operations, such as cpu, network activity, 
+	NFS and sockets. These options can be viewed by reviewing the man pages of sar.</p>
+	<p><b>Sa1</b> is the internal mechanism that performs the actual statistical collection and writes the data to a binary file at 
+	specified times. Information is culled from the <b>/proc </b>directory where the Linux kernel writes and maintains pertinent data 
+	while the operating system is running. Similar to sar, the binary file is written into <b>/var/log/sa </b>and named <b>sa##</b>. 
+	Again, the <b>##</b> represents the day of the month (i.e. <b>sar03</b> would be the third day of the month). Once more, the numerical 
+	value changes accordingly without system administrator intervention. </p>
+	<p><b>Sa2</b> is responsible for converting the sa1 binary file into a human readable format. Upon successful creation of the binary 
+	file <b>sa##</b> it becomes necessary to set up a cron task that will call the sa2 libraries to convert the sa1 binary file into 
+	the human-readable sar file. SYSSTAT utilizes the scheduled cron command execution to draw and record specified performance data 
+	based upon pre-defined parameters. It is not necessary to run the <b>sa2</b> cron at the same time or as often as the <b>sa1</b> 
+	cron. The <b>sa2</b> function will create and write the sar file to the /var/log/sa directory. </p>
+	<p>How often SYSSTAT "wakes up" to record and what data is captured, is determined by your operational needs, regulatory requirements 
+	and purposes of the server being monitored. These logs can be rotated to a central logging server and stored for analysis at a later 
+	date if desired.</p>
+</blockquote>
+</em></b></i><center><table border="0" width="100"><tr>
+<td align="center"><a href="#n20090811X_sysstat_howto_a_deployment_and_configuration_guide_for_linux_servers"><img border="0" src="/Images/up.png" width="16" height="16"></a></td>
+<td align="center"><a name="n20090811X_linux_101_hacks" href="#NEWS_TOC"><img border="0" src="/Images/home.gif" width="16" height="18"></a></td>
+<td align="center"><a href="#n20090523X_linux_com_cli_magic_tracking_system_performance_with_sar"><img border="0" src="/Images/down.png" width="16" height="16"></a></td>
+</tr></table></center>
+
+<h4><a target="_blank" href="http://www.ccm.ece.vt.edu/twiki/pub/Main/WebHome/Linux-101-Hacks.pdf">Linux-101-Hacks</a></h4>
+<blockquote>
+	<font size="3"><b>
+	<p align="LEFT">Display CPU Statistics using Sar Command </p>
+	<dir>
+		</b></font><font face="Courier New,Courier New" size="1">
+		<p align="LEFT"># </font><font face="Courier New,Courier New" size="1"><b>sar –u </p>
+		</b>
+		<p align="LEFT">Linux 2.6.9-42.ELsmp (dev-db) 01/01/2009 </p>
+		<p align="LEFT">12:00:01 AM CPU %user %nice %system %iowait %idle </p>
+		<p align="LEFT">12:05:01 AM all 3.70 0.00 0.85 0.00 95.45 </p>
+		<p align="LEFT">12:10:01 AM all 4.59 0.00 1.19 0.06 94.16 </p>
+		<p align="LEFT">12:15:01 AM all 3.90 0.00 0.95 0.04 95.11 </p>
+		<p align="LEFT">12:20:01 AM all 4.06 0.00 1.00 0.01 94.93 </p>
+		<p align="LEFT">12:25:01 AM all 3.89 0.00 0.87 0.00 95.23 </p>
+		<p align="LEFT">12:30:01 AM all 3.89 0.00 0.87 0.00 95.23 </p>
+		<p align="LEFT">Skipped.. </p>
+		<p align="LEFT">Average: all 4.56 0.00 1.00 0.15 94.29 </p>
+	</dir>
+	</font><font size="2"><b>
+	<p align="LEFT">Note: </b></font><font face="Trebuchet MS,Trebuchet MS" size="2">If you need a break down of the performance data 
+	for the individual CPU's, execute the following command. </p>
+	<dir>
+		</font><font face="Courier New,Courier New" size="2">
+		<p align="LEFT"># sar -u -P ALL </p>
+	</dir>
+	</font><font size="3"><b>
+	<p align="LEFT">Display Disk IO Statistics using sar command </p>
+	<dir>
+		</b></font><font face="Courier New,Courier New" size="1">
+		<p align="LEFT"># </font><font face="Courier New,Courier New" size="1"><b>sar –d </p>
+		</b>
+		<p align="LEFT">Linux 2.6.9-42.ELsmp (dev-db) 01/01/2009 </p>
+		<p align="LEFT">12:00:01 AM DEV tps rd_sec/s wr_sec/s </p>
+		<p align="LEFT">12:05:01 AM dev2-0 1.65 1.28 45.43 </p>
+		<p align="LEFT">12:10:01 AM dev8-1 4.08 8.11 21.81 </p>
+		<p align="LEFT">Skipped.. </p>
+		<p align="LEFT">Average: dev2-0 4.66 120.77 69.45 </p>
+		<p align="LEFT">Average: dev8-1 1.89 3.17 8.02 </p>
+	</dir>
+	</font><font size="3"><b>
+	<p align="LEFT">Display networking Statistics using sar command </p>
+	<dir>
+		</b></font><font face="Courier New,Courier New" size="1">
+		<p align="LEFT"># </font><font face="Courier New,Courier New" size="1"><b>sar -n DEV | more </p>
+		</b>
+		<p align="LEFT">Linux 2.6.9-42.ELsmp (dev-db) 01/01/2009 </p>
+		<p align="LEFT">12:00:01 AM IFACE rxpck/s txpck/s rxbyt/s txbyt/s rxcmp/s txcmp/ </p>
+		<p align="LEFT">s rxmcst/s </p>
+		<p align="LEFT">12:05:01 AM lo 0.17 0.16 25.31 23.33 0.00 0.0 </p>
+		<p align="LEFT">0 0.00 </p>
+		<p align="LEFT">12:10:01 AM eth0 52.92 53.64 10169.74 12178.57 0.00 0.0 </p>
+		<p align="LEFT">0 0.00 </p>
+		<p align="LEFT"># </font><font face="Courier New,Courier New" size="1"><b>sar -n SOCK |more </p>
+		</b>
+		<p align="LEFT">Linux 2.6.9-42.ELsmp (dev-db) 01/01/2009 </p>
+		<p align="LEFT">12:00:01 AM totsck tcpsck udpsck rawsck ip-frag </p>
+		<p align="LEFT">12:05:01 AM 50 13 3 0 0 </p>
+		<p align="LEFT">12:10:01 AM 50 13 4 0 0 </p>
+	</dir>
+</blockquote>
+</font>
+</em></b></i><center><table border="0" width="100"><tr>
+<td align="center"><a href="#n20090811X_linux_101_hacks"><img border="0" src="/Images/up.png" width="16" height="16"></a></td>
+<td align="center"><a name="n20090523X_linux_com_cli_magic_tracking_system_performance_with_sar" href="#NEWS_TOC"><img border="0" src="/Images/home.gif" width="16" height="18"></a></td>
+<td align="center"><a href="#n20090523X_project_details_for_ksar"><img border="0" src="/Images/down.png" width="16" height="16"></a></td>
+</tr></table></center>
+
+<h4>[May 23, 2009] <a target="_blank" href="http://www.linux.com/archive/feed/52570">Linux.com CLI Magic Tracking system performance 
+with sar</a> By <a target="_blank" href="http://commandlinemac.com">Keith Winston</a> </h4>
+<blockquote>
+	<h6>March 20, 2006</h6>
+	Sadc (system activity data collector) is the program that gathers performance data. It pulls its data out of the virtual /proc filesystem, 
+	then it saves the data in a file (one per day) named /var/log/sa/saDD where DD is the day of the month.
+	<p>Two shell scripts from the sysstat package control how the data collector is run. The first script, sa1, controls how often data 
+	is collected, while sa2 creates summary reports (one per day) in /var/log/sa/sarDD. Both scripts are run from cron. In the default 
+	configuration, data is collected every 10 minutes and summarized just before midnight.</p>
+	<p>If you suspect a performance problem with a particular program, you can use <code>sadc</code> to collect data on a particular 
+	process (with the <code>-x</code> argument), or its children (<code>-X</code>), but you will need to set up a custom script using 
+	those flags.</p>
+	<p>As Dr. Heisenberg showed, the act of measuring something changes it. Any tool that collects performance data has some overall 
+	negative impact on system performance, but with sar, the impact seems to be minimal. I ran a test with the sa1 cron job set to gather 
+	data every minute (on a server that was not busy) and it didn&#39;t cause any serious issues. That may not hold true on a busy system.</p>
+	<p><strong>Creating reports</strong> </p>
+	<p>If the daily summary reports created by the sa2 script are not enough, you can create your own custom reports using sar. The 
+	sar program reads data from the current daily data file unless you specify otherwise. To have sar read a particular data file, use 
+	the <code>-f /var/log/sa/saDD</code> option. You can select multiple files by using multiple <code>-f</code> options. Since many 
+	of sar&#39;s reports are lengthy, you may want to pipe the output to a file.</p>
+	<p>To create a basic report showing CPU usage and I/O wait time percentage, use <code>sar</code> with no flags. It produces a report 
+	similar to this:</p>
+	<pre>01:10:00 PM       CPU     %user     %nice   %system   %iowait     %idle
+01:20:00 PM       all      7.78      0.00      3.34     20.94     67.94
+01:30:00 PM       all      0.75      0.00      0.46      1.71     97.08
+01:40:00 PM       all      0.65      0.00      0.48      1.63     97.23
+01:50:00 PM       all      0.96      0.00      0.74      2.10     96.19
+02:00:00 PM       all      0.58      0.00      0.54      1.87     97.01
+02:10:00 PM       all      0.80      0.00      0.60      1.27     97.33
+02:20:01 PM       all      0.52      0.00      0.37      1.17     97.94
+02:30:00 PM       all      0.49      0.00      0.27      1.18     98.06
+Average:          all      1.85      0.00      0.44      2.56     95.14
+</pre>
+	<p>If the %idle is near zero, your CPU is overloaded. If the %iowait is large, your disks are overloaded.</p>
+	<p>To check the kernel&#39;s paging performance, use <code>sar -B</code>, which will produce a report similar to this:</p>
+	<pre>11:00:00 AM  pgpgin/s pgpgout/s   fault/s  majflt/s
+11:10:00 AM      8.90     34.08      0.00      0.00
+11:20:00 AM      2.65     26.63      0.00      0.00
+11:30:00 AM      1.91     34.92      0.00      0.00
+11:40:01 AM      0.26     36.78      0.00      0.00
+11:50:00 AM      0.53     32.94      0.00      0.00
+12:00:00 PM      0.17     30.70      0.00      0.00
+12:10:00 PM      1.22     27.89      0.00      0.00
+12:20:00 PM      4.11    133.48      0.00      0.00
+12:30:00 PM      0.41     31.31      0.00      0.00
+Average:       130.91     27.04      0.00      0.00
+</pre>
+	<p>Raw paging numbers may not be of concern, but a high number of
+	<a target="_blank" href="http://www.kernelnewbies.org/glossary/#M">major faults</a> (majflt/s) indicate that the system needs more 
+	memory. Note that majflt/s is only valid with kernel versions 2.5 and later.</p>
+	<p>For network statistics, use <code>sar -n DEV</code>. The <code>-n DEV</code> option tells sar to generate a report that shows 
+	the number of packets and bytes sent and received for each interface. Here is an abbreviated version of the report:</p>
+	<pre>11:00:00 AM     IFACE   rxpck/s   txpck/s   rxbyt/s   txbyt/s
+11:10:00 AM        lo      0.62      0.62     35.03     35.03
+11:10:00 AM      eth0     29.16     36.71   4159.66  34309.79
+11:10:00 AM      eth1      0.00      0.00      0.00      0.00
+11:20:00 AM        lo      0.29      0.29     15.85     15.85
+11:20:00 AM      eth0     25.52     32.08   3535.10  29638.15
+11:20:00 AM      eth1      0.00      0.00      0.00      0.00
+</pre>
+	<p>To see network errors, try <code>sar -n EDEV</code>, which shows network failures.</p>
+	<p><strong>Reports on current activity</strong> </p>
+	<p>Sar can also be used to view what is happening with a specific subsystem, such as networking or I/O, almost in real time. By 
+	passing a time interval (in seconds) and a count for the number of reports to produce, you can take an immediate snapshot of a system 
+	to find a potential bottleneck.</p>
+	<p>For example, to see the basic report every second for the next 10 seconds, use <code>sar 1 10</code>. You can run any of the 
+	reports this way to see near real-time results.</p>
+	<p><strong>Benchmarking</strong> </p>
+	<p>Even if you have plenty of horsepower to run your applications, you can use sar to track changes in the workload over time. To 
+	do this, save the summary reports (sar only saves seven) to a different directory over a period of a few weeks or a month. This 
+	set of reports can serve as a baseline for the normal system workload. Then compare new reports against the baseline to see how 
+	the workload is changing over time. You can automate your comparison reports with
+	<a target="_blank" href="http://www.linux.com/article.pl?sid=06/01/10/2211211">AWK</a> or your favorite programming language.</p>
+	<p>In large systems management, benchmarking is important to predict when and how hardware should be upgraded. It also provides 
+	ammunition to justify your hardware upgrade requests.</p>
+	<p><strong>Digging deeper</strong> </p>
+	<p>In my experience, most hardware performance problems are related to the disks, memory, or CPU. Perhaps more frequently, application 
+	programming errors or poorly designed databases cause serious performance issues.</p>
+	<p>Whatever the problems, sar and friends can give you a comprehensive view of how things are working and help track down bottlenecks 
+	to fix a sluggish system. The examples here just scratch the surface of what sar can do. If you take a look at the man pages, it 
+	should be easy to customize a set of reports for your needs.</p>
+</blockquote>
+</em></b></i><center><table border="0" width="100"><tr>
+<td align="center"><a href="#n20090523X_linux_com_cli_magic_tracking_system_performance_with_sar"><img border="0" src="/Images/up.png" width="16" height="16"></a></td>
+<td align="center"><a name="n20090523X_project_details_for_ksar" href="#NEWS_TOC"><img border="0" src="/Images/home.gif" width="16" height="18"></a></td>
+<td align="center"><a href="#n20090523X_project_details_for_atsar"><img border="0" src="/Images/down.png" width="16" height="16"></a></td>
+</tr></table></center>
+
+<h4><a target="_blank" href="http://freshmeat.net/projects/ksar/">Project details for ksar</a></h4>
+<h5>Java-based</h5>
+<blockquote>
+	<h6><a target="_blank" href="http://freshmeat.net/projects/ksar/">freshmeat.net</a></h6>
+	<p>ksar is a sar graphing tool that can graph Linux, Mac OS X, AIX, and Solaris sar output. A sar statistics graph can be output 
+	to a PDF file. </p>
+</blockquote>
+</em></b></i><center><table border="0" width="100"><tr>
+<td align="center"><a href="#n20090523X_project_details_for_ksar"><img border="0" src="/Images/up.png" width="16" height="16"></a></td>
+<td align="center"><a name="n20090523X_project_details_for_atsar" href="#NEWS_TOC"><img border="0" src="/Images/home.gif" width="16" height="18"></a></td>
+<td align="center"><a href="#n20090523X_project_details_for_sar_p_plot"><img border="0" src="/Images/down.png" width="16" height="16"></a></td>
+</tr></table></center>
+
+<h4><a target="_blank" href="http://freshmeat.net/projects/atsar/">Project details for atsar</a></h4>
+<blockquote>
+	<h6><a target="_blank" href="http://freshmeat.net/projects/atsar/">freshmeat.net</a></h6>
+	<p>The atsar command can be used to detect performance bottlenecks on Linux systems. It is similar to the sar command on other UNIX 
+	platforms. Atsar has the ability to show what is happening on the system at a given moment. It also keeps track of the past system 
+	load by maintaining history files from which information can be extracted. Statistics about the utilization of CPUs, disks and disk 
+	partitions, memory and swap, tty&#39;s, TCP/IP (v4/v6), NFS, and FTP/HTTP traffic are gathered. Most of the functionality of atsar has 
+	been incorporated in the atop project. </p>
+	<p><b>Author:</b><br>
+	Gerlof Langeveld
+	<a style="color: #3366CC; text-decoration: underline; font-family: Verdana, Tahoma, Arial, Helvetica, sans-serif" href="mailto:gerlof%20__at__%20ATComputing%20__dot__%20nl">
+	[contact developer]</a> </p>
+</blockquote>
+</em></b></i><center><table border="0" width="100"><tr>
+<td align="center"><a href="#n20090523X_project_details_for_atsar"><img border="0" src="/Images/up.png" width="16" height="16"></a></td>
+<td align="center"><a name="n20090523X_project_details_for_sar_p_plot" href="#NEWS_TOC"><img border="0" src="/Images/home.gif" width="16" height="18"></a></td>
+<td align="center"><a href="#n20090523X_project_details_for_bsdsar"><img border="0" src="/Images/down.png" width="16" height="16"></a></td>
+</tr></table></center>
+
+<h4><a target="_blank" href="http://freshmeat.net/projects/sarpplot/">Project details for Sar P Plot</a></h4>
+<h5>Perl based</h5>
+<blockquote>
+	<h6><a target="_blank" href="http://freshmeat.net/projects/sarpplot/">freshmeat.net </a></h6>
+	<p>Sar P Plot is a simple application which takes the output of the atsar application and puts it into Gnuplot data files. It can 
+	be useful on server systems for performance analysis.</p>
+</blockquote>
+</em></b></i><center><table border="0" width="100"><tr>
+<td align="center"><a href="#n20090523X_project_details_for_sar_p_plot"><img border="0" src="/Images/up.png" width="16" height="16"></a></td>
+<td align="center"><a name="n20090523X_project_details_for_bsdsar" href="#NEWS_TOC"><img border="0" src="/Images/home.gif" width="16" height="18"></a></td>
+<td align="center"><a href="#n20090523X_red_hat_linux_specific_information"><img border="0" src="/Images/down.png" width="16" height="16"></a></td>
+</tr></table></center>
+
+<h4><a target="_blank" href="http://freshmeat.net/projects/bsdsar/"> Project details for BSDsar</a> </h4>
+<h5>Perl scripts for processing sar data</h5>
+<blockquote>
+	<h6><a target="_blank" href="http://freshmeat.net/projects/bsdsar/">freshmeat.net</a></h6>
+	<p>BSDsar generates a history of usage on a FreeBSD machine. It logs data such as CPU usage, disk activity, network bandwidth usage 
+	and activity, NFS information, memory, and swap. It is similar to atsar (for Linux) and sar (for Solaris).</p>
+</blockquote>
+</em></b></i><center><table border="0" width="100"><tr>
+<td align="center"><a href="#n20090523X_project_details_for_bsdsar"><img border="0" src="/Images/up.png" width="16" height="16"></a></td>
+<td align="center"><a name="n20090523X_red_hat_linux_specific_information" href="#NEWS_TOC"><img border="0" src="/Images/home.gif" width="16" height="18"></a></td>
+<td align="center"><a href="#n20080202X_itworld_com_unix_system_administration_introducing_sar"><img border="0" src="/Images/down.png" width="16" height="16"></a></td>
+</tr></table></center>
+
+<h4><a target="_blank" href="http://www.redhat.com/docs/manuals/linux/RHL-9-Manual/admin-primer/s1-resource-rhlspec.html">Red Hat Linux-Specific 
+Information</a></h4>
+<blockquote>
+	<p><b>2.5.4.3. The <tt class="COMMAND">sadc</tt> command</b></p>
+	<p>As stated earlier, the <tt class="COMMAND">sadc</tt> command collects system utilization data and writes it to a file for later 
+	analysis. By default, the data is written to files in the <tt class="FILENAME">/var/log/sa/</tt> directory. The files are named
+	<tt class="FILENAME">sa<tt class="REPLACEABLE"><i>&lt;dd&gt;</i></tt></tt>, where <tt class="FILENAME"><tt class="REPLACEABLE"><i>&lt;dd&gt;</i></tt></tt> 
+	is the current day&#39;s two-digit date.</p>
+	<p><tt class="COMMAND">sadc</tt> is normally run by the <tt class="COMMAND">sa1</tt> script. This script is periodically invoked 
+	by <tt class="COMMAND">cron</tt> via the file <tt class="FILENAME">sysstat</tt>, which is located in <tt class="FILENAME">/etc/crond.d</tt>. 
+	The <tt class="COMMAND">sa1</tt> script invokes <tt class="COMMAND">sadc</tt> for a single one-second measuring interval. By default,
+	<tt class="COMMAND">cron</tt> runs <tt class="COMMAND">sa1</tt> every 10 minutes, adding the data collected during each interval 
+	to the current <tt class="FILENAME">/var/log/sa/sa<tt class="REPLACEABLE"><i>&lt;dd&gt;</i></tt></tt> file. </p>
+	<p><b>2.5.4.4. The <tt class="COMMAND">sar</tt> command</b></p>
+	<p>The <tt class="COMMAND">sar</tt> command produces system utilization reports based on the data collected by
+	<tt class="COMMAND">sadc</tt>. As configured in Red Hat Linux, <tt class="COMMAND">sar</tt> is automatically run to process the 
+	files automatically collected by <tt class="COMMAND">sadc</tt>. The report files are written to <tt class="FILENAME">/var/log/sa/</tt> 
+	and are named <tt class="FILENAME">sar<tt class="REPLACEABLE"><i>&lt;dd&gt;</i></tt></tt>, where <tt class="FILENAME">
+	<tt class="REPLACEABLE"><i>&lt;dd&gt;</i></tt></tt> is the two-digit representations of the previous day&#39;s two-digit date.</p>
+	<p><tt class="COMMAND">sar</tt> is normally run by the <tt class="COMMAND">sa2</tt> script. This script is periodically invoked 
+	by <tt class="COMMAND">cron</tt> via the file <tt class="FILENAME">sysstat</tt>, which is located in <tt class="FILENAME">/etc/crond.d</tt>. 
+	By default, <tt class="COMMAND">cron</tt> runs <tt class="COMMAND">sa2</tt> once a day at 23:53, allowing it to produce a report 
+	for the entire day&#39;s data.</p>
+	<p><b>2.5.4.4.1. Reading <tt class="COMMAND">sar</tt> Reports</b></p>
+	<p>The format of a <tt class="COMMAND">sar</tt> report produced by the default Red Hat Linux configuration consists of multiple 
+	sections, with each section containing a specific type of data, ordered by the time of day that the data was collected. Since
+	<tt class="COMMAND">sadc</tt> is configured to perform a one-second measurement interval every ten minutes, the default
+	<tt class="COMMAND">sar</tt> reports contain data in ten-minute increments, from 00:00 to 23:50<a name="AEN1680" href="#FTN.AEN1680">[2]</a>.</p>
+	<p>Each section of the report starts with a heading that illustrates the data contained in the section. The heading is repeated 
+	at regular intervals throughout the section, making it easier to interpret the data while paging through the report. Each section 
+	ends with a line containing the average of the data reported in that section.</p>
+	<p>Here is a sample section <tt class="COMMAND">sar</tt> report, with the data from 00:30 through 23:40 removed to save space:</p>
+	<table class="SCREEN" width="100%" bgcolor="#dcdcdc">
+		<tr>
+			<td>
+			<pre class="SCREEN"><tt class="COMPUTEROUTPUT">00:00:01          CPU     %user     %nice   %system     %idle
+00:10:00          all      6.39      1.96      0.66     90.98
+00:20:01          all      1.61      3.16      1.09     94.14
+…
+23:50:01          all     44.07      0.02      0.77     55.14
+Average:          all      5.80      4.99      2.87     86.34</tt>
+            </pre>
+			</td>
+		</tr>
+	</table>
+	<p>In this section, CPU utilization information is displayed. This is very similar to the data displayed by <tt class="COMMAND">
+	iostat</tt>.</p>
+	<p>Other sections may have more than one line&#39;s worth of data per time, as shown by this section generated from CPU utilization 
+	data collected on a dual-processor system:</p>
+	<table class="SCREEN" width="100%" bgcolor="#dcdcdc">
+		<tr>
+			<td>
+			<pre class="SCREEN"><tt class="COMPUTEROUTPUT">00:00:01          CPU     %user     %nice   %system     %idle
+00:10:00            0      4.19      1.75      0.70     93.37
+00:10:00            1      8.59      2.18      0.63     88.60
+00:20:01            0      1.87      3.21      1.14     93.78
+00:20:01            1      1.35      3.12      1.04     94.49
+…
+23:50:01            0     42.84      0.03      0.80     56.33
+23:50:01            1     45.29      0.01      0.74     53.95
+Average:            0      6.00      5.01      2.74     86.25
+Average:            1      5.61      4.97      2.99     86.43</tt>
+            </pre>
+			</td>
+		</tr>
+	</table>
+	<p>There are a total of seventeen different sections present in reports generated by the default Red Hat Linux
+	<tt class="COMMAND">sar</tt> configuration; many are discussing in upcoming chapters. For more information about the data contained 
+	in each section, see the <tt class="COMMAND">sar(1)</tt> man page. </p>
+	<h3 class="FOOTNOTES">Notes</h3>
+	<table class="FOOTNOTES" width="100%" border="0">
+		<tr>
+			<td valign="top" align="left" width="5%">
+			<a name="FTN.AEN1574" href="http://www.redhat.com/docs/manuals/linux/RHL-9-Manual/admin-primer/s1-resource-rhlspec.html#AEN1574">
+			[1]</a></td>
+			<td valign="top" align="left" width="95%">Device major numbers can be found by using <tt class="COMMAND">ls -l</tt> to display 
+			the desired device file in <tt class="FILENAME">/dev/</tt>. Here is sample output from <tt class="COMMAND">ls -l /dev/hda</tt>:<table class="SCREEN" width="90%" bgcolor="#dcdcdc">
+				<tr>
+					<td>
+					<pre class="SCREEN"><tt class="COMPUTEROUTPUT">brw-rw----    1 root     disk       3,   0 Aug 30 19:31 /dev/hda</tt>
+                  </pre>
+					</td>
+				</tr>
+			</table>
+			<p>The major number in this example is <tt class="COMPUTEROUTPUT">3</tt>, and appears between the file&#39;s group and its minor 
+			number.</p>
+			</td>
+		</tr>
+		<tr>
+			<td valign="top" align="left" width="5%">
+			<a name="FTN.AEN1680" href="http://www.redhat.com/docs/manuals/linux/RHL-9-Manual/admin-primer/s1-resource-rhlspec.html#AEN1680">
+			[2]</a></td>
+			<td valign="top" align="left" width="95%">Due to changing system loads, the actual time that the data was collected may 
+			vary by a second or two.</td>
+		</tr>
+	</table>
+</blockquote>
+</em></b></i><center><table border="0" width="100"><tr>
+<td align="center"><a href="#n20090523X_red_hat_linux_specific_information"><img border="0" src="/Images/up.png" width="16" height="16"></a></td>
+<td align="center"><a name="n20080202X_itworld_com_unix_system_administration_introducing_sar" href="#NEWS_TOC"><img border="0" src="/Images/home.gif" width="16" height="18"></a></td>
+<td align="center"><a href="#n20060818X_how_to_monitor_a_system_with_sysstat_on_centos_4_3_howtoforge_linux_howtos_and_tutorials"><img border="0" src="/Images/down.png" width="16" height="16"></a></td>
+</tr></table></center>
+
+<h4>[Feb 2, 2008] <a target="_blank" href="http://www.itworld.com/nl/unix_sys_adm/04172002/">ITworld.com - UNIX SYSTEM ADMINISTRATION 
+- Introducing SAR</a></h4>
+<blockquote>
+	<p>An underused tool for looking into system performance, the sar command samples system activity counters available in the Unix 
+	kernel and prepares reports. Like most tools for measuring performance, sar provides a lot of data but little analysis, which probably 
+	explains why it doesn&#39;t get much more of a workout. It&#39;s up to the user to interpret the numbers and determine how a system is performing 
+	(or what is slowing it down). </p>
+	<p>Some companies bridge the gap between an excessive amount of available data and the bottom line system performance by creating 
+	or employing evaluation tools for the raw numbers and preparing a report that provides conclusions, not just numbers. SarCheck (a 
+	tool available from Aptitune Corporation) is one such tool. It provides some of the performance insights that might otherwise only 
+	be available to those staffs blessed by the presence of a performance specialist. </p>
+	<p>The sar command can be thought of as running in two modes: interactive or &quot;real-time&quot;. &quot;Real-time&quot; mode reports on the system&#39;s 
+	current activity and &quot;historical&quot;, which uses data previously collected and stored in log files. In both cases, the reports reflect 
+	data that is routinely collected in the kernel but, in the latter case, this data is sampled and stored so that past performance 
+	can be analyzed. </p>
+	<p>sar is not strictly a Solaris tool, either. It&#39;s available in other flavors of Unix as well, though configuration and default 
+	behavior may vary between implementations. RedHat Linux systems collect system activity data routinely and save it in files in the 
+	/var/log/sa directory. Solaris systems come prepared for running sar in either mode, but collection of data in performance logs 
+	must be specifically invoked by un-commenting lines in the start script (/etc/rc2.d/S21perf) and crontab file (/var/spool/cron/crontabs/sys) 
+	associated with the tool. </p>
+	<p>The Solaris package containing the sar commands is called SUNWaccu. The interactive and historical versions of the sar command 
+	differ only in where the data is coming from -- from the kernel moment by moment or from one of the log files containing previously 
+	collected performance data.</p>
+</blockquote>
+</em></b></i><center><table border="0" width="100"><tr>
+<td align="center"><a href="#n20080202X_itworld_com_unix_system_administration_introducing_sar"><img border="0" src="/Images/up.png" width="16" height="16"></a></td>
+<td align="center"><a name="n20060818X_how_to_monitor_a_system_with_sysstat_on_centos_4_3_howtoforge_linux_howtos_and_tutorials" href="#NEWS_TOC"><img border="0" src="/Images/home.gif" width="16" height="18"></a></td>
+<td align="center"><a href="#n20060818X_optimizing_aix_5l_performance_monitoring_your_cpu_part_2"><img border="0" src="/Images/down.png" width="16" height="16"></a></td>
+</tr></table></center>
+
+<h4>[Aug 18, 2006] <a target="_blank" href="http://www.howtoforge.com/sysstat_monitoring_centos">How To Monitor A System With Sysstat 
+On Centos 4.3 HowtoForge - Linux Howtos and Tutorials</a></h4>
+<blockquote>
+	A common task for System Administrators is to monitor and care for a server. That&#39;s fairly easy to do at a moment&#39;s notice, but 
+	how to keep a record of this information over time?  One way to monitor your server is to use the Sysstat package.
+<p>
+	<i><b>Sysstat is actually a collection of utilities designed to collect information about the performance of a linux installation, 
+	and record them over time.</b></i>
+<p>
+	It&#39;s fairly easy to install too, since it is included as a package on many distributions.<p>To install on Centos 4.3, just type 
+	the following:</p>
+	<p class="command"><font color="#0000FF"><b>yum install sysstat</b></font></p>
+	<p>We now have the <font color="#0000FF"><b>sysstat</b></font> scripts installed on the system. Lets try the<b><font color="#0000FF">
+	sar</font></b> command.</p>
+	<p class="command"><font color="#0000FF"><b>sar</b></font></p>
+	<pre>Linux 2.6.16-xen (xen30)        08/17/2006
+
+11:00:02 AM       CPU     %user     %nice   %system   %iowait     %idle
+11:10:01 AM       all      0.00      0.00      0.00      0.00     99.99
+Average:          all      0.00      0.00      0.00      0.00     99.99</pre>
+	<p>Several bits of information, such as Linux kernel, hostname, and date are reported.<br>
+	More importantly, the various ways CPU time being spent on the system is shown.</p>
+	<ul>
+		<li><font color="#0000FF"><b>%user, %nice, %system</b></font>,
+		<font color="#0000FF"><b>%iowait,</b></font> and <b><font color="#0000FF">%idle</font></b> 
+		describe ways that the CPU may be utilized.</li>
+		<li><font color="#0000FF"><b>%user</b></font> and <font color="#0000FF"><b>
+		%nice </b></font>refer to your software programs, such as MySQL or Apache.</li>
+		<li><font color="#0000FF"><b>%system </b></font>refers to the kernel&#39;s internal workings.</li>
+		<li><font color="#0000FF"><b>%iowait </b></font>is time spent waiting for Input/Output, such as 
+		a disk read or write. Finally, since the kernel accounts for 100% of the runnable time it can schedule, any unused time goes 
+		into %idle.</li>
+	</ul>
+	<p>The information above is shown for a 1 second interval. How can we keep track of that information over time? 
+<p>
+	If our system was consistently running heavy in <b><font color="#0000FF">%iowait</font></b>, we might 
+	surmise that a disk was getting overloaded, or going bad.
+<p>
+	At least, we would know to investigate.</p>
+	<p>So how do we track the information over time? We can schedule sar to run at regular intervals, say, 
+	every 10 minutes.
+<p>
+	We then direct it to send the output to sysstat&#39;s special log files for later reports.<br>
+	The way to do this is with the Cron daemon.</p>
+	<p>By creating a file called <font color="#0000FF"><b>sysstat </b></font>in <b>
+	<font color="#0000FF">/etc/cron.d</font></b>, we can tell cron to run sar every day.<br>
+	Fortunately, the Systat package that yum installed already did this step for us.</p>
+	<p class="command"><b><font color="#0000FF">more /etc/cron.d/sysstat</font></b></p>
+	<pre># run system activity accounting tool every 10 minutes
+*/10 * * * * root /usr/lib/sa/sa1 1 1
+# generate a daily summary of process accounting at 23:53
+53 23 * * * root /usr/lib/sa/sa2 -A</pre>
+	<p>The sa1 script logs sar output into sysstatâ€™s binary log file format, and 
+	sa2 reports it back in human readable format. The report is written to a file in /var/log/sa.</p>
+	<p class="command"><b><font color="#0000FF">ls /var/log/sa</font></b></p>
+	<pre>sa17  sar17</pre>
+	<p>sa17 is the binary sysstat log, sar17 is the report. (Today&#39;s date is 
+	the 17th)</p>
+	<p>There is quite alot of information contained in the sar report, but there are a few values that can tell us how busy the server 
+	is.
+<p>
+	Values to watch are swap usage, disk IO wait, and the run queue. These can be obtained by running <font color="#0000FF"><b>sar</b></font> 
+	manually, which will report on those values.</p>
+	<p class="command"><font color="#0000FF"><b>sar</b></font></p>
+	<pre>Linux 2.6.16-xen (xen30)        08/17/2006
+
+11:00:02 AM       CPU     %user     %nice   %system   %iowait     %idle
+11:10:01 AM       all      0.00      0.00      0.00      0.00     99.99
+11:20:01 AM       all      0.00      0.00      0.00      0.00    100.00
+11:30:02 AM       all      0.01      0.26      0.19      1.85     97.68
+11:39:20 AM       all      0.00      2.41      2.77      0.53     94.28
+11:40:01 AM       all      1.42      0.00      0.18      3.24     95.15
+Average:          all      0.03      0.62      0.69      0.64     98.02</pre>
+	<p>There were a few moments where of disk activity was high in the <b><font color="#0000FF">%iowait</font></b> 
+	column, but it didn&#39;t stay that way for too long. An average of 0.64 is pretty good.</p>
+	<p>How about my swap usage, am I running out of Ram? Being swapped out is normal for the Linux kernel, which will swap from time 
+	to time. Constant swapping is bad, and generally means you need more Ram.</p>
+	<p class="command"><font color="#0000FF"><b>sar -W</b></font></p>
+	<pre>Linux 2.6.16-xen (xen30)        08/17/2006
+
+11:00:02 AM  pswpin/s pswpout/s
+11:10:01 AM      0.00      0.00
+11:20:01 AM      0.00      0.00
+11:30:02 AM      0.00      0.00
+11:39:20 AM      0.00      0.00
+11:40:01 AM      0.00      0.00
+11:50:01 AM      0.00      0.00
+Average:         0.00      0.00</pre>
+	<p>Nope, we are looking good. No persistant swapping has taken place.</p>
+	<p>How about system load? Are my processes waiting too long to run on the CPU?</p>
+	<p class="command"><font color="#0000FF"><b>sar -q</b></font></p>
+	<pre>Linux 2.6.16-xen (xen30)        08/17/2006
+
+11:00:02 AM   runq-sz  plist-sz   ldavg-1   ldavg-5  ldavg-15
+11:10:01 AM         0        47      0.00      0.00      0.00
+11:20:01 AM         0        47      0.00      0.00      0.00
+11:30:02 AM         0        47      0.28      0.21      0.08
+11:39:20 AM         0        45      0.01      0.24      0.17
+11:40:01 AM         0        46      0.07      0.22      0.17
+11:50:01 AM         0        46      0.00      0.02      0.07
+Average:            0        46      0.06      0.12      0.08</pre>
+	<p>No, an average load of .06 is really good. Notice that there is a 1, 5, and 15 minute interval on the right.
+<p>
+	Having the three time intervals gives you a feel for how much load the system is carrying.<br>
+	A 3 or 4 in the 1 minute average is ok, but the same number in the 15 minute<br>
+	column may indicate that work is not clearing out, and that a closer look is warranted.</p>
+	<p>This was a short look at the Sysstat package.</p>
+	<p>We only looked at the out put of three of sar&#39;s attributes, but there are others.<br>
+	Now, armed with sar in your toolbox, your system administration job just became a little easier. </p>
+	<i>This page is released into the public domain.</i></blockquote>
+</em></b></i><center><table border="0" width="100"><tr>
+<td align="center"><a href="#n20060818X_how_to_monitor_a_system_with_sysstat_on_centos_4_3_howtoforge_linux_howtos_and_tutorials"><img border="0" src="/Images/up.png" width="16" height="16"></a></td>
+<td align="center"><a name="n20060818X_optimizing_aix_5l_performance_monitoring_your_cpu_part_2" href="#NEWS_TOC"><img border="0" src="/Images/home.gif" width="16" height="18"></a></td>
+<td align="center"><a href="#n20060818X_identifying_i_o_bottlenecks_under_unix"><img border="0" src="/Images/down.png" width="16" height="16"></a></td>
+</tr></table></center>
+
+<h4><a target="_blank" href="http://www.ibm.com/developerworks/aix/library/au-aixoptimization2/index.html?ca=drs-">Optimizing AIX 5L 
+performance Monitoring your CPU, Part 2</a></h4>
+<blockquote>
+	<p><b>Using sar</b></p>
+	<p>The next command, <code>sar</code>, is the UNIX System Activity Reporting tool (part of the bos.acct fileset). It has been around 
+	for what seems like forever in the UNIX world. This command essentially writes to standard output the contents of the cumulative 
+	activity, which you would have selected as its flag. For example, the following command using the <code>-u</code> flag reports CPU 
+	statistics. As with vmstat, if you are using shared partitioning in a virtualized environment, it reports back two additional columns 
+	of information; <i>physc</i> and <i>entc</i>, which define the number of physical processors consumed by the partitions as well 
+	as the percentage of entitled capacity utilized. </p>
+	<p>I ran this command on the system (see <a href="#list3">Listing 3</a>) when there were no users around. Unless 
+	there were some batch jobs running, I would not expect to see a lot of activity. </p>
+	<p><b>Listing 3. Running sar with no users around</b></p>
+	<pre>                
+# sar -u 1 5 (or sar 1 5)
+
+AIX test01 3 5     03/18/07
+
+System configuration: lcpu=2 
+
+17:36:53    %usr    %sys    %wio   %idle   physc
+17:36:54       0       0       0     100    2.00
+17:36:55       1       0       0     99     2.00
+17:36:56       0       0       0     100    2.00
+17:36:57       0       0       0     100    2.00
+17:36:58       0       0       0     100    2.00
+
+Average        0       0       0     100    2.00
+</pre>
+	<p>Clearly, this system also shows no CPU bottleneck to speak of.</p>
+	<p>The columns used above are similar to vmstat entry outputs. The following table correlates sar and vmstat descriptives (see
+	<a href="#table1">Table 1</a>).
+<p>
+	<a name="table1"><b>Table 1. sar output fields and the corresponding vmstat field</b></a></p>
+	<table class="data-table-1" cellspacing="0" cellpadding="0" width="572 sar commandcommandcommandy=" table using a heading tag for the caption, all columns left-aligned" border="0">
+		<tr>
+			<th>sar</th>
+			<th>vmstat</th>
+		</tr>
+		<tr>
+			<td>%usr</td>
+			<td>us</td>
+		</tr>
+		<tr>
+			<td>%sys</td>
+			<td>sy</td>
+		</tr>
+		<tr>
+			<td>%wio</td>
+			<td>wa</td>
+		</tr>
+		<tr>
+			<td>%idle</td>
+			<td>id</td>
+		</tr>
+	</table>
+	<p>One of the reasons I prefer vmstat to sar is that it gives you the CPU utilization information, and it provides overall monitoring 
+	information on memory and I/O. With sar, you need to run separate commands to pull the information. One advantage that sar gives 
+	you is the ability to capture daily information and to run reports on this information (without writing your own script to do so). 
+	It does this by using a process called the System Activity Data Collector, which is essentially a back-end to the <code>sar</code> 
+	command. When enabled, usually through cron (on a default AIX partition, you would usually find it commented out), it collects data 
+	periodically in binary format. </p>
+</blockquote>
+</em></b></i><center><table border="0" width="100"><tr>
+<td align="center"><a href="#n20060818X_optimizing_aix_5l_performance_monitoring_your_cpu_part_2"><img border="0" src="/Images/up.png" width="16" height="16"></a></td>
+<td align="center"><a name="n20060818X_identifying_i_o_bottlenecks_under_unix" href="#NEWS_TOC"><img border="0" src="/Images/home.gif" width="16" height="18"></a></td>
+<td align="center"><a href="#n20060228X_easy_system_monitoring_with_sar"><img border="0" src="/Images/down.png" width="16" height="16"></a></td>
+</tr></table></center>
+
+<h4>[PDF]
+<a target="_blank" href="http://support.businessobjects.com/documentation/installation_resources/5i/tips_and_tricks/pdf/deployment/dt024.pdf">
+Identifying I/O Bottlenecks Under UNIX</a></h4>
+</em></b></i><center><table border="0" width="100"><tr>
+<td align="center"><a href="#n20060818X_identifying_i_o_bottlenecks_under_unix"><img border="0" src="/Images/up.png" width="16" height="16"></a></td>
+<td align="center"><a name="n20060228X_easy_system_monitoring_with_sar" href="#NEWS_TOC"><img border="0" src="/Images/home.gif" width="16" height="18"></a></td>
+<td align="center"><a href="#n20100627X_the_sar_command"><img border="0" src="/Images/down.png" width="16" height="16"></a></td>
+</tr></table></center>
+
+<h4>[Feb 28,  2006] <a target="_blank" href="http://www.ibm.com/developerworks/aix/library/au-unix-perfmonsar.html">Easy system 
+monitoring with SAR</a> by <a href="#author">Sean Walberg</a></h4>
+<blockquote>
+	<p><b><a target="_blank" href="http://www.ibm.com/developerworks">www.ibm.com/developerworks</a></b></p>
+	<p><b>Extracting useful information</b></p>
+	<p>Data is being collected, but it must be queried to be useful. Running the <code>sar</code> command without options generates 
+	basic statistics about CPU usage for the current day. <a href="#listing2">Listing 2</a> shows the output of
+	<code>sar</code> without any parameters. (You might see different column names depending on the platform. In some UNIX flavors,
+	<code>sadc</code> collects more or less data based on what&#39;s available.) The examples here are from Sun Solaris 10; whatever platform 
+	you&#39;re using will be similar, but might have slightly different column names.</p>
+	<br>
+	<a name="listing2"><b>Listing 2. Default output of sar (showing CPU usage</b></a><pre>-bash-3.00$ sar
+
+SunOS unknown 5.10 Generic_118822-23 sun4u    01/20/2006
+
+00:00:01    %usr    %sys    %wio   %idle
+00:10:00       0       0       0     100
+. cut ...
+09:30:00       4      47       0      49
+
+Average        0       1       0      98
+</pre>
+	<p>Each line in the output of <code>sar</code> is a single measurement, with the timestamp in the left-most column. The other columns 
+	hold the data. (These columns vary depending on the command-line arguments you use.) In <a href="#listing2">Listing 
+	2</a>, the CPU usage is broken into four categories:</p>
+	<ul>
+		<li><b>%usr:</b> The percentage of time the CPU is spending on user processes, such as applications, shell scripts, or interacting 
+		with the user. </li>
+		<li><b>%sys:</b> The percentage of time the CPU is spending executing kernel tasks. In this example, the number is high, because 
+		I was pulling data from the kernel&#39;s random number generator. </li>
+		<li><b>%wio:</b> The percentage of time the CPU is waiting for input or output from a block device, such as a disk. </li>
+		<li><b>%idle:</b> The percentage of time the CPU isn&#39;t doing anything useful. </li>
+	</ul>
+	<p>The last line is an average of all the datapoints. However, because most systems experience busy periods followed by idle periods, 
+	the average doesn&#39;t tell the entire story.</p>
+	<p><b><a name="N100D3">Watching disk activity</a></b></p>
+	<p>Disk activity is also monitored. High disk usage means that there will be a greater chance that an application requesting data 
+	from disk will block (pause) until the disk is ready for that process. The solution typically involves splitting file systems across 
+	disks or arrays; however, the first step is to know that you have a problem.</p>
+	<p>The output of <code>sar -d</code> shows various disk-related statistics for one measurement period. For the sake of brevity,
+	<a href="#listing3">Listing 3</a> shows only hard disk drive activity.
+<p>
+	<a name="listing3"><b>Listing 3. Output of sar -d (showing disk activity)</b></a></p>
+	<pre>$ sar -d
+
+SunOS unknown 5.10 Generic_118822-23 sun4u    01/22/2006
+
+00:00:01   device       %busy   avque   r+w/s  blks/s  avwait  avserv
+. cut ...
+14:00:02   dad0             31     0.6      78   16102     1.9     5.3
+           dad0,c            0     0.0       0       0     0.0     0.0
+           dad0,h           31     0.6      78   16102     1.9     5.3
+           dad1              0     0.0       0       1     1.6     1.3
+           dad1,a            0     0.0       0       1     1.6     1.3
+           dad1,b            0     0.0       0       0     0.0     0.0
+           dad1,c            0     0.0       0       0     0.0     0.0
+</pre>
+	<p>As in the previous example, the time is along the left. The other columns are as follows:</p>
+	<ul>
+		<li><b>device:</b> This is the disk, or disk partition, being measured. In Sun Solaris, you must translate this disk into a 
+		physical disk by looking up the reported name in /etc/path_to_inst, and then cross-reference that information to the entries 
+		in /dev/dsk. In Linux®, the major and minor numbers of the disk device are used. </li>
+		<li><b>%busy:</b> This is the percentage of time the device is being read from or written to. </li>
+		<li><b>avque:</b> This is the average depth of the queue that is used to serialize disk activity. The higher the avque value, 
+		the more blocking is occurring. </li>
+		<li><b>r+w/s, blks/s:</b> This is disk activity per second in terms of read or write operations and disk blocks, respectively.
+		</li>
+		<li><b>avwait:</b> This is the average time (in milliseconds) that a disk read or write operation waits before it is performed.
+		</li>
+		<li><b>avserv:</b> This is the average time (in milliseconds) that a disk read or write operation takes to execute. </li>
+	</ul>
+	<p>Some of these numbers, such as <b>avwait</b> and <b>avserv</b> values, correlate directly into user experience. High wait times 
+	on the disk likely point to several people contending for the disk, which should be confirmed with high avque numbers. High avserv 
+	values point to slow disks.</p>
+	<p><b>Other metrics</span></b></p>
+	<p>Many other items are collected, with corresponding arguments to view them:</p>
+	<ul>
+		<li>The <code>-b</code> argument shows information on buffers and the efficiency of using a buffer versus having to go to disk.
+		</li>
+		<li>The <code>-c</code> argument shows system calls broken down into some of the popular calls, such as <code>fork()</code>,
+		<code>exec()</code>, <code>read()</code>, and <code>write()</code>. High process creation can lead to poor performance and is 
+		a sign that you might need to move some applications to another computer. </li>
+		<li>The <code>-g</code>, <code>-p</code>, and <code>-w</code> arguments show paging (swapping) activity. High paging is a sign 
+		of memory starvation. In particular, the <code>-w</code> argument shows the number of process switches: A high number can mean 
+		too many things are running on the computer, which is spending more time switching than working. </li>
+		<li>The <code>-q</code> argument shows the size of the run queue, which is the same as the load average for the time. </li>
+		<li>The <code>-r</code> argument shows free memory and swap space over time. </li>
+	</ul>
+	<p>Each UNIX flavor implements its own set of measurements and command-line arguments for <code>sar</code>. Those I&#39;ve shown are 
+	common and represent the elements that I find more useful. </p>
+</blockquote>
+</em></b></i><h2><a name="Recommended_Links">Recommended Links</a></h2>
+<table border="0" width="100%" height="220">
+<tr>
+<td width="100%" align="center">	
+
+<h3>Google matched content</h3>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-format="autorelaxed"
+     data-ad-client="ca-pub-4031247137266443"
+     data-ad-slot="1626659014"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</td>
+</table>
+<h3>Softpanorama Recommended</h3>
+
+<h3><a name="Top_articles">Top articles</a></h3><h3><a name="Sites">Sites</a></h3>
+
+<h4><a target="_blank" href="http://en.wikipedia.org/wiki/Sar_in_UNIX">Sar in UNIX - Wikipedia, the free encyclopedia</a></h4>
+<h4><a target="_blank" href="http://pagesperso-orange.fr/sebastien.godard/">SYSSTAT</a></h4>
+<blockquote>
+	<p>This page has news, information, documentation and links software for the sysstat utilities that I created 
+	for Linux. The sysstat utilities are a collection of performance monitoring tools for Linux. These include sar, sadf, mpstat, iostat, 
+	pidstat and sa tools. Go to the 
+	<a target="_blank" href="http://pagesperso-orange.fr/sebastien.godard/features.html">Features</a> page 
+	to display a list of sysstat&#39;s features, or see the 
+	<a target="_blank" href="http://pagesperso-orange.fr/sebastien.godard/documentation.html">Documentation</a><span lang="EN-GB"> page 
+	to learn some more about them.</span></p>
+</blockquote>
+<h4><a target="_blank" href="http://www.ibm.com/developerworks/aix/library/au-unix-perfmonsar.html">Easy system monitoring with SAR</a> 
+by
+<a class="dwauthor" title rel="#authortip1" jquery1243174320448="23" cmimpressionsent="1" hoverintent_t="undefined" hoverintent_s="1" href="#author1">
+Sean Walberg</a>  </h4>
+<blockquote>
+	<h6>Feb 28, 2006 | IBM DeveloperWorks</h6>
+</blockquote>
+<h4><a target="_blank" href="http://www.howtoforge.com/sysstat_monitoring_centos">How To Monitor A System With Sysstat On Centos 4.3 
+HowtoForge - Linux Howtos and Tutorials</a> by
+<a title="View user profile." rel="nofollow" href="http://www.howtoforge.com/forums/member.php?u=4107">Quantact-Tim</a></h4>
+<h4><a target="_blank" href="http://www.linux.com/archive/feature/52570">Linux.com CLI Magic Tracking system performance with sar</a></h4>
+<h4><a target="_blank" href="http://www.itworld.com/nl/unix_sys_adm/04172002/">ITworld.com - UNIX SYSTEM ADMINISTRATION - Introducing 
+SAR</a></h4>
+<h4>[PDF]
+<a class="l" onmousedown="return clk('http://www.nciips.cc.nc.us/fallconference%20presentations/Solaris%20Performance%20monitoring%20-%20sar.pdf','res','8','')" href="http://www.nciips.cc.nc.us/fallconference%20presentations/Solaris%20Performance%20monitoring%20-%20sar.pdf">
+Solaris Performance monitoring - sar - NCCCS Systems Office Wiki</a></h4>
+<h4><a target="_blank" href="http://freshmeat.net/projects/bsdsar/">freshmeat.net Project details for BSDsar</a> </h4>
+<blockquote>
+	<p>BSDsar generates a history of usage on a FreeBSD machine. It logs data such as CPU usage, disk activity, network bandwidth usage 
+	and activity, NFS information, memory, and swap. It is similar to atsar (for Linux) and sar (for Solaris).</p>
+</blockquote>
+<h4><a target="_blank" href="http://freshmeat.net/projects/atsar/">freshmeat.net Project details for atsar</a></h4>
+<blockquote>
+	The atsar command can be used to detect performance bottlenecks on Linux systems. It is similar to the sar command on other UNIX 
+	platforms. Atsar has the ability to show what is happening on the system at a given moment. It also keeps track of the past system 
+	load by maintaining history files from which information can be extracted. Statistics about the utilization of CPUs, disks and disk 
+	partitions, memory and swap, tty&#39;s, TCP/IP (v4/v6), NFS, and FTP/HTTP traffic are gathered. Most of the functionality of atsar has 
+	been incorporated in the atop project.
+	<p><b>Author:</b><br>
+	Gerlof Langeveld
+	<a style="color: #3366CC; text-decoration: underline; font-family: Verdana, Tahoma, Arial, Helvetica, sans-serif" href="mailto:gerlof%20__at__%20ATComputing%20__dot__%20nl">
+	[contact developer]</a> </p>
+	<h2><a name="Sar_Report_Generators">Sar Report Generators</a></h2>
+</blockquote>
+<h4><a target="_blank" href="http://freshmeat.net/projects/sarpplot/">freshmeat.net Project details for Sar P Plot</a></h4>
+<blockquote>
+	<p>Sar P Plot is a simple application which takes the output of the atsar application and puts it into Gnuplot data files. It can 
+	be useful on server systems for performance analysis.</p>
+</blockquote>
+<h4><a target="_blank" href="http://freshmeat.net/projects/bsdsar/">freshmeat.net Project details for BSDsar</a> </h4>
+<h5>Perl scripts for processing sar data</h5>
+<blockquote>
+	<p>BSDsar generates a history of usage on a FreeBSD machine. It logs data such as CPU usage, disk activity, network bandwidth usage 
+	and activity, NFS information, memory, and swap. It is similar to atsar (for Linux) and sar (for Solaris).</p>
+</blockquote>
+<h2><a name="Reference">Reference</a></h2>
+<h4><a target="_blank" href="http://www.princeton.edu/~psg/unix/solaris/troubleshoot/sar.html">Solaris troubleshooting - sar</a></h4>
+<blockquote>
+	<p>The word &quot;<code>sar</code>&quot; is used to refer to two related items: <br>
+ </p>
+	<ol>
+		<li>The system activity report package </li>
+		<li>The system activity reporter </li>
+	</ol>
+	<p><b>System Activity Report Package</b></p>
+	This facility stores a great deal of performance data about a system. This information is invaluable when attempting to identify 
+	the source of a performance problem.
+	<p>The Report Package can be enabled by uncommenting the appropriate lines in the sys crontab. The <code>sa1</code> program stores 
+	performance data in the <code>/var/adm/sa</code> directory. <code>sa2 </code>writes reports from this data, and <code>sadc</code> 
+	is a more general version of <code>sa1</code>. </p>
+	<p>In practice, I do not find that the <code>sa2</code>-produced reports are terribly useful in most cases. Depending on the issue 
+	being examined, it may be sufficient to run <code>sa1</code> at intervals that can be set in the sys crontab. </p>
+	<p>Alternatively, <code>sar</code> can be used on the command line to look at performance over different time slices or over a constricted 
+	period of time: 
+<p>
+	<code>sar -A -o <i>outfile</i> 5 2000</code> 
+<p>
+	(Here, &quot;5&quot; represents the time slice and &quot;2000&quot; represents the number of samples to be taken. &quot;outfile&quot; is the output file where 
+	the data will be stored.) </p>
+	<p>The data from this file can be read by using the &quot;-f&quot; option (see below). </p>
+	<p><b>System Activity Reporter</b></p>
+	<code>sar</code> has several options that allow it to process the data collected by <code>sa1</code> in different ways:
+	<ul>
+		<li><b>-a</b>: Reports file system access statistics. Can be used to look at issues related to the
+		<a target="_blank" href="http://www.princeton.edu/~psg/unix/solaris/troubleshoot/diskio.html#dnlc">DNLC</a>. <br>
+ <ul>
+			<li><b>iget/s</b>: Rate of requests for inodes not in the DNLC. An <code>iget</code> will be issued for each path component 
+			of the file&#39;s path. <br>
+ </li>
+			<li><b>namei/s</b>: Rate of file system path searches. (If the directory name is not in the DNLC, <code>iget</code> calls 
+			are made.) <br>
+ </li>
+			<li><b>dirbk/s</b>: Rate of directory block reads. <br>
+ </li>
+		</ul>
+		</li>
+		<li><b>-A</b>: Reports all data. <br>
+ </li>
+		<li><b>-b</b>: Buffer activity reporter: <br>
+ <ul>
+			<li><b>bread/s, bwrit/s</b>: Transfer rates (per second) between system buffers and block devices (such as disks). <br>
+ </li>
+			<li><b>lread/s, lwrit/s</b>: System buffer access rates (per second). <br>
+ </li>
+			<li><b>%rcache, %wcache</b>: Cache hit rates (%). <br>
+ </li>
+			<li><b>pread/s, pwrit/s</b>: Transfer rates between system buffers and character devices. <br>
+ </li>
+		</ul>
+		</li>
+		<li><b>-c</b>: System call reporter: <br>
+ <ul>
+			<li><b>scall/s</b>: System call rate (per second). <br>
+ </li>
+			<li><b>sread/s, swrit/s, fork/s, exec/s</b>: Call rate for these calls (per second). <br>
+ </li>
+			<li><b>rchar/s, wchar/s</b>: Transfer rate (characters per second). <br>
+ </li>
+		</ul>
+		</li>
+		<li><b>-d</b>: Disk activity (actually, block device activity): <br>
+ <ul>
+			<li><b>%busy</b>: % of time servicing a transfer request. <br>
+ </li>
+			<li><b>avque</b>: Average number of outstanding requests. <br>
+ </li>
+			<li><b>r+w/s</b>: Rate of reads+writes (transfers per second). <br>
+ </li>
+			<li><b>blks/s</b>: Rate of 512-byte blocks transferred (per second). <br>
+ </li>
+			<li><b>avwait</b>: Average wait time (ms). <br>
+ </li>
+			<li><b>avserv</b>: Average service time (ms). (For block devices, this includes seek rotation and data transfer times. Note 
+			that the <code><a target="_blank" href="http://www.princeton.edu/~psg/unix/solaris/troubleshoot/iostat.html">iostat</a></code>
+			<code>svc_t</code> is equivalent to the <code>avwait</code>+<code>avserv</code>.) <br>
+ </li>
+		</ul>
+		</li>
+		<li><b>-e HH:MM</b>: CPU useage up to time specified. <br>
+ </li>
+		<li><b>-f <i>filename</i></b>: Use <i>filename</i> as the source for the binary <code>sar</code> data. The default is to use 
+		today&#39;s file <code>from /var/adm/sa</code>. <br>
+ </li>
+		<li><b>-g</b>: Paging activity (see
+		<a target="_blank" href="http://www.princeton.edu/~psg/unix/solaris/troubleshoot/ram.html#paging">&quot;Paging&quot; </a>for more details):
+		<ul>
+			<br>
+ <li><b>pgout/s</b>: Page-outs (requests per second). <br>
+ </li>
+			<li><b>ppgout/s</b>: Page-outs (pages per second). <br>
+ </li>
+			<li><b>pgfree/s</b>: Pages freed by the page scanner (pages per second). <br>
+ </li>
+			<li><b>pgscan/s</b>: Scan rate (pages per second). <br>
+ </li>
+			<li><b>%ufs_ipf</b>: Percentage of UFS inodes removed from the free list while still pointing at reuseable memory pages. 
+			This is the same as the percentage of igets that force page flushes. <br>
+ </li>
+		</ul>
+		<br>
+ </li>
+		<li><b>-i <i>sec</i></b>: Set the data collection interval to i seconds. <br>
+ </li>
+		<li><b>-k</b>: Kernel memory allocation:
+		<ul>
+			<br>
+ <li><b>sml_mem</b>: Amount of virtual memory available for the small pool (bytes). (Small requests are less than 256 bytes)
+			<br>
+ </li>
+			<li><b>lg_mem</b>: Amount of virtual memory available for the large pool (bytes). (512 bytes-4 Kb) <br>
+ </li>
+			<li><b>ovsz_alloc</b>: Memory allocated to oversize requests (bytes). Oversize requests are dynamically allocated, so there 
+			is no pool. (Oversize requests are larger than 4 Kb) <br>
+ </li>
+			<li><b>alloc</b>: Amount of memory allocated to a pool (bytes). The total KMA useage is the sum of these columns. <br>
+ </li>
+			<li><b>fail</b>: Number of requests that failed. </li>
+		</ul>
+		<br>
+ </li>
+		<li><b>-m</b>: Message and semaphore activities. <br>
+ <ul>
+			<li><b>msg/s, sema/s</b>: Message and semaphore statistics (operations per second). <br>
+ </li>
+		</ul>
+		</li>
+		<li><b>-o <i>filename</i></b>: Saves output to <i>filename</i>. <br>
+ </li>
+		<li><b>-p</b>: Paging activities. <br>
+ <ul>
+			<li><b>atch/s</b>: Attaches (per second). (This is the number of page faults that are filled by reclaiming a page already 
+			in memory.) <br>
+ </li>
+			<li><b>pgin/s</b>: Page-in requests (per second) to file systems. <br>
+ </li>
+			<li><b>ppgin/s</b>: Page-ins (per second). (Multiple pages may be affected by a single request.) <br>
+ </li>
+			<li><b>pflt/s</b>: Page faults from protection errors (per second). <br>
+ </li>
+			<li><b>vflts/s</b>: Address translation page faults (per second). (This happens when a valid page is not in memory. It is 
+			comparable to the <code>vmstat</code>-reported <code>page/mf</code> value.) <br>
+ </li>
+			<li><b>slock/s</b>: Faults caused by software lock requests that require physical I/O (per second). <br>
+ </li>
+		</ul>
+		</li>
+		<li><b>-q</b>: Run queue length and percentage of the time that the run queue is occupied. <br>
+ </li>
+		<li><b>-r</b>: Unused memory pages and disk blocks. <br>
+ <ul>
+			<li><b>freemem</b>: Pages available for use (Use <code>pagesize</code> to determine the size of the pages). <br>
+ </li>
+			<li><b>freeswap</b>: Disk blocks available in swap (512-byte blocks). <br>
+ </li>
+		</ul>
+		</li>
+		<li><b>-s <i>time</i></b>: Start looking at data from <i>time</i> onward. <br>
+ </li>
+		<li><b>-u</b>: CPU utilization. <br>
+ <ul>
+			<li><b>%usr</b>: User time. <br>
+ </li>
+			<li><b>%sys</b>: System time. <br>
+ </li>
+			<li><b>%wio</b>: Waiting for I/O (does not include time when another process could be schedule to the CPU). <br>
+ </li>
+			<li><b>%idle</b>: Idle time. <br>
+ </li>
+		</ul>
+		</li>
+		<li><b>-v</b>: Status of process, inode, file tables. <br>
+ <ul>
+			<li><b>proc-sz</b>: Number of process entries (proc structures) currently in use, compared with <code>max_nprocs</code>.
+			<br>
+ </li>
+			<li><b>inod-sz</b>: Number of inodes in memory compared with the number currently allocated in the kernel. <br>
+ </li>
+			<li><b>file-sz</b>: Number of entries in and size of the open file table in the kernel. <br>
+ </li>
+			<li><b>lock-sz</b>: Shared memory record table entries currently used/allocated in the kernel. This size is reported as 
+			0 for standards compliance (space is allocated dynamically for this purpose). <br>
+ </li>
+			<li><b>ov</b>: Overflows between sampling points. <br>
+ </li>
+		</ul>
+		</li>
+		<li><b>-w</b>: System swapping and switching activity. <br>
+ <ul>
+			<li><b>swpin/s, swpot/s, bswin/s, bswot/s</b>: Number of LWP transfers or 512-byte blocks per second. <br>
+ </li>
+			<li><b>pswch/s</b>: Process switches (per second). <br>
+ </li>
+		</ul>
+		</li>
+		<li><b>-y</b>: TTY device activity. <br>
+ <ul>
+			<li><b>rawch/s, canch/s, outch/s</b>: Input character rate, character rate processed by canonical queue, output character 
+			rate. <br>
+ </li>
+			<li><b>rcvin/s, xmtin/s, mdmin/s</b>: Receive, transmit and modem interrupt rates. </li>
+		</ul>
+		</li>
+	</ul>
+</blockquote>
+<h2><hr></h2>
+<hr noshade color="#FF0000" size="5">
+
+<h2><a name="Etc">Etc</a></h2>
+
+<p><b>Society</b></p>
+<blockquote>
+
+<p><b><a href="/Skeptics/groupthink.shtml"><font size="2">Groupthink</font></a><font size="2"> :
+<a href="/Skeptics/Political_skeptic/Two_party_system_as_poliarchy/index.shtml">Two Party System 
+as Polyarchy</a> : 
+<a href="/Skeptics/Financial_skeptic/Casino_capitalism/Corruption_of_regulators/index.shtml">
+Corruption of Regulators</a> :
+<a href="/Social/Bureaucracy/index.shtml">Bureaucracies</a> :
+<a href="/Social/Toxic_managers/Micromanagers/understanding_micromanagers.shtml">Understanding Micromanagers 
+and Control Freaks</a> : <a href="/Social/Toxic_managers/index.shtml">Toxic Managers</a> :&nbsp;&nbsp;
+<a href="/Skeptics/Pseudoscience/harvard_mafia.shtml">Harvard Mafia</a> :
+<a href="/Social/Toxic_managers/Communication/diplomatic_communication.shtml">Diplomatic Communication</a> 
+: <a href="/Social/Toxic_managers/surviving_a_bad_performance_review.shtml">Surviving a Bad Performance 
+Review</a> : <a href="/Skeptics/Financial_skeptic/index.shtml">Insufficient Retirement Funds as 
+Immanent Problem of Neoliberal Regime</a> : <a href="/Skeptics/index.shtml">PseudoScience</a> :
+<a href="/Skeptics/Political_skeptic/index.shtml">Who Rules America</a> :
+<a href="/Skeptics/Political_skeptic/Neoliberalism/index.shtml">Neoliberalism
+</a>&nbsp;: <a href="/Skeptics/Political_skeptic/Elite_theory/iron_law_of_oligarchy.shtml">The Iron 
+Law of Oligarchy</a> : </font><a href="/Skeptics/Political_skeptic/libertarianism.shtml">
+<font size="2">Libertarian Philosophy</font></a></b></p>
+</blockquote>
+
+<p><b>Quotes</b></p>
+<blockquote>
+
+<p><b><font size="2" face="Arial"> 
+<a href="/Skeptics/Quotes/war_and_peace_quotes.shtml">War and Peace</a> </font>
+<font face="Arial"><font size="2">: <a href="/Skeptics/Quotes/financial_quotes.shtml">Skeptical 
+Finance</a> : <a href="/Skeptics/Quotes/famous_galbraith_quotes.shtml">John 
+Kenneth Galbraith</a> :<a href="/Skeptics/Quotes/talleyrand_quotes.shtml">Talleyrand</a> :
+<a href="/Skeptics/Quotes/oscar_wilde_quotes.shtml">Oscar Wilde</a> :
+<a href="/Skeptics/Quotes/bismarck_quotes.shtml">Otto Von Bismarck</a> :
+<a href="/Skeptics/Quotes/keynes_quotes.shtml">Keynes</a> :
+<a href="/Skeptics/Quotes/george_carlin.shtml">George Carlin</a> :
+<a href="/Skeptics/skeptical_quotes.shtml">Skeptics</a> :
+<a href="/Skeptics/Quotes/propaganda.shtml">Propaganda</a>&nbsp; : <a href="/SE/quotes.shtml">SE 
+quotes</a> : <a href="/Lang/quotes.shtml">Language Design and Programming Quotes</a> :
+<a href="/Bulletin/quotes.shtml">Random IT-related quotes</a> :&nbsp;
+<a href="/Skeptics/Quotes/somerset_maugham.shtml">Somerset Maugham</a> :
+<a href="/Skeptics/Quotes/marcus_aurelius.shtml">Marcus Aurelius</a> :
+<a href="/Skeptics/Quotes/kurt_vonnegut_quotes.shtml">Kurt Vonnegut</a> :
+<a href="/Skeptics/Quotes/eric_hoffer.shtml">Eric Hoffer</a> :
+<a href="/Skeptics/Quotes/churchill_quotes.shtml">Winston Churchill</a> :
+<a href="/Skeptics/Quotes/napoleon_quotes.shtml">Napoleon Bonaparte</a> :
+<a href="/Skeptics/Quotes/ambrose_bierce.shtml">Ambrose Bierce</a> :&nbsp;
+<a href="/Skeptics/Quotes/bernard_shaw.shtml">Bernard Shaw</a> : </font>
+<a href="/Skeptics/Quotes/mark_twain_quotes.shtml"><font size="2">Mark Twain Quotes</font></a></font></b></p>
+</blockquote>
+
+<p><b>Bulletin:</b></p>
+<blockquote>
+
+<p><b><font face="Arial"><a href="http://softpanorama.biz/Bulletin/Sp2013_v25/bulletin25_12.shtml">
+<font size="2">Vol 25, No.12 (December, 2013) Rational Fools vs. Efficient Crooks The efficient 
+markets hypothesis</font></a><font size="2"> :
+<a href="http://softpanorama.biz/Skeptics/Political_skeptic/Bulletin/political_skeptic2013.shtml">
+Political Skeptic Bulletin, 2013</a> :
+<a href="http://softpanorama.biz/Skeptics/Financial_skeptic/Unemployment/Bulletin/unempoyment2010.shtml">
+Unemployment Bulletin, 2010</a> :
+<a href="http://softpanorama.biz/Bulletin/Sp2011_v23/bulletin23_10.shtml">&nbsp;Vol 23, No.10 
+(October, 2011) An observation about corporate security departments</a> :
+<a href="http://softpanorama.biz/Skeptics/Political_skeptic/Fifth_column/Color_revolutions/Euromaydan/Bulletin/euromaydan14_06.shtml">
+Slightly Skeptical Euromaydan Chronicles, June 2014</a> :
+<a href="http://softpanorama.biz/Skeptics/Financial_skeptic/Casino_capitalism/12_Apostols_of_deregulation/Greenspan/Bulletin/greenspan_bulletin2008.shtml">
+Greenspan legacy bulletin, 2008</a> :
+<a href="/Bulletin/Sp2013_v25/bulletin25_10.shtml">Vol 25, No.10 (October, 2013) Cryptolocker Trojan 
+(Win32/Crilock.A)</a> :
+<a href="/Bulletin/Sp2013_v25/bulletin25_08.shtml">Vol 25, No.08 (August, 2013) Cloud providers 
+as intelligence collection hubs</a> : 
+<a href="http://softpanorama.biz/Skeptics/Financial_skeptic/Humor/Bulletin/financial_humor2010.shtml">
+Financial Humor Bulletin, 2010</a> :
+<a href="http://softpanorama.biz/Skeptics/Financial_skeptic/Inequality/Bulletin/inequality2009.shtml">
+Inequality Bulletin, 2009</a> :
+<a href="http://softpanorama.biz/Skeptics/Financial_skeptic/Humor/Bulletin/financial_humor2008.shtml">
+Financial Humor Bulletin, 2008</a> :
+<a href="http://softpanorama.biz/Copyright/Bulletin/copyleft_problems2004.shtml">Copyleft Problems 
+Bulletin, 2004</a> :
+<a href="http://softpanorama.biz/Skeptics/Financial_skeptic/Humor/Bulletin/financial_humor2011.shtml">
+Financial Humor Bulletin, 2011</a> :
+<a href="http://softpanorama.biz/Skeptics/Financial_skeptic/Energy/Bulletin/energy_bulletin2010.shtml">
+Energy Bulletin, 2010</a> : <a href="http://softpanorama.biz/Malware/Bulletin/malware2010.shtml">
+Malware Protection Bulletin, 2010</a> : <a href="/Bulletin/Sp2014_v26/bulletin26_01.shtml">Vol 26, 
+No.1 (January, 2013) Object-Oriented Cult</a> :
+<a href="http://softpanorama.biz/Skeptics/Political_skeptic/Bulletin/political_skeptic2011.shtml">
+Political Skeptic Bulletin, 2011</a> :
+<a href="/Bulletin/Sp2011_v23/bulletin23_11.shtml">Vol 23, No.11 (November, 2011) Softpanorama classification 
+of sysadmin horror stories</a> : <a href="/Bulletin/Sp2013_v25/bulletin25_05.shtml">Vol 25, No.05 
+(May, 2013) Corporate bullshit as a communication method</a>&nbsp; : </font><a href="/Bulletin/Sp2013_v25/bulletin25_06.shtml">
+<font size="2">Vol 25, No.06 (June, 2013) A Note on the Relationship of Brooks Law and Conway Law</font></a></font></b></p>
+</blockquote>
+
+<p align="left"><b>History:</b></p>
+<blockquote>
+
+<p><b><font face="Arial"><a href="/History/index.shtml"><font size="2">Fifty glorious years (1950-2000): 
+the triumph of the US computer engineering</font></a><font size="2"> :
+<a href="/People/Knuth/index.shtml">Donald Knuth</a> : <a href="/People/Knuth/taocp.shtml">TAoCP 
+and its Influence of Computer Science</a> : <a href="/People/Stallman/index.shtml">Richard Stallman</a> 
+: <a href="/People/Torvalds/index.shtml">Linus Torvalds</a>&nbsp; :
+<a href="/People/Wall/index.shtml">Larry Wall </a>&nbsp;:
+<a href="/People/Ousterhout/index.shtml">John K. Ousterhout</a> : <a href="/History/ctss.shtml">
+CTSS</a> : <a href="/History/multix.shtml">Multix OS</a> <a href="/History/Unix/index.shtml">Unix 
+History</a> : <a href="/People/Shell_giants/introduction.shtml">Unix shell history</a> :
+<a href="/Editors/Vimorama/history.shtml">VI editor</a> :
+<a href="/Scripting/Piporama/history.shtml">History of pipes concept</a> :
+<a href="/Solaris/solaris_history.shtml">Solaris</a> : <a href="/History/dos_history.shtml">MS DOS</a> 
+:&nbsp; <a href="/History/lang_history.shtml">Programming Languages History</a> :
+<a href="/Lang/pl1.shtml">PL/1</a> : <a href="/Lang/simula67.shtml">Simula 67</a> :
+<a href="/Lang/Cilorama/history.shtml">C</a> :
+<a href="/People/Stallman/history_of_gcc_development.shtml">History of GCC development</a> :&nbsp;
+<a href="/People/Scripting_giants/scripting_languages_as_vhll.shtml">Scripting Languages</a> :
+<a href="/Scripting/Perlbook/Ch01/perl_history.shtml">Perl history&nbsp; </a>&nbsp;:
+<a href="/History/os_history.shtml">OS History</a> : <a href="/Mail/history.shtml">Mail</a> :
+<a href="/DNS/history.shtml">DNS</a> : <a href="/Net/Application_layer/SSH/ssh_history.shtml">SSH</a> 
+: <a href="/History/cpu_history.shtml">CPU Instruction Sets</a> :
+<a href="/Hardware/Sun/history_of_sparc.shtml">SPARC systems 1987-2006</a> :
+<a href="/OFM/Paradigm/Ch03/norton_commander.shtml">Norton Commander</a> :
+<a href="/Windows/Norton_utilities/history.shtml">Norton Utilities</a> :
+<a href="/Windows/Ghosting/ghost_history.shtml">Norton Ghost</a> :
+<a href="/Office/Frontpage/history.shtml">Frontpage history</a> :
+<a href="/Malware/Malware_defense_history/index.shtml">Malware Defense History</a> :
+<a href="/Utilities/Screen/history.shtml">GNU Screen</a> : </font>
+<a href="/OSS/oss_early_history.shtml"><font size="2">OSS early history</font></a></font></b></p>
+</blockquote>
+
+<p><b>Classic books:</b></p>
+<blockquote>
+
+<p><b><font face="Arial"><a href="/Bookshelf/Classic/peter_principle.shtml"><font size="2">The Peter 
+Principle</font></a><font size="2"> : <a href="/Bookshelf/Classic/parkinson_law.shtml">Parkinson 
+Law</a> : <a href="/Bookshelf/Classic/nineteen_eighty_four.shtml">1984</a> :
+<a href="/Bookshelf/Classic/tmmm.shtml">The Mythical Man-Month</a> :&nbsp;
+<a href="/Bookshelf/Classic/polya_htsi.shtml">How to Solve It by George Polya</a> :
+<a href="/Bookshelf/Classic/taocp.shtml">The Art of Computer Programming</a> :
+<a href="/Bookshelf/Classic/teops.shtml">The Elements of Programming Style</a> :
+<a href="/Bookshelf/Classic/unix_haters_handhook.shtml">The Unix Hater’s Handbook</a> :
+<a href="/Bookshelf/Classic/jargon_file.shtml">The Jargon file</a> :
+<a href="/Bookshelf/Classic/true_believer.shtml">The True Believer</a> :
+<a href="/Bookshelf/Classic/programming_pearls.shtml">Programming Pearls</a> :
+<a href="/Bookshelf/Classic/good_soldier_svejk.shtml">The Good Soldier Svejk</a> : </font>
+<a href="/Bookshelf/Classic/power_elite.shtml"><font size="2">The Power Elite</font></a></font></b></p>
+</blockquote>
+
+<p><b>Most popular humor pages:</b></p>
+<blockquote>
+
+<p><font face="Arial"><b><a href="/Bulletin/Humor/Slackerism/it_slacker_manifest.shtml">
+<font size="2">Manifest of the Softpanorama IT Slacker Society</font></a><font size="2"> :
+<a href="/Bulletin/Humor/Slackerism/ten_commandments_of_software_slackerism.shtml">Ten Commandments 
+of the IT Slackers Society</a> : <a href="/Bulletin/Humor/index.shtml">Computer Humor Collection</a> 
+: <a href="/Bulletin/Humor/bsd_logo_story.shtml">BSD Logo Story</a> :
+<a href="/Bulletin/Humor/cuckoo_egg.shtml">The Cuckoo&#39;s Egg </a>:
+<a href="/Bulletin/Humor/slang.shtml">IT Slang</a> : <a href="/Lang/Cpp_rama/humor.shtml">C++ Humor</a> 
+: <a href="/Bulletin/Humor/Archive/humor059.shtml">ARE YOU A BBS ADDICT?</a> :
+<a href="/Bulletin/Humor/Archive/humor092.shtml">The Perl Purity Test</a> :
+<a href="/Bulletin/Humor/Archive/humor065.shtml">Object oriented programmers of all nations</a> 
+: <a href="/Skeptics/Financial_skeptic/Humor/financial_humor.shtml">Financial Humor</a> :
+<a href="/Skeptics/Financial_skeptic/Humor/Bulletin/financial_humor2008.shtml">Financial Humor Bulletin, 
+2008</a> : <a href="/Skeptics/Financial_skeptic/Humor/Bulletin/financial_humor2010.shtml">Financial 
+Humor Bulletin, 2010</a> : <a href="/Editors/humor.shtml">The Most Comprehensive Collection of Editor-related 
+Humor</a> : <a href="/Lang/programming_languages_humor.shtml">Programming Language Humor</a> :
+<a href="/Skeptics/Financial_skeptic/Casino_capitalism/Systemic_instability_of_financial_sector/TBTF/Goldman_Sachs/humor.shtml">
+Goldman Sachs related humor</a> :
+<a href="/Skeptics/Financial_skeptic/Casino_capitalism/Twelve_apostles_of_deregulation/Greenspan/greenspan_humor.shtml">
+Greenspan humor</a> : <a href="/Lang/Cilorama/humor.shtml">C Humor</a> :
+<a href="/Scripting/humor.shtml">Scripting Humor</a> :
+<a href="/Bulletin/Humor/real_programmers_humor.shtml">Real Programmers Humor</a> :
+<a href="/WWW/humor.shtml">Web Humor</a> : <a href="/Copyright/humor.shtml">GPL-related Humor</a> 
+: <a href="/OFM/ofm_humor.shtml">OFM Humor</a> :
+<a href="/Skeptics/Political_skeptic/humor.shtml">Politically Incorrect Humor</a> :
+<a href="/Security/IDS/humor.shtml">IDS Humor</a> : <a href="/Bulletin/Humor/linux_sucks.shtml">
+&quot;Linux Sucks&quot; Humor </a>: <a href="/Links/Russian/Culture/Music/russian_musical_humor.shtml">Russian 
+Musical Humor</a> : <a href="/Bulletin/Humor/best_russian_programmer_humor.shtml">Best Russian Programmer 
+Humor</a> : <a href="/Bulletin/Humor/Archive/humor070.shtml">Microsoft plans to buy Catholic Church</a> 
+: <a href="/People/Stallman/rms_related_humor.shtml">Richard Stallman Related Humor</a> :
+<a href="/Admin/humor.shtml">Admin Humor</a> : <a href="/People/Wall/perl_related_humor.shtml">Perl-related 
+Humor</a> : <a href="/People/Torvalds/linus_torvalds_related_humor.shtml">Linus Torvalds Related 
+humor</a> : <a href="/Skeptics/humor.shtml">PseudoScience Related Humor</a> :
+<a href="/Net/net_humor.shtml">Networking Humor</a> :
+<a href="/Scripting/Shellorama/humor.shtml">Shell Humor</a> :
+<a href="/Skeptics/Financial_skeptic/Humor/Bulletin/financial_humor2011.shtml">Financial Humor Bulletin, 
+2011</a> : <a href="/Skeptics/Financial_skeptic/Humor/Bulletin/financial_humor2012.shtml">Financial 
+Humor Bulletin, 2012</a> :
+<a href="/Skeptics/Financial_skeptic/Humor/Bulletin/financial_humor2013.shtml">Financial Humor Bulletin, 
+2013</a> : <a href="/Lang/Javarama/humor.shtml">Java Humor</a> : <a href="/SE/humor.shtml">Software 
+Engineering Humor</a> : <a href="/Solaris/humor.shtml">Sun Solaris Related Humor</a> :
+<a href="/Education/humor.shtml">Education Humor</a> : <a href="/Admin/Tivoli/ibm_humor.shtml">IBM 
+Humor</a> : <a href="/Lang/Asmorama/humor.shtml">Assembler-related Humor</a> :
+<a href="/Editors/Vimorama/vim_humor.shtml">VIM Humor</a> : <a href="/Malware/humor.shtml">Computer 
+Viruses Humor</a> : <a href="/Bulletin/Humor/Archive/humor034.shtml">Bright tomorrow is rescheduled 
+to a day after tomorrow</a> : <a href="/Bulletin/Humor/classic_computer_humor.shtml">Classic Computer 
+Humor</a> </font></b></font></p>
+</blockquote>
+
+<p align="left"><b><a href="/Bulletin/Humor/last_but_not_least.shtml">The Last but not Least</a> </b> <em>Technology is dominated by 
+two types of people: those who understand what they do not manage and those who manage what they do not understand ~Archibald Putt. 
+Ph.D</em></p>
+
+<hr size="5" noshade color="#FF0000"><font face="Verdana" size="1">
+
+<p><i><b>Copyright © 1996-2020 by </b></i><b><i>Softpanorama Society</i></b>. <a target="_blank" href>www.softpanorama.org</a> 
+was initially created as a service to the (now defunct) UN Sustainable Development Networking Programme (<a target="_blank" href="http://www.un.org/Depts/dhl/sflib/">SDNP</a>) 
+without any remuneration. This document is an industrial compilation designed and <b>created exclusively 
+for educational use</b> and is distributed under the <a href="/license.shtml">Softpanorama Content License</a>. 
+Original materials copyright belong 
+to respective owners. <i><b>Quotes are made<font color="#FF0000"> for educational purposes only</font> 
+in compliance with the fair use doctrine. </b></i> 
+</p>
+
+<p><em><b>FAIR USE NOTICE</b> </em>This site contains 
+		copyrighted material the use of which has not always been specifically 
+		authorized by the copyright owner. We are making such material available 
+		to advance understanding of computer science, IT technology, economic, scientific, and social  
+		issues. We believe this constitutes a 'fair use' of any such 
+		copyrighted material as provided by section 107 of the US Copyright Law according to which 
+such material can be distributed without profit exclusively for research and educational purposes.</p>
+
+<p><b>This is a Spartan WHYFF (We Help You For Free) 
+site written by people for whom English is not a native language.</b> Grammar and spelling errors should 
+be expected. <b>The site contain some broken links as it develops like a living tree...</b></p>
+
+<table border="0" width="100%">
+<tr>
+<td>
+
+<p align="center"><font face="Verdana" size="1">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</font></td>
+<td><font face="Verdana" size="1">You can use PayPal to to buy a cup of coffee for authors 
+of this site </font></td>
+</tr>
+</table>
+
+<p><b>Disclaimer:</b> </p>
+
+<p><i>The statements, views and opinions presented on this web page are those of the author (or 
+referenced source) and are 
+not endorsed by, nor do they necessarily reflect, the opinions of the Softpanorama society.</i> <i>We do not warrant the correctness 
+of the information provided or its fitness for any purpose. </i>The site uses AdSense so you need to be aware of Google privacy policy. You you do not want to be 
+tracked by Google please disable Javascript for this site. <em>This site is perfectly usable without 
+Javascript.</em> 
+</font></p>
+<p><i>Last modified: 
+<!--webbot bot="Timestamp" s-type="EDITED" s-format="%B %d, %Y" startspan -->March 12, 2019<!--webbot bot="Timestamp" i-checksum="17043" endspan --></i> </p>
+
+</body>
+
+</html>
