@@ -329,21 +329,17 @@ static void invalidate_script_cdata(char *map, size_t size)
 }
 
 /**
- * Parse the html in the file and return its htmlDocPtr; exit on failure
+ * Parse the html in the mapped file and return its htmlDocPtr; exit on failure
  */
-static htmlDocPtr parse_file(int fd)
+static htmlDocPtr parse_mapped_file(char *map, size_t mapsize)
 {
 	htmlDocPtr doc;
 	int flags = HTML_PARSE_NOERROR | HTML_PARSE_NOWARNING;
-	char *map;
-	size_t mapsize;
 
-	mapsize = map_file(fd, &map);
 	invalidate_script_cdata(map, mapsize);
 	doc = htmlReadMemory(map, mapsize, options.base_url, options.enc, flags);
 	if (!doc)
 		fatal_msg("libxml2 couldn't parse the document as HTML");
-	munmap(map, mapsize);
 	return doc;
 }
 
@@ -947,16 +943,27 @@ static int run_dangerous(int input_fd, int output_fd)
 	FILE *output_fp;
 	htmlDocPtr doc;
 	htmlNodePtr article = NULL;
+	char *input_map;
+	size_t input_size;
 	int ret = 0;
 
 	output_fp = fdopen(output_fd, "w");
 	if (!output_fp)
 		fatal_errno();
 
+	/*
+	 * Some standard libraries use newfstatat() to implement fstat(). We don't
+	 * want to allow checking arbitrary paths inside the sandbox, so just map
+	 * the file ahead of time.
+	 */
+	input_size = map_file(input_fd, &input_map);
+
 	start_sandbox();
 	assert_sandbox_works();
 
-	doc = parse_file(input_fd);
+	doc = parse_mapped_file(input_map, input_size);
+	munmap(input_map, input_size);
+
 	if (check_html_redirect(doc, output_fp)) {
 		ret = STATUS_HTML_REDIRECT;
 		goto out;
