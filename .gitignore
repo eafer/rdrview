@@ -2,3 +2,4 @@
 *.o
 /rdrview
 tags
+/src/version.h

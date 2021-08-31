@@ -1,5 +1,6 @@
 SYSTEM = $(shell uname)
 CC = gcc
+GIT_COMMIT = $(shell git rev-parse --short HEAD)
 
 CFLAGS = -DNDEBUG -O2 -Wall -Wextra -fno-strict-aliasing
 override CFLAGS += $(shell curl-config --cflags) $(shell xml2-config --cflags)
@@ -23,11 +24,20 @@ OBJS = $(SRCS:.c=.o)
 rdrview: $(OBJS)
 	$(CC) $(LDFLAGS) -o rdrview $(OBJS) $(LDLIBS)
 
+src/rdrview.o: src/rdrview.c src/rdrview.h src/version.h
+	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ -c $<
+
 %.o: %.c src/rdrview.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ -c $<
 
+src/version.h: COMMIT
+	@printf '#define GIT_COMMIT\t"%s"\n' $(GIT_COMMIT) > src/version.h
+
+.PHONY: COMMIT
+COMMIT:
+
 clean:
-	rm -f $(OBJS) rdrview
+	rm -f $(OBJS) rdrview src/version.h
 install:
 	mkdir -p $(BINDIR)
 	cp -f rdrview $(BINDIR)

@@ -39,6 +39,7 @@
 #include <libxml/tree.h>
 #include <libxml/HTMLparser.h>
 #include <libxml/encoding.h>
+#include "version.h"
 #include "rdrview.h"
 
 /* Program name */
@@ -399,7 +400,10 @@ static void parse_arguments(int argc, char *argv[])
 			options.base_url = optarg;
 			break;
 		case 'v':
-			puts("rdrview version 0.1");
+			if (*GIT_COMMIT)
+				printf("rdrview - git commit id: %s\n", GIT_COMMIT);
+			else /* Git not available during build */
+				printf("rdrview - unknown git commit id\n");
 			exit(0);
 		case 'B':
 			++output_opts;
