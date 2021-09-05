@@ -140,6 +140,14 @@ diff "$OUT_OLD" "$OUT_NEW" || fail "Regular output differs for rust test"
 echo '<html></html>' | $RDRVIEW &>/dev/null
 [ "$?" -eq "139" ] && fail "Childless root node triggered a segfault"
 
+# Check that unicode characters in the base url are accepted, even if invalid
+RDRVIEW="../rdrview"
+if [ "$1" = "-V" ]; then
+	RDRVIEW="$VALGRIND $RDRVIEW --disable-sandbox"
+fi
+$RDRVIEW -u 'https://ja.wikipedia.org/wiki/ウィキペディア' -H < "./unicode-url/source.html" > "$HTML_NEW" || fail "Failure on unicode url test"
+diff "./unicode-url/expected.html" "$HTML_NEW" || fail "Unicode url not handled properly"
+
 # Check that the only temporary files remaining belong to Valgrind
 TMPCOUNT=$(ls -1 "$TMPDIR" | wc -l)
 VGDCOUNT=$(ls -1 "$TMPDIR" | grep "vgdb-pipe" | wc -l)
