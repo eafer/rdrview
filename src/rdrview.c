@@ -22,6 +22,7 @@
  * limitations under the License.
  */
 
+#include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -39,6 +40,7 @@
 #include <libxml/tree.h>
 #include <libxml/HTMLparser.h>
 #include <libxml/encoding.h>
+#include <libxml/uri.h>
 #include "version.h"
 #include "rdrview.h"
 
@@ -936,6 +938,36 @@ out:
 	return ret;
 }
 
+/**
+ * Is this an ascii-only string?
+ */
+static bool string_is_ascii(const char *str)
+{
+	while (*str) {
+		if (!isascii(*str++))
+			return false;
+	}
+	return true;
+}
+
+/**
+ * Percent-encode invalid unicode characters in the base url
+ */
+static void escape_unicode_base_url(void)
+{
+	static const xmlChar *ignore = (xmlChar *)"%;/?:@&=+$,[]";
+	const char *base = options.base_url;
+
+	/* This is all a bit hacky, so make sure not to break valid urls */
+	if (string_is_ascii(base))
+		return;
+
+	/* The url may have valid reserved characters, don't escape those */
+	options.base_url = (char *)xmlURIEscapeStr((xmlChar *)base, ignore);
+	if (!options.base_url)
+		fatal_msg("failed to escape unicode url - try to supply a valid one");
+}
+
 /* Status code returned by the child if it found an html redirect */
 #define STATUS_HTML_REDIRECT 2
 
@@ -978,6 +1010,13 @@ static int run_dangerous(int input_fd, int output_fd)
 		ret = !is_probably_readerable(doc);
 		goto out;
 	}
+
+	/*
+	 * Unicode urls are technically invalid and libxml2 can't handle them, but
+	 * people are used to modern browsers and expect them to work, so try to
+	 * escape them before they are needed.
+	 */
+	escape_unicode_base_url();
 
 	article = parse(doc);
 	if (!article)
