@@ -774,6 +774,7 @@ static inline void assert_sandbox_works(void)
 /* Descriptors for the encodings supported via iconv */
 static iconv_t gb2312_cd;
 static iconv_t cp1252_cd;
+static iconv_t koi8r_cd;
 
 /**
  * Set up the iconv conversion descriptors to be used by libxml2. This is
@@ -788,6 +789,10 @@ static void init_iconv(void)
 	cp1252_cd = iconv_open("UTF-8", "CP1252");
 	if (cp1252_cd == (iconv_t)(-1))
 		fatal_errno();
+
+	koi8r_cd = iconv_open("UTF-8", "KOI8-R");
+	if (koi8r_cd == (iconv_t)(-1))
+		fatal_errno();
 }
 
 /**
@@ -797,6 +802,7 @@ static void clean_iconv(void)
 {
 	iconv_close(gb2312_cd);
 	iconv_close(cp1252_cd);
+	iconv_close(koi8r_cd);
 }
 
 /**
