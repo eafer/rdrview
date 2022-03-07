@@ -23,6 +23,10 @@
 
 #include <seccomp.h>
 
+#ifdef __ANDROID__
+#include <sys/mman.h>
+#endif
+
 static void do_start_sandbox(void)
 {
 	scmp_filter_ctx ctx;
@@ -44,6 +48,12 @@ static void do_start_sandbox(void)
 	fail |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mmap), 0);
 	fail |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mmap2), 0);
 	fail |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(munmap), 0);
+#ifdef __ANDROID__
+	fail |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(madvise), 1,
+	                         SCMP_A2_32(SCMP_CMP_EQ, MADV_DONTNEED, 0));
+	fail |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mprotect), 1,
+	                         SCMP_A2_32(SCMP_CMP_MASKED_EQ, ~(PROT_READ|PROT_WRITE), 0));
+#endif
 
 	fail |= seccomp_load(ctx);
 	if (fail)
