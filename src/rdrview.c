@@ -386,6 +386,9 @@ static void parse_arguments(int argc, char *argv[])
 	options.flags |= OPT_WEIGHT_CLASSES;
 	options.flags |= OPT_CLEAN_CONDITIONALLY;
 
+	if (argc == 0)
+		exit(1);
+
 	progname = argv[0];
 	while (1) {
 		int opt = getopt_long(argc, argv, OPTSTRING, LONGOPTS, NULL);
