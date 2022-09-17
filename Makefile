@@ -1,5 +1,9 @@
 SYSTEM = $(shell uname)
-CC = gcc
+ifeq ($(SYSTEM), OpenBSD)
+	CC := egcc
+else
+	CC := gcc
+endif
 GIT_COMMIT = $(shell git rev-parse --short HEAD)
 
 CFLAGS = -DNDEBUG -O2 -Wall -Wextra -fno-strict-aliasing
