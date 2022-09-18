@@ -63,7 +63,7 @@ To build _rdrview_ on the BSDs, you will need GNU make as well as the libraries.
 Having a terminal browser available is recommended. On OpenBSD, become root and
 run
 
-    pkg_add gmake curl libxml lynx
+    pkg_add gmake gcc libxml curl lynx
 
 On FreeBSD, that would be
 
