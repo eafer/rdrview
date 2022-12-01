@@ -14,6 +14,8 @@ ifeq ($(SYSTEM), Linux)
 	LDLIBS += -lseccomp
 else ifeq ($(SYSTEM), FreeBSD)
 	LDLIBS += -liconv
+else ifeq ($(SYSTEM), OpenBSD)
+	LDLIBS += -liconv
 else ifeq ($(SYSTEM), Darwin)
 	LDLIBS += -liconv
 endif
