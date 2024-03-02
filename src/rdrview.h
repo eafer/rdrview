@@ -26,6 +26,7 @@
 #define RDRVIEW_H
 
 #include <assert.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <sys/types.h>
 #include <regex.h>
