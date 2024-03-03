@@ -239,7 +239,7 @@ static void url_to_file(FILE *file)
 		fatal();
 
 	/* I don't expect any other protocols, so be safe */
-	protocols = CURLPROTO_HTTP | CURLPROTO_HTTPS;
+	protocols = CURLPROTO_HTTP | CURLPROTO_HTTPS | CURLPROTO_FILE;
 	if (curl_easy_setopt(curl, CURLOPT_PROTOCOLS, protocols))
 		fatal();
 
