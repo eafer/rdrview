@@ -1665,8 +1665,6 @@ static void fix_all_relative_urls(htmlNodePtr article)
 /**
  * fx: Removes the class="" attribute [...], except those that match
  * CLASSES_TO_PRESERVE and the classesToPreserve array from the options object.
- *
- * TODO: add cli option to preserve other classes, or all of them
  */
 static htmlNodePtr clean_classes(htmlNodePtr node)
 {
@@ -1828,7 +1826,8 @@ htmlNodePtr parse(htmlDocPtr doc)
 		return NULL;
 
 	fix_all_relative_urls(article);
-	change_descendants(article, clean_classes);
+	if (!(options.flags & OPT_PRESERVE_CLASSES))
+		change_descendants(article, clean_classes);
 	change_descendants(article, clean_if_text_node);
 	/* We wouldn't need this if we could print/save a single node as html */
 	change_descendants(article, fill_if_not_self_closing);

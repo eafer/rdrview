@@ -12,6 +12,7 @@ rdrview \- extract readable content from a webpage
 [\fB-E \fIencoding\fR]
 [\fB-A \fIuser-agent\fR]
 [\fB-T \fItemplate\fR]
+[\fB-P\fR]
 [\fB-c\fR|\fB-H\fR|\fB\-M\fR|\fB\-B \fIbrowser\fR]
 [\fIpath\fR|\fIurl\fR]
 .SH DESCRIPTION
@@ -86,6 +87,9 @@ first check how it implements the same-origin policy for local files.
 .TP
 .BR \-M ", " \-\-meta
 Output only the metadata for the article.
+.TP
+.BR \-P ", " \-\-preserve-classes
+Don't remove html class attributes.
 .TP
 \fB\-T \fItemplate\fR, \fB--template=\fItemplate
 Pick the metadata to include in the extracted article.

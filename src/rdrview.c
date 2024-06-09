@@ -96,7 +96,7 @@ __attribute__((noreturn)) void fatal_errno(void)
  */
 static void usage(void)
 {
-	char *args = "[-v] [-u base-url] [-E encoding] [-A user-agent] [-T template] [-c|-H|-M|-B browser] [path|url]";
+	char *args = "[-v] [-u base-url] [-E encoding] [-A user-agent] [-T template] [-P] [-c|-H|-M|-B browser] [path|url]";
 
 	fprintf(stderr, "usage: %s %s\n", progname, args);
 	exit(1);
@@ -358,7 +358,7 @@ static void check_known_encoding(const char *enc)
 	fatal_msg("unrecognized encoding");
 }
 
-static const char *OPTSTRING = "cu:vB:E:A:HMT:";
+static const char *OPTSTRING = "cu:vB:E:A:HMT:P";
 #define DISABLE_SANDBOX 256 /* No short version of this option */
 static const struct option LONGOPTS[] = {
 	{"check", no_argument, NULL, 'c'},
@@ -370,6 +370,7 @@ static const struct option LONGOPTS[] = {
 	{"html", no_argument, NULL, 'H'},
 	{"meta", no_argument, NULL, 'M'},
 	{"template", required_argument, NULL, 'T'},
+	{"preserve-classes", no_argument, NULL, 'P'},
 	{"disable-sandbox", no_argument, NULL, DISABLE_SANDBOX},
 	{0}
 };
@@ -432,6 +433,9 @@ static void parse_arguments(int argc, char *argv[])
 			break;
 		case 'T':
 			options.template = optarg;
+			break;
+		case 'P':
+			options.flags |= OPT_PRESERVE_CLASSES;
 			break;
 		case DISABLE_SANDBOX:
 			options.disable_sandbox = true;

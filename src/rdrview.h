@@ -59,6 +59,7 @@ extern struct options options;
 #define OPT_STRIP_UNLIKELY (1 << 5) /* Remove unlikely nodes early */
 #define OPT_WEIGHT_CLASSES (1 << 6) /* Consider classes for node score */
 #define OPT_CLEAN_CONDITIONALLY (1 << 7) /* Remove fishy nodes on prep */
+#define OPT_PRESERVE_CLASSES (1 << 8) /* Preserve class attributes */
 
 /* fx: number of chars an article must have in order to return a result */
 #define DEFAULT_CHAR_THRESHOLD 500
