@@ -414,9 +414,9 @@ static void parse_arguments(int argc, char *argv[])
 			break;
 		case 'v':
 			if (*GIT_COMMIT)
-				printf("rdrview 0.1.2 - git commit id: %s\n", GIT_COMMIT);
+				printf("rdrview 0.1.3 - git commit id: %s\n", GIT_COMMIT);
 			else /* Git not available during build */
-				printf("rdrview 0.1.2 - unknown git commit id\n");
+				printf("rdrview 0.1.3 - unknown git commit id\n");
 			exit(0);
 		case 'B':
 			++output_opts;
