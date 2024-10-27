@@ -228,11 +228,15 @@ static void url_to_file(FILE *file)
 {
 	CURL *curl;
 	CURLcode res;
+	char errbuf[CURL_ERROR_SIZE];
+	size_t errlen;
 	long protocols;
 
 	curl = curl_easy_init();
 	if (!curl)
 		fatal_msg("libcurl could not be initialized");
+	if (curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuf))
+		fatal();
 	if (curl_easy_setopt(curl, CURLOPT_URL, options.url))
 		fatal();
 	if (curl_easy_setopt(curl, CURLOPT_WRITEDATA, file))
@@ -257,10 +261,13 @@ static void url_to_file(FILE *file)
 		fatal();
 
 	res = curl_easy_perform(curl);
-	if (res == CURLE_UNSUPPORTED_PROTOCOL)
-		fatal_msg("unsupported url protocol");
-	else if (res)
-		fatal_msg("couldn't fetch the webpage");
+	if (res) {
+		errlen = strlen(errbuf);
+		fprintf(stderr, "%s: couldn't fetch the webpage (%s)\n", progname, curl_easy_strerror(res));
+		if (errlen)
+			fprintf(stderr, "%s%s", errbuf, (errbuf[errlen - 1] != '\n') ? "\n" : "");
+		exit(1);
+	}
 
 	if (fflush(file))
 		fatal_errno();
