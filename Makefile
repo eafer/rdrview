@@ -1,6 +1,6 @@
 SYSTEM = $(shell uname)
 ifeq ($(SYSTEM), OpenBSD)
-	CC := egcc
+	CC := cc
 else
 	CC := gcc
 endif
