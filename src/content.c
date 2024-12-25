@@ -104,6 +104,11 @@ void strcpy_normalize(xmlChar *dest, const xmlChar *src)
 			*dest = ' ';
 			src += isspace(*src) ? 1 : 2;
 		}
+		/* Skip zero-width space (U+200B) */
+		if (memcmp(src, "\xe2\x80\x8b", 3) == 0) {
+			--dest;   // Don't copy it
+			src += 2; // Skip the extra bytes
+		}
 		if (*dest == ' ')
 			--src;
 	}
