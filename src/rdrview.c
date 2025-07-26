@@ -1194,9 +1194,12 @@ int main(int argc, char *argv[])
 	int ret;
 
 	LIBXML_TEST_VERSION
+
+#ifndef LIBXML2_HAS_NO_XMLMALLOC
 	/* I made a mess mixing xmlMalloc() and malloc(), so play it safe here */
 	if (xmlMemSetup(free, malloc, realloc, strdup))
 		fatal();
+#endif
 
 	set_cleanup_handlers();
 	parse_arguments(argc, argv);

@@ -33,6 +33,18 @@
 #include <libxml/HTMLtree.h>
 #include <libxml/debugXML.h>
 
+#if defined(__APPLE__) && defined(__MACH__)
+#include <Availability.h>
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 150400
+#define LIBXML2_HAS_NO_XMLMALLOC
+#endif
+#endif
+
+#ifdef LIBXML2_HAS_NO_XMLMALLOC
+#define xmlMalloc	malloc
+#define xmlFree		free
+#endif
+
 /* The Incapsula CDN demands user-agent strings of a certain form */
 #define RDRVIEW_DEFAULT_USER_AGENT "Mozilla/5.0 rdrview/0.1.4"
 
