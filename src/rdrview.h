@@ -41,7 +41,9 @@
 #endif
 
 #ifdef LIBXML2_HAS_NO_XMLMALLOC
+#undef xmlMalloc
 #define xmlMalloc	malloc
+#undef xmlFree
 #define xmlFree		free
 #endif
 
