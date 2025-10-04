@@ -48,7 +48,7 @@
 #endif
 
 /* The Incapsula CDN demands user-agent strings of a certain form */
-#define RDRVIEW_DEFAULT_USER_AGENT "Mozilla/5.0 rdrview/0.1.4"
+#define RDRVIEW_DEFAULT_USER_AGENT "Mozilla/5.0 rdrview/0.1.5"
 
 /* Cli options, plus some internal configuration */
 struct options {
