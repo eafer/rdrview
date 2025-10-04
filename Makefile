@@ -2,7 +2,7 @@ SYSTEM = $(shell uname)
 ifeq ($(SYSTEM), OpenBSD)
 	CC := cc
 else
-	CC := gcc
+	CC := ${CC}
 endif
 GIT_COMMIT = $(shell git rev-parse --short HEAD)
 
@@ -20,7 +20,7 @@ else ifeq ($(SYSTEM), Darwin)
 	LDLIBS += -liconv
 endif
 
-PREFIX = /usr/local
+PREFIX ?= /usr/local
 BINDIR = $(DESTDIR)$(PREFIX)/bin
 ifeq ($(SYSTEM), OpenBSD)
 	MANDIR = $(DESTDIR)$(PREFIX)/man/man1
@@ -50,10 +50,9 @@ clean:
 	rm -f $(OBJS) rdrview src/version.h
 install:
 	mkdir -p $(BINDIR)
-	cp -f rdrview $(BINDIR)
+	install -m 0555 rdrview $(BINDIR)
 	mkdir -p $(MANDIR)
-	cp -f rdrview.1 $(MANDIR)
-	chmod 0644 $(MANDIR)/rdrview.1
+	install -m 0444 rdrview.1 $(MANDIR)
 
 uninstall:
 	cd $(BINDIR) && rm rdrview
