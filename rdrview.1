@@ -91,6 +91,17 @@ Output only the metadata for the article.
 .BR \-P ", " \-\-preserve-classes
 Don't remove html class attributes.
 .TP
+.BR \-\-disable-heuristic=\fIflags
+Disable removing page elements based on different readability heuristics.
+Options value should be a comma-separated list of processing flags to disable,
+with following ones supported:
+.IR unlikely
+(element place and role unlikely to be readable),
+.IR weight
+(regexps against element class names),
+.IR fishy
+(checks for tag name and non-text contents).
+.TP
 \fB\-T \fItemplate\fR, \fB--template=\fItemplate
 Pick the metadata to include in the extracted article.
 The template is a comma-separated list of some of the following:

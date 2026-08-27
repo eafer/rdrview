@@ -96,7 +96,7 @@ __attribute__((noreturn)) void fatal_errno(void)
  */
 static void usage(void)
 {
-	char *args = "[-v] [-u base-url] [-E encoding] [-A user-agent] [-T template] [-P] [-c|-H|-M|-B browser] [path|url]";
+	char *args = "[-v] [-u base-url] [-E encoding] [-A user-agent] [-T template] [proc-flags] [-c|-H|-M|-B browser] [path|url]";
 
 	fprintf(stderr, "usage: %s %s\n", progname, args);
 	exit(1);
@@ -365,8 +365,29 @@ static void check_known_encoding(const char *enc)
 	fatal_msg("unrecognized encoding");
 }
 
+/**
+ * Parse and apply command-line heuristic toggle flags to global options structure.
+ */
+static void toggle_heuristic_flags(char *flags)
+{
+	char *flag;
+	for (flag = strtok(flags, ","); flag; flag = strtok(NULL, ",")) {
+		if (strcmp(flag, "unlikely") == 0)
+			options.flags ^= OPT_STRIP_UNLIKELY;
+		else if (strcmp(flag, "weight") == 0)
+			options.flags ^= OPT_WEIGHT_CLASSES;
+		else if (strcmp(flag, "fishy") == 0)
+			options.flags ^= OPT_CLEAN_CONDITIONALLY;
+		else fatal_msg("unrecognized heuristic flags");
+	}
+}
+
+
+/* No short versions for these options */
+#define GETOPT_DISABLE_SANDBOX 256
+#define GETOPT_DISABLE_HEURISTIC 257
+
 static const char *OPTSTRING = "cu:vB:E:A:HMT:P";
-#define DISABLE_SANDBOX 256 /* No short version of this option */
 static const struct option LONGOPTS[] = {
 	{"check", no_argument, NULL, 'c'},
 	{"base", required_argument, NULL, 'u'},
@@ -378,7 +399,8 @@ static const struct option LONGOPTS[] = {
 	{"meta", no_argument, NULL, 'M'},
 	{"template", required_argument, NULL, 'T'},
 	{"preserve-classes", no_argument, NULL, 'P'},
-	{"disable-sandbox", no_argument, NULL, DISABLE_SANDBOX},
+	{"disable-sandbox", no_argument, NULL, GETOPT_DISABLE_SANDBOX},
+	{"disable-heuristic", required_argument, NULL, GETOPT_DISABLE_HEURISTIC},
 	{0}
 };
 
@@ -389,7 +411,6 @@ static void parse_arguments(int argc, char *argv[])
 {
 	int output_opts = 0; /* Only one of these options can be set */
 
-	/* TODO: add flags to override this? */
 	options.flags |= OPT_STRIP_UNLIKELY;
 	options.flags |= OPT_WEIGHT_CLASSES;
 	options.flags |= OPT_CLEAN_CONDITIONALLY;
@@ -444,8 +465,11 @@ static void parse_arguments(int argc, char *argv[])
 		case 'P':
 			options.flags |= OPT_PRESERVE_CLASSES;
 			break;
-		case DISABLE_SANDBOX:
+		case GETOPT_DISABLE_SANDBOX:
 			options.disable_sandbox = true;
+			break;
+		case GETOPT_DISABLE_HEURISTIC:
+			toggle_heuristic_flags(optarg);
 			break;
 		default:
 			usage();
