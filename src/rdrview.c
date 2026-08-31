@@ -230,7 +230,9 @@ static void url_to_file(FILE *file)
 	CURLcode res;
 	char errbuf[CURL_ERROR_SIZE];
 	size_t errlen;
+#if !CURL_AT_LEAST_VERSION(7, 85, 0)
 	long protocols;
+#endif
 
 	curl = curl_easy_init();
 	if (!curl)
@@ -243,9 +245,14 @@ static void url_to_file(FILE *file)
 		fatal();
 
 	/* I don't expect any other protocols, so be safe */
+#if CURL_AT_LEAST_VERSION(7, 85, 0)
+	if (curl_easy_setopt(curl, CURLOPT_PROTOCOLS_STR, "http,https,file"))
+		fatal();
+#else
 	protocols = CURLPROTO_HTTP | CURLPROTO_HTTPS | CURLPROTO_FILE;
 	if (curl_easy_setopt(curl, CURLOPT_PROTOCOLS, protocols))
 		fatal();
+#endif
 
 	/* Enable automatic decompression */
 	if (curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, ""))
